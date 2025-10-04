@@ -7,6 +7,7 @@ import { brazilStates } from '@/data/states';
 import { calculateViability } from '@/data/gameLogic';
 import { useClimateData } from '@/hooks/useClimateData';
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Satellite } from 'lucide-react';
 
 interface ViabilityPopupProps {
@@ -18,6 +19,7 @@ interface ViabilityPopupProps {
 export const ViabilityPopup = ({ open, onClose, stateId }: ViabilityPopupProps) => {
   const { t, lang } = useLanguage();
   const { selectedCrop, addPlanting } = useGameState();
+  const navigate = useNavigate();
   const [useRealData, setUseRealData] = useState(true);
 
   const state = brazilStates.find((s) => s.id === stateId);
