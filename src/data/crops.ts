@@ -1,5 +1,12 @@
 export type Sector = 'agricultura' | 'pecuaria' | 'aquicultura' | 'silvicultura' | 'horticultura';
 
+export interface CropStage {
+  name: { pt: string; en: string };
+  daysToComplete: number;
+  waterNeeds: 'low' | 'medium' | 'high';
+  tempSensitivity: 'low' | 'medium' | 'high';
+}
+
 export interface Crop {
   id: string;
   name: { pt: string; en: string };
@@ -10,6 +17,8 @@ export interface Crop {
   idealRain: [number, number];
   idealSoil: string[];
   waterConsumption: 'low' | 'medium' | 'high';
+  growthDays: number;
+  stages: CropStage[];
 }
 
 export const crops: Crop[] = [
@@ -24,6 +33,14 @@ export const crops: Crop[] = [
     idealRain: [1000, 2000],
     idealSoil: ['latossolo', 'argiloso'],
     waterConsumption: 'high',
+    growthDays: 120,
+    stages: [
+      { name: { pt: 'Plantio', en: 'Planting' }, daysToComplete: 7, waterNeeds: 'high', tempSensitivity: 'medium' },
+      { name: { pt: 'Germinação', en: 'Germination' }, daysToComplete: 14, waterNeeds: 'high', tempSensitivity: 'high' },
+      { name: { pt: 'Crescimento', en: 'Growth' }, daysToComplete: 50, waterNeeds: 'high', tempSensitivity: 'medium' },
+      { name: { pt: 'Floração', en: 'Flowering' }, daysToComplete: 28, waterNeeds: 'medium', tempSensitivity: 'high' },
+      { name: { pt: 'Maturação', en: 'Maturation' }, daysToComplete: 21, waterNeeds: 'low', tempSensitivity: 'medium' },
+    ],
   },
   {
     id: 'milho',
@@ -35,6 +52,14 @@ export const crops: Crop[] = [
     idealRain: [800, 1600],
     idealSoil: ['latossolo', 'argiloso', 'arenoso'],
     waterConsumption: 'medium',
+    growthDays: 150,
+    stages: [
+      { name: { pt: 'Plantio', en: 'Planting' }, daysToComplete: 7, waterNeeds: 'medium', tempSensitivity: 'medium' },
+      { name: { pt: 'Germinação', en: 'Germination' }, daysToComplete: 10, waterNeeds: 'high', tempSensitivity: 'high' },
+      { name: { pt: 'Crescimento', en: 'Growth' }, daysToComplete: 60, waterNeeds: 'high', tempSensitivity: 'medium' },
+      { name: { pt: 'Floração', en: 'Flowering' }, daysToComplete: 35, waterNeeds: 'high', tempSensitivity: 'high' },
+      { name: { pt: 'Maturação', en: 'Maturation' }, daysToComplete: 38, waterNeeds: 'medium', tempSensitivity: 'low' },
+    ],
   },
   {
     id: 'cafe',
@@ -46,6 +71,13 @@ export const crops: Crop[] = [
     idealRain: [1000, 1800],
     idealSoil: ['latossolo', 'argiloso'],
     waterConsumption: 'medium',
+    growthDays: 1095,
+    stages: [
+      { name: { pt: 'Plantio de Mudas', en: 'Seedling Planting' }, daysToComplete: 180, waterNeeds: 'high', tempSensitivity: 'high' },
+      { name: { pt: 'Crescimento Vegetativo', en: 'Vegetative Growth' }, daysToComplete: 365, waterNeeds: 'medium', tempSensitivity: 'medium' },
+      { name: { pt: 'Primeira Floração', en: 'First Flowering' }, daysToComplete: 365, waterNeeds: 'medium', tempSensitivity: 'high' },
+      { name: { pt: 'Maturação dos Frutos', en: 'Fruit Maturation' }, daysToComplete: 185, waterNeeds: 'medium', tempSensitivity: 'medium' },
+    ],
   },
   {
     id: 'cana',
@@ -57,6 +89,13 @@ export const crops: Crop[] = [
     idealRain: [1200, 1800],
     idealSoil: ['latossolo', 'argiloso'],
     waterConsumption: 'high',
+    growthDays: 365,
+    stages: [
+      { name: { pt: 'Plantio', en: 'Planting' }, daysToComplete: 30, waterNeeds: 'high', tempSensitivity: 'medium' },
+      { name: { pt: 'Brotação', en: 'Sprouting' }, daysToComplete: 60, waterNeeds: 'high', tempSensitivity: 'high' },
+      { name: { pt: 'Crescimento', en: 'Growth' }, daysToComplete: 180, waterNeeds: 'high', tempSensitivity: 'medium' },
+      { name: { pt: 'Maturação', en: 'Maturation' }, daysToComplete: 95, waterNeeds: 'medium', tempSensitivity: 'low' },
+    ],
   },
   // Pecuária
   {
@@ -69,6 +108,12 @@ export const crops: Crop[] = [
     idealRain: [800, 1600],
     idealSoil: ['latossolo', 'argiloso', 'arenoso'],
     waterConsumption: 'medium',
+    growthDays: 730,
+    stages: [
+      { name: { pt: 'Nascimento', en: 'Birth' }, daysToComplete: 1, waterNeeds: 'high', tempSensitivity: 'high' },
+      { name: { pt: 'Crescimento', en: 'Growth' }, daysToComplete: 365, waterNeeds: 'medium', tempSensitivity: 'medium' },
+      { name: { pt: 'Engorda', en: 'Fattening' }, daysToComplete: 364, waterNeeds: 'medium', tempSensitivity: 'low' },
+    ],
   },
   {
     id: 'ave',
@@ -80,6 +125,12 @@ export const crops: Crop[] = [
     idealRain: [800, 1400],
     idealSoil: ['latossolo', 'argiloso', 'arenoso'],
     waterConsumption: 'low',
+    growthDays: 42,
+    stages: [
+      { name: { pt: 'Nascimento', en: 'Hatching' }, daysToComplete: 1, waterNeeds: 'high', tempSensitivity: 'high' },
+      { name: { pt: 'Crescimento Inicial', en: 'Early Growth' }, daysToComplete: 14, waterNeeds: 'medium', tempSensitivity: 'high' },
+      { name: { pt: 'Crescimento Final', en: 'Final Growth' }, daysToComplete: 27, waterNeeds: 'medium', tempSensitivity: 'medium' },
+    ],
   },
   {
     id: 'suino',
@@ -91,6 +142,12 @@ export const crops: Crop[] = [
     idealRain: [800, 1400],
     idealSoil: ['latossolo', 'argiloso', 'arenoso'],
     waterConsumption: 'medium',
+    growthDays: 180,
+    stages: [
+      { name: { pt: 'Nascimento', en: 'Birth' }, daysToComplete: 1, waterNeeds: 'high', tempSensitivity: 'high' },
+      { name: { pt: 'Crescimento', en: 'Growth' }, daysToComplete: 90, waterNeeds: 'medium', tempSensitivity: 'medium' },
+      { name: { pt: 'Terminação', en: 'Finishing' }, daysToComplete: 89, waterNeeds: 'medium', tempSensitivity: 'low' },
+    ],
   },
   // Aquicultura
   {
@@ -103,6 +160,12 @@ export const crops: Crop[] = [
     idealRain: [1000, 2000],
     idealSoil: ['hidromórfico', 'aluvial'],
     waterConsumption: 'high',
+    growthDays: 180,
+    stages: [
+      { name: { pt: 'Alevinagem', en: 'Fingerling' }, daysToComplete: 30, waterNeeds: 'high', tempSensitivity: 'high' },
+      { name: { pt: 'Recria', en: 'Juvenile' }, daysToComplete: 60, waterNeeds: 'high', tempSensitivity: 'medium' },
+      { name: { pt: 'Engorda', en: 'Fattening' }, daysToComplete: 90, waterNeeds: 'high', tempSensitivity: 'medium' },
+    ],
   },
   {
     id: 'camarao',
@@ -114,6 +177,12 @@ export const crops: Crop[] = [
     idealRain: [1200, 2200],
     idealSoil: ['hidromórfico', 'aluvial'],
     waterConsumption: 'high',
+    growthDays: 120,
+    stages: [
+      { name: { pt: 'Pós-Larva', en: 'Post-Larvae' }, daysToComplete: 20, waterNeeds: 'high', tempSensitivity: 'high' },
+      { name: { pt: 'Juvenil', en: 'Juvenile' }, daysToComplete: 40, waterNeeds: 'high', tempSensitivity: 'medium' },
+      { name: { pt: 'Engorda', en: 'Fattening' }, daysToComplete: 60, waterNeeds: 'high', tempSensitivity: 'medium' },
+    ],
   },
   {
     id: 'tambaqui',
@@ -125,6 +194,12 @@ export const crops: Crop[] = [
     idealRain: [1500, 2500],
     idealSoil: ['hidromórfico', 'aluvial'],
     waterConsumption: 'high',
+    growthDays: 270,
+    stages: [
+      { name: { pt: 'Alevinagem', en: 'Fingerling' }, daysToComplete: 45, waterNeeds: 'high', tempSensitivity: 'high' },
+      { name: { pt: 'Recria', en: 'Juvenile' }, daysToComplete: 90, waterNeeds: 'high', tempSensitivity: 'medium' },
+      { name: { pt: 'Engorda', en: 'Fattening' }, daysToComplete: 135, waterNeeds: 'high', tempSensitivity: 'medium' },
+    ],
   },
   // Silvicultura
   {
@@ -137,6 +212,13 @@ export const crops: Crop[] = [
     idealRain: [1000, 1600],
     idealSoil: ['latossolo', 'argiloso'],
     waterConsumption: 'medium',
+    growthDays: 2555,
+    stages: [
+      { name: { pt: 'Plantio', en: 'Planting' }, daysToComplete: 180, waterNeeds: 'high', tempSensitivity: 'high' },
+      { name: { pt: 'Crescimento Inicial', en: 'Early Growth' }, daysToComplete: 730, waterNeeds: 'medium', tempSensitivity: 'medium' },
+      { name: { pt: 'Crescimento Médio', en: 'Mid Growth' }, daysToComplete: 1095, waterNeeds: 'medium', tempSensitivity: 'low' },
+      { name: { pt: 'Maturação', en: 'Maturation' }, daysToComplete: 550, waterNeeds: 'low', tempSensitivity: 'low' },
+    ],
   },
   {
     id: 'pinus',
@@ -148,6 +230,13 @@ export const crops: Crop[] = [
     idealRain: [1000, 1400],
     idealSoil: ['latossolo', 'argiloso'],
     waterConsumption: 'low',
+    growthDays: 5475,
+    stages: [
+      { name: { pt: 'Plantio', en: 'Planting' }, daysToComplete: 365, waterNeeds: 'high', tempSensitivity: 'high' },
+      { name: { pt: 'Crescimento Inicial', en: 'Early Growth' }, daysToComplete: 1460, waterNeeds: 'medium', tempSensitivity: 'medium' },
+      { name: { pt: 'Crescimento Médio', en: 'Mid Growth' }, daysToComplete: 2190, waterNeeds: 'low', tempSensitivity: 'low' },
+      { name: { pt: 'Maturação', en: 'Maturation' }, daysToComplete: 1460, waterNeeds: 'low', tempSensitivity: 'low' },
+    ],
   },
   // Horticultura
   {
@@ -160,6 +249,13 @@ export const crops: Crop[] = [
     idealRain: [800, 1400],
     idealSoil: ['argiloso', 'latossolo'],
     waterConsumption: 'medium',
+    growthDays: 60,
+    stages: [
+      { name: { pt: 'Plantio', en: 'Planting' }, daysToComplete: 7, waterNeeds: 'high', tempSensitivity: 'medium' },
+      { name: { pt: 'Germinação', en: 'Germination' }, daysToComplete: 10, waterNeeds: 'high', tempSensitivity: 'high' },
+      { name: { pt: 'Crescimento', en: 'Growth' }, daysToComplete: 30, waterNeeds: 'medium', tempSensitivity: 'medium' },
+      { name: { pt: 'Colheita', en: 'Harvest' }, daysToComplete: 13, waterNeeds: 'low', tempSensitivity: 'low' },
+    ],
   },
   {
     id: 'frutas',
@@ -171,5 +267,12 @@ export const crops: Crop[] = [
     idealRain: [1000, 1600],
     idealSoil: ['latossolo', 'argiloso'],
     waterConsumption: 'medium',
+    growthDays: 730,
+    stages: [
+      { name: { pt: 'Plantio de Mudas', en: 'Seedling Planting' }, daysToComplete: 90, waterNeeds: 'high', tempSensitivity: 'high' },
+      { name: { pt: 'Crescimento', en: 'Growth' }, daysToComplete: 365, waterNeeds: 'medium', tempSensitivity: 'medium' },
+      { name: { pt: 'Floração', en: 'Flowering' }, daysToComplete: 180, waterNeeds: 'medium', tempSensitivity: 'high' },
+      { name: { pt: 'Frutificação', en: 'Fruiting' }, daysToComplete: 95, waterNeeds: 'medium', tempSensitivity: 'medium' },
+    ],
   },
 ];

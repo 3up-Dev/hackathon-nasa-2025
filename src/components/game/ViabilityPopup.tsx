@@ -34,7 +34,7 @@ export const ViabilityPopup = ({ open, onClose, stateId }: ViabilityPopupProps) 
   if (!state || !crop || !viability) return null;
 
   const handlePlant = () => {
-    addPlanting(stateId, viability.scores);
+    navigate(`/education?crop=${crop.id}&state=${stateId}`);
     onClose();
   };
 

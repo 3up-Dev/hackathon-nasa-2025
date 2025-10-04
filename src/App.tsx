@@ -13,6 +13,9 @@ import Tutorial from './pages/Tutorial';
 import Registration from './pages/Registration';
 import Login from './pages/Login';
 import GameMap from './pages/GameMap';
+import PrePlantingEducation from './pages/PrePlantingEducation';
+import ProductionDashboard from './pages/ProductionDashboard';
+import HarvestResults from './pages/HarvestResults';
 import Results from './pages/Results';
 import NotFound from './pages/NotFound';
 
@@ -32,6 +35,9 @@ const App = () => (
           <Route path="/select-country" element={<ProtectedRoute><CountrySelect /></ProtectedRoute>} />
           <Route path="/tutorial" element={<ProtectedRoute><Tutorial /></ProtectedRoute>} />
           <Route path="/game" element={<ProtectedRoute><GameMap /></ProtectedRoute>} />
+          <Route path="/education" element={<ProtectedRoute><PrePlantingEducation /></ProtectedRoute>} />
+          <Route path="/production" element={<ProtectedRoute><ProductionDashboard /></ProtectedRoute>} />
+          <Route path="/harvest" element={<ProtectedRoute><HarvestResults /></ProtectedRoute>} />
           <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
