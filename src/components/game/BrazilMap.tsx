@@ -84,7 +84,7 @@ export const BrazilMap = ({ onStateClick }: BrazilMapProps) => {
         <button
           onClick={handleZoomIn}
           disabled={zoom >= 3}
-          className="w-10 h-10 rounded-lg bg-white shadow-lg flex items-center justify-center text-xl font-bold hover:bg-game-green-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-2 border-game-gray-300"
+          className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl font-bold hover:scale-110 transition-transform disabled:opacity-50 disabled:cursor-not-allowed border-2 border-game-gray-300"
           aria-label="Zoom in"
         >
           +
@@ -92,7 +92,7 @@ export const BrazilMap = ({ onStateClick }: BrazilMapProps) => {
         <button
           onClick={handleZoomOut}
           disabled={zoom <= 1}
-          className="w-10 h-10 rounded-lg bg-white shadow-lg flex items-center justify-center text-xl font-bold hover:bg-game-green-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-2 border-game-gray-300"
+          className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl font-bold hover:scale-110 transition-transform disabled:opacity-50 disabled:cursor-not-allowed border-2 border-game-gray-300"
           aria-label="Zoom out"
         >
           −
