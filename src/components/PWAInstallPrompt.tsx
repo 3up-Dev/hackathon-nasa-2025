@@ -66,7 +66,7 @@ export const PWAInstallPrompt = () => {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm z-50 animate-in slide-in-from-bottom-4">
-      <div className="bg-game-panel border-4 border-game-border rounded-lg p-4 shadow-pixel">
+      <div className="bg-white border-4 border-game-green-700 rounded-lg p-4 shadow-lg">
         <div className="flex items-start gap-3">
           <div className="text-3xl">📱</div>
           <div className="flex-1">
