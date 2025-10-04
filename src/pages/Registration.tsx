@@ -2,11 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
-import { useLanguage } from '@/hooks/useLanguage';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 const registrationSchema = z.object({
@@ -15,7 +14,7 @@ const registrationSchema = z.object({
     const birthDate = new Date(date);
     const today = new Date();
     const age = today.getFullYear() - birthDate.getFullYear();
-    return age >= 13 && age <= 120;
+    return age >= 13;
   }, 'Você deve ter pelo menos 13 anos'),
   email: z.string().trim().email('E-mail inválido').max(255),
   phone: z.string().trim().min(10, 'Telefone inválido').max(20),
@@ -24,7 +23,6 @@ const registrationSchema = z.object({
 
 export default function Registration() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
@@ -42,147 +40,131 @@ export default function Registration() {
       // Validate form data
       const validatedData = registrationSchema.parse(formData);
 
-      // Sign up with Supabase Auth
+      // Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: validatedData.email,
         password: validatedData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/game`,
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            full_name: validatedData.fullName,
+          },
         },
       });
 
-      if (authError) {
-        if (authError.message.includes('already registered')) {
-          toast.error('Este e-mail já está cadastrado');
-        } else {
-          toast.error('Erro ao criar conta: ' + authError.message);
-        }
-        setLoading(false);
-        return;
-      }
+      if (authError) throw authError;
 
       if (!authData.user) {
-        toast.error('Erro ao criar usuário');
-        setLoading(false);
-        return;
+        throw new Error('Erro ao criar usuário');
       }
 
       // Create profile
-      const { error: profileError } = await supabase.from('profiles').insert({
-        user_id: authData.user.id,
-        full_name: validatedData.fullName,
-        birth_date: validatedData.birthDate,
-        email: validatedData.email,
-        phone: validatedData.phone,
-      });
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          user_id: authData.user.id,
+          full_name: validatedData.fullName,
+          birth_date: validatedData.birthDate,
+          email: validatedData.email,
+          phone: validatedData.phone,
+        });
 
-      if (profileError) {
-        console.error('Error creating profile:', profileError);
-        toast.error('Erro ao criar perfil');
-        setLoading(false);
-        return;
-      }
+      if (profileError) throw profileError;
 
       toast.success('Conta criada com sucesso!');
       navigate('/game');
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const firstError = error.errors[0];
-        toast.error(firstError.message);
+        toast.error(error.errors[0].message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
       } else {
         toast.error('Erro ao criar conta');
       }
+    } finally {
       setLoading(false);
     }
   };
 
   return (
     <GameLayout>
-      <div className="relative h-full bg-game-bg overflow-y-auto">
-        <div className="max-w-md mx-auto p-8">
-          <div className="bg-white rounded-lg shadow-lg p-6 border-2 border-game-gray-300">
-            <h2 className="font-pixel text-lg text-game-fg mb-6 text-center">
+      <div className="relative h-full bg-game-bg overflow-auto">
+        <div className="flex flex-col items-center justify-center min-h-full p-8">
+          <div className="w-full max-w-md">
+            <h1 className="font-pixel text-lg text-game-fg mb-8 text-center">
               Criar Conta
-            </h2>
+            </h1>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="fullName" className="font-sans text-sm text-game-fg">
-                  Nome Completo *
+                <Label htmlFor="fullName" className="font-pixel text-xs text-game-fg">
+                  Nome Completo
                 </Label>
                 <Input
                   id="fullName"
                   type="text"
+                  required
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   className="mt-1"
-                  required
-                  maxLength={100}
                 />
               </div>
 
               <div>
-                <Label htmlFor="birthDate" className="font-sans text-sm text-game-fg">
-                  Data de Nascimento *
+                <Label htmlFor="birthDate" className="font-pixel text-xs text-game-fg">
+                  Data de Nascimento
                 </Label>
                 <Input
                   id="birthDate"
                   type="date"
+                  required
                   value={formData.birthDate}
                   onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
                   className="mt-1"
-                  required
-                  max={new Date().toISOString().split('T')[0]}
                 />
               </div>
 
               <div>
-                <Label htmlFor="email" className="font-sans text-sm text-game-fg">
-                  E-mail *
+                <Label htmlFor="email" className="font-pixel text-xs text-game-fg">
+                  E-mail
                 </Label>
                 <Input
                   id="email"
                   type="email"
+                  required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="mt-1"
-                  required
-                  maxLength={255}
                 />
               </div>
 
               <div>
-                <Label htmlFor="phone" className="font-sans text-sm text-game-fg">
-                  Telefone *
+                <Label htmlFor="phone" className="font-pixel text-xs text-game-fg">
+                  Telefone
                 </Label>
                 <Input
                   id="phone"
                   type="tel"
+                  required
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="mt-1"
                   placeholder="(00) 00000-0000"
-                  required
-                  maxLength={20}
                 />
               </div>
 
               <div>
-                <Label htmlFor="password" className="font-sans text-sm text-game-fg">
-                  Senha *
+                <Label htmlFor="password" className="font-pixel text-xs text-game-fg">
+                  Senha
                 </Label>
                 <Input
                   id="password"
                   type="password"
+                  required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="mt-1"
-                  required
-                  maxLength={100}
                 />
-                <p className="text-xs text-game-gray-700 mt-1">
-                  Mínimo de 6 caracteres
-                </p>
               </div>
 
               <div className="pt-4">
