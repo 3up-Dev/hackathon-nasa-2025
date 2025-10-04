@@ -45,7 +45,7 @@ export default function Login() {
   return (
     <GameLayout>
       <div className="relative h-full bg-game-bg overflow-auto">
-        <div className="flex flex-col p-6">
+        <div className="flex flex-col items-center justify-center min-h-full p-6">
           <div className="w-full max-w-md mx-auto">
             <div className="flex items-center mb-6">
               <button
