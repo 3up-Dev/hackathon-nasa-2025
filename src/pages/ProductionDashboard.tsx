@@ -173,8 +173,8 @@ export default function ProductionDashboard() {
           <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <Leaf className="w-5 h-5 text-game-green-700" />
-              <span className="font-pixel text-[10px] text-game-fg">
-                {lang === 'pt' ? 'Sustentabilidade' : 'Sustainability'}
+              <span className="font-pixel text-[10px] text-game-fg leading-tight">
+                Sustenta-<br />bilidade
               </span>
             </div>
             <p className="font-pixel text-lg text-game-fg">{productionState.sustainabilityScore}%</p>
