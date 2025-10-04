@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+// import { useNavigate, useLocation } from 'react-router-dom';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -11,19 +11,19 @@ import { calculateViability } from '@/data/gameLogic';
 import { Loader2, Thermometer, Droplets, Mountain, Clock, Satellite } from 'lucide-react';
 
 export default function PrePlantingEducation() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  // const navigate = useNavigate();
+  // const location = useLocation();
   const { t, lang } = useLanguage();
   const [crop, setCrop] = useState<Crop | null>(null);
   const [state, setState] = useState<BrazilState | null>(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
+    const params = new URLSearchParams(window.location.search);
     const cropId = params.get('crop');
     const stateId = params.get('state');
 
     if (!cropId || !stateId) {
-      navigate('/game');
+      window.location.href = '/game';
       return;
     }
 
@@ -31,13 +31,13 @@ export default function PrePlantingEducation() {
     const selectedState = brazilStates.find(s => s.id === stateId);
 
     if (!selectedCrop || !selectedState) {
-      navigate('/game');
+      window.location.href = '/game';
       return;
     }
 
     setCrop(selectedCrop);
     setState(selectedState);
-  }, [location, navigate]);
+  }, []);
 
   const { data: climateData, loading: loadingClimate } = useClimateData(state!, !!state);
 
@@ -49,7 +49,8 @@ export default function PrePlantingEducation() {
   const compatibilityScore = Math.round(viability.isViable ? 85 : 45);
 
   const handleStartProduction = () => {
-    navigate(`/production?crop=${crop.id}&state=${state.id}`);
+    if (!crop || !state) return;
+    window.location.href = `/production?crop=${crop.id}&state=${state.id}`;
   };
 
   return (
@@ -214,7 +215,7 @@ export default function PrePlantingEducation() {
         <div className="flex gap-4">
           <PixelButton
             variant="ghost"
-            onClick={() => navigate('/game')}
+            onClick={() => (window.location.href = '/game')}
             className="flex-1"
           >
             {t('cta_close')}
