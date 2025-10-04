@@ -68,15 +68,13 @@ export default function Tutorial() {
 
         {/* Navigation buttons */}
         <div className="absolute bottom-8 left-8 right-8 flex gap-4">
-          {currentSlide > 0 && (
-            <PixelButton
-              variant="secondary"
-              onClick={() => setCurrentSlide(currentSlide - 1)}
-              className="w-20"
-            >
-              ←
-            </PixelButton>
-          )}
+          <PixelButton
+            variant="secondary"
+            onClick={() => currentSlide === 0 ? navigate('/select-country') : setCurrentSlide(currentSlide - 1)}
+            className="w-20"
+          >
+            ←
+          </PixelButton>
           <PixelButton variant="primary" onClick={handleNext} className="flex-1">
             {currentSlide === slides.length - 1 ? t('cta_start') : t('cta_next')}
           </PixelButton>
