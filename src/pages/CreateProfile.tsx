@@ -100,7 +100,7 @@ export default function CreateProfile() {
                   )}
                 >
                   <span className="text-xl mb-1">{sector.icon}</span>
-                  <span className="font-pixel text-[7px] text-game-fg text-center leading-tight">
+                  <span className="font-pixel text-[6px] text-game-fg text-center leading-tight">
                     {sector.name[lang]}
                   </span>
                 </button>
