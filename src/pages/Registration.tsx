@@ -38,6 +38,27 @@ export default function Registration() {
     password: '',
   });
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, '');
+    
+    if (value.length <= 11) {
+      if (value.length <= 2) {
+        value = value.replace(/(\d{0,2})/, '($1');
+      } else if (value.length <= 6) {
+        value = value.replace(/(\d{2})(\d{0,4})/, '($1) $2');
+      } else if (value.length <= 10) {
+        value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+      } else {
+        value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+      }
+    } else {
+      value = value.substring(0, 11);
+      value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    }
+    
+    setFormData({ ...formData, phone: value });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -197,9 +218,10 @@ export default function Registration() {
                   type="tel"
                   required
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={handlePhoneChange}
                   className="mt-1"
                   placeholder="(00) 00000-0000"
+                  maxLength={15}
                 />
               </div>
 
