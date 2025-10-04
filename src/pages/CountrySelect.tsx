@@ -16,7 +16,7 @@ export default function CountrySelect() {
   const countries: Country[] = [
     { id: 'brazil', name: { pt: 'Brasil', en: 'Brazil' }, flag: '🇧🇷', available: true },
     { id: 'usa', name: { pt: 'Estados Unidos', en: 'United States' }, flag: '🇺🇸', available: false },
-    { id: 'china', name: { pt: 'China', en: 'China' }, flag: '🇰🇵', available: false },
+    { id: 'paraguay', name: { pt: 'Paraguai', en: 'Paraguay' }, flag: '🇵🇾', available: false },
     { id: 'india', name: { pt: 'Índia', en: 'India' }, flag: '🇮🇳', available: false },
     { id: 'argentina', name: { pt: 'Argentina', en: 'Argentina' }, flag: '🇦🇷', available: false },
     { id: 'canada', name: { pt: 'Canadá', en: 'Canada' }, flag: '🇨🇦', available: false },
