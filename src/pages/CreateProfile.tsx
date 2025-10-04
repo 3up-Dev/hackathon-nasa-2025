@@ -84,7 +84,7 @@ export default function CreateProfile() {
             <h2 className="font-pixel text-xs text-game-fg mb-3 text-center">
               1. Escolha o Setor
             </h2>
-            <div className="grid grid-cols-3 gap-2 max-w-2xl mx-auto">
+            <div className="grid grid-cols-5 gap-1 max-w-2xl mx-auto">
               {sectors.map((sector) => (
                 <button
                   key={sector.id}
@@ -93,14 +93,14 @@ export default function CreateProfile() {
                     setSelectedCrop(null); // Reset crop when changing sector
                   }}
                   className={cn(
-                    'flex flex-col items-center justify-center p-4 rounded-xl border-4 transition-all',
+                    'flex flex-col items-center justify-center p-2 rounded-lg border-4 transition-all',
                     selectedSector === sector.id
                       ? 'border-game-green-700 bg-game-green-400 bg-opacity-20 scale-105 shadow-lg'
                       : 'border-game-gray-300 hover:border-game-green-400 hover:scale-105 bg-white'
                   )}
                 >
-                  <span className="text-3xl mb-1">{sector.icon}</span>
-                  <span className="font-pixel text-[8px] text-game-fg text-center leading-tight">
+                  <span className="text-xl mb-1">{sector.icon}</span>
+                  <span className="font-pixel text-[7px] text-game-fg text-center leading-tight">
                     {sector.name[lang]}
                   </span>
                 </button>
