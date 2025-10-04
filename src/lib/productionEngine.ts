@@ -35,7 +35,7 @@ export interface ProductionState {
 }
 
 export interface ClimateEvent {
-  type: 'drought' | 'flood' | 'heat' | 'cold' | 'pest';
+  type: 'drought' | 'flood' | 'heat' | 'cold' | 'pest' | 'fire' | 'storm';
   severity: 'low' | 'medium' | 'high';
   description: { pt: string; en: string };
   impact: {
@@ -112,7 +112,7 @@ export class ProductionEngine {
     
     // Fetch real climate data for this period
     let realClimateData: RealClimateData | undefined;
-    let detectedAnomalies: { drought: boolean; flood: boolean; heatWave: boolean; coldSnap: boolean } | undefined;
+    let detectedAnomalies: { drought: boolean; flood: boolean; heatWave: boolean; coldSnap: boolean; fireRisk: boolean; stormRisk: boolean } | undefined;
     
     if (stateLocation) {
       try {
@@ -214,6 +214,32 @@ export class ProductionEngine {
           waterChange += coldEvent.impact.water;
           sustainabilityChange += coldEvent.impact.sustainability;
         }
+        
+        if (detectedAnomalies.fireRisk) {
+          const fireEvent: ClimateEvent = {
+            type: 'fire',
+            severity: 'high',
+            description: { pt: '🔥 Risco de Incêndio Detectado pela NASA', en: '🔥 Fire Risk Detected by NASA' },
+            impact: { health: -25, water: 80, sustainability: -15 }
+          };
+          climateEvents.push(fireEvent);
+          healthChange += fireEvent.impact.health;
+          waterChange += fireEvent.impact.water;
+          sustainabilityChange += fireEvent.impact.sustainability;
+        }
+        
+        if (detectedAnomalies.stormRisk) {
+          const stormEvent: ClimateEvent = {
+            type: 'storm',
+            severity: 'high',
+            description: { pt: '⛈️ Tempestade Severa Detectada pela NASA', en: '⛈️ Severe Storm Detected by NASA' },
+            impact: { health: -18, water: -20, sustainability: -10 }
+          };
+          climateEvents.push(stormEvent);
+          healthChange += stormEvent.impact.health;
+          waterChange += stormEvent.impact.water;
+          sustainabilityChange += stormEvent.impact.sustainability;
+        }
       }
     } else {
       // Fallback to old calculation if no real data
@@ -254,7 +280,7 @@ export class ProductionEngine {
   private async fetchRealClimateData(
     location: { latitude: number; longitude: number }, 
     daysCount: number
-  ): Promise<{ data: RealClimateData; anomalies: any } | null> {
+  ): Promise<{ data: RealClimateData; anomalies: { drought: boolean; flood: boolean; heatWave: boolean; coldSnap: boolean; fireRisk: boolean; stormRisk: boolean } } | null> {
     try {
       const { data, error } = await supabase.functions.invoke('get-nasa-climate-data', {
         body: {

@@ -5,6 +5,7 @@ import { PixelButton } from '@/components/layout/PixelButton';
 import { ProductionChecklist } from '@/components/game/ProductionChecklist';
 import { StageProgress } from '@/components/game/StageProgress';
 import { TimeControls } from '@/components/game/TimeControls';
+import { ClimateAlerts } from '@/components/game/ClimateAlerts';
 import { translations } from '@/i18n/translations';
 import { crops, Crop } from '@/data/crops';
 import { brazilStates, BrazilState } from '@/data/states';
@@ -248,6 +249,13 @@ export default function ProductionDashboard() {
             <SimpleProgress value={productionState.sustainabilityScore} className="mt-2 h-2" />
           </div>
         </div>
+
+        {/* Climate Alerts */}
+        {productionState.climateEvents && productionState.climateEvents.length > 0 && (
+          <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
+            <ClimateAlerts events={productionState.climateEvents} lang={lang} />
+          </div>
+        )}
 
         {/* Stage Progress */}
         <StageProgress crop={crop} currentDay={productionState.currentDay} lang={lang} />

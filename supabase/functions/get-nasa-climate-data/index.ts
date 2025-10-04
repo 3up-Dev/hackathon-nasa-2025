@@ -10,6 +10,8 @@ interface ClimateAnomalies {
   flood: boolean;
   heatWave: boolean;
   coldSnap: boolean;
+  fireRisk: boolean;
+  stormRisk: boolean;
 }
 
 interface NASAClimateData {
@@ -117,6 +119,8 @@ serve(async (req) => {
       flood: totalPrecip > (validPrecips.length * 15), // More than 15mm per day average
       heatWave: avgTemp > 35,
       coldSnap: avgTemp < 10,
+      fireRisk: avgTemp > 35 && avgHumidity < 30 && totalPrecip < (validPrecips.length * 2), // High temp, low humidity, low rain
+      stormRisk: totalPrecip > (validPrecips.length * 20), // Extreme precipitation
     };
 
     const result: NASAClimateData = {
