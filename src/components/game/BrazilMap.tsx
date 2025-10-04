@@ -178,7 +178,7 @@ export const BrazilMap = ({ onStateClick }: BrazilMapProps) => {
             MT: { x: 180, y: 200, w: 85, h: 100 },
             MS: { x: 180, y: 305, w: 70, h: 80 },
             GO: { x: 270, y: 250, w: 70, h: 85 },
-            DF: { x: 310, y: 280, w: 18, h: 18 },
+            DF: { x: 345, y: 290, w: 16, h: 16 },
             // Southeast
             MG: { x: 300, y: 330, w: 80, h: 90 },
             ES: { x: 385, y: 360, w: 35, h: 50 },
