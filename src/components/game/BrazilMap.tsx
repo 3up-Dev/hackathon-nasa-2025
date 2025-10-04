@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { brazilStates } from '@/data/states';
 import { useGameState } from '@/hooks/useGameState';
 
@@ -8,7 +8,66 @@ interface BrazilMapProps {
 
 export const BrazilMap = ({ onStateClick }: BrazilMapProps) => {
   const [hoveredState, setHoveredState] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
   const { plantedStates } = useGameState();
+
+  const handleZoomIn = () => {
+    setZoom((prev) => Math.min(prev + 0.3, 3));
+  };
+
+  const handleZoomOut = () => {
+    setZoom((prev) => Math.max(prev - 0.3, 1));
+    if (zoom <= 1.3) {
+      setPan({ x: 0, y: 0 });
+    }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (zoom > 1) {
+      setIsDragging(true);
+      setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isDragging && zoom > 1) {
+      setPan({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y,
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (zoom > 1 && e.touches.length === 1) {
+      setIsDragging(true);
+      setDragStart({ 
+        x: e.touches[0].clientX - pan.x, 
+        y: e.touches[0].clientY - pan.y 
+      });
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (isDragging && zoom > 1 && e.touches.length === 1) {
+      setPan({
+        x: e.touches[0].clientX - dragStart.x,
+        y: e.touches[0].clientY - dragStart.y,
+      });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
 
   const regionColors = {
     north: '#9CCC65',
@@ -20,11 +79,47 @@ export const BrazilMap = ({ onStateClick }: BrazilMapProps) => {
 
   return (
     <div className="relative w-full h-full flex items-center justify-center p-4">
-      <svg
-        viewBox="0 0 500 600"
-        className="w-full h-full max-h-[500px]"
-        style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' }}
+      {/* Zoom controls */}
+      <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
+        <button
+          onClick={handleZoomIn}
+          disabled={zoom >= 3}
+          className="w-10 h-10 rounded-lg bg-white shadow-lg flex items-center justify-center text-xl font-bold hover:bg-game-green-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-2 border-game-gray-300"
+          aria-label="Zoom in"
+        >
+          +
+        </button>
+        <button
+          onClick={handleZoomOut}
+          disabled={zoom <= 1}
+          className="w-10 h-10 rounded-lg bg-white shadow-lg flex items-center justify-center text-xl font-bold hover:bg-game-green-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-2 border-game-gray-300"
+          aria-label="Zoom out"
+        >
+          −
+        </button>
+      </div>
+
+      <div
+        ref={containerRef}
+        className="w-full h-full flex items-center justify-center overflow-hidden"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{ cursor: zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
       >
+        <svg
+          viewBox="0 0 500 600"
+          className="w-full h-full max-h-[500px]"
+          style={{ 
+            filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))',
+            transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`,
+            transition: isDragging ? 'none' : 'transform 0.2s ease-out',
+          }}
+        >
         {/* Simplified Brazil map - using rectangles positioned to approximate states */}
         {brazilStates.map((state) => {
           const isHovered = hoveredState === state.id;
@@ -114,7 +209,8 @@ export const BrazilMap = ({ onStateClick }: BrazilMapProps) => {
             </g>
           );
         })}
-      </svg>
+        </svg>
+      </div>
     </div>
   );
 };
