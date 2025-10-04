@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ThermometerSun, Cloud, Mountain, CheckCircle, XCircle } from 'lucide-react';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { BrazilMap } from '@/components/game/BrazilMap';
 import { useGameProfiles } from '@/hooks/useGameProfiles';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useClimateData } from '@/hooks/useClimateData';
 import { crops } from '@/data/crops';
 import { states } from '@/data/states';
+import { calculateViability } from '@/data/gameLogic';
 import { cn } from '@/lib/utils';
 
 const sectors = [
@@ -60,6 +62,33 @@ export default function CreateProfile() {
 
   const canCreate = selectedSector && selectedCrop && selectedState;
   const selectedStateData = states.find(s => s.id === selectedState);
+  const selectedCropData = crops.find(c => c.id === selectedCrop);
+
+  // Fetch climate data when all selections are made
+  const { data: climateData, loading: climateLoading } = useClimateData(
+    selectedStateData || null,
+    !!canCreate
+  );
+
+  // Calculate viability when we have all data
+  const [viabilityResult, setViabilityResult] = useState<any>(null);
+  
+  useEffect(() => {
+    if (selectedCropData && selectedStateData && canCreate) {
+      const result = calculateViability(
+        selectedCropData,
+        selectedStateData,
+        climateData ? {
+          temperature: climateData.temperature,
+          precipitation: climateData.precipitation,
+          isRealData: climateData.isRealData
+        } : undefined
+      );
+      setViabilityResult(result);
+    } else {
+      setViabilityResult(null);
+    }
+  }, [selectedCropData, selectedStateData, climateData, canCreate]);
 
   return (
     <GameLayout>
@@ -155,7 +184,89 @@ export default function CreateProfile() {
         </div>
 
         {/* Footer - Fixed */}
-        <div className="p-4 border-t-4 border-game-fg bg-white">
+        <div className="p-4 border-t-4 border-game-fg bg-white space-y-4">
+          {/* Viability Report */}
+          {canCreate && viabilityResult && (
+            <div className={cn(
+              "rounded-xl border-4 p-4 space-y-3",
+              viabilityResult.isViable 
+                ? "border-game-green-700 bg-game-green-400 bg-opacity-10" 
+                : "border-game-brown bg-game-brown bg-opacity-10"
+            )}>
+              {/* Header */}
+              <div className="flex items-center gap-2">
+                {viabilityResult.isViable ? (
+                  <CheckCircle className="w-5 h-5 text-game-green-700" />
+                ) : (
+                  <XCircle className="w-5 h-5 text-game-brown" />
+                )}
+                <h3 className="font-pixel text-xs text-game-fg">
+                  {viabilityResult.isViable ? '✅ Local Viável' : '⚠️ Local Desafiador'}
+                </h3>
+              </div>
+
+              {/* Climate Data */}
+              {climateLoading ? (
+                <div className="text-center py-2">
+                  <span className="font-sans text-xs text-game-gray-700">Carregando dados climáticos...</span>
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="flex flex-col items-center p-2 bg-white rounded-lg border-2 border-game-gray-300">
+                    <ThermometerSun className="w-4 h-4 text-game-brown mb-1" />
+                    <span className="font-sans text-[10px] text-game-gray-700">Temperatura</span>
+                    <span className="font-pixel text-xs text-game-fg">
+                      {climateData?.temperature || selectedStateData?.temp}°C
+                    </span>
+                  </div>
+                  
+                  <div className="flex flex-col items-center p-2 bg-white rounded-lg border-2 border-game-gray-300">
+                    <Cloud className="w-4 h-4 text-blue-500 mb-1" />
+                    <span className="font-sans text-[10px] text-game-gray-700">Chuva Anual</span>
+                    <span className="font-pixel text-xs text-game-fg">
+                      {climateData?.precipitation || selectedStateData?.rain}mm
+                    </span>
+                  </div>
+                  
+                  <div className="flex flex-col items-center p-2 bg-white rounded-lg border-2 border-game-gray-300">
+                    <Mountain className="w-4 h-4 text-amber-700 mb-1" />
+                    <span className="font-sans text-[10px] text-game-gray-700">Tipo de Solo</span>
+                    <span className="font-pixel text-[9px] text-game-fg uppercase">
+                      {selectedStateData?.soil}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Success Rate */}
+              <div className="bg-white rounded-lg p-3 border-2 border-game-gray-300">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-sans text-xs text-game-gray-700">Chance de Sucesso</span>
+                  <span className="font-pixel text-sm text-game-fg">
+                    {viabilityResult.isViable ? '85%' : '45%'}
+                  </span>
+                </div>
+                <div className="w-full bg-game-gray-200 rounded-full h-2">
+                  <div 
+                    className={cn(
+                      "h-2 rounded-full transition-all",
+                      viabilityResult.isViable ? "bg-game-green-700" : "bg-game-brown"
+                    )}
+                    style={{ width: viabilityResult.isViable ? '85%' : '45%' }}
+                  />
+                </div>
+              </div>
+
+              {/* Data Source */}
+              {climateData && (
+                <p className="text-center text-[8px] text-game-gray-700 font-sans">
+                  {climateData.isRealData ? '📡 Dados reais da NASA POWER' : '🔮 Dados simulados'}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Create Button */}
           <PixelButton
             onClick={handleCreateProfile}
             disabled={!canCreate || creating}
@@ -163,8 +274,9 @@ export default function CreateProfile() {
           >
             {creating ? 'Criando...' : '🚀 Iniciar Produção'}
           </PixelButton>
+          
           {canCreate && (
-            <p className="text-center text-xs text-game-gray-700 mt-2 font-sans">
+            <p className="text-center text-xs text-game-gray-700 font-sans">
               Nome do perfil: BR/{selectedState}/{crops.find(c => c.id === selectedCrop)?.name[lang]}
             </p>
           )}
