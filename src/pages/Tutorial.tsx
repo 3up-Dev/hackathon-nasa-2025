@@ -2,29 +2,15 @@ import { useState } from 'react';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { TutorialSlide } from '@/components/tutorial/TutorialSlide';
-import { useLanguage } from '@/hooks/useLanguage';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function Tutorial() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { t } = useLanguage();
 
   const slides = [
-    {
-      icon: '🌡️',
-      title: t('tut_1_title'),
-      body: t('tut_1_body'),
-    },
-    {
-      icon: '🌱',
-      title: t('tut_2_title'),
-      body: t('tut_2_body'),
-    },
-    {
-      icon: '📊',
-      title: t('tut_3_title'),
-      body: t('tut_3_body'),
-    },
+    { icon: '🌡️', title: 'Clima e Solo', body: 'Aprenda como clima e solo afetam sua produção.' },
+    { icon: '🌱', title: 'Ciclo da Plantação', body: 'Gerencie etapas do plantio até a colheita.' },
+    { icon: '📊', title: 'Indicadores e Progresso', body: 'Acompanhe métricas para tomar melhores decisões.' },
   ];
 
   const handleNext = () => {
@@ -61,7 +47,7 @@ export default function Tutorial() {
             onClick={handleSkip}
             className="font-sans text-sm text-game-gray-700 hover:text-game-fg"
           >
-            {t('cta_skip')}
+            Pular
           </button>
         </div>
 
@@ -97,7 +83,7 @@ export default function Tutorial() {
           </PixelButton
           >
           <PixelButton variant="primary" onClick={handleNext} className="flex-1">
-            {currentSlide === slides.length - 1 ? t('cta_start') : t('cta_next')}
+            {currentSlide === slides.length - 1 ? 'Começar' : 'Próximo'}
           </PixelButton>
         </div>
       </div>

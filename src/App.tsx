@@ -6,7 +6,7 @@ import { PWAProvider } from "@/components/PWAProvider";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Home from './pages/Home';
 import CountrySelect from './pages/CountrySelect';
-import Tutorial from './pages/Tutorial';
+const Tutorial = React.lazy(() => import('./pages/Tutorial'));
 import Registration from './pages/Registration';
 import Login from './pages/Login';
 import GameMap from './pages/GameMap';
@@ -88,7 +88,7 @@ const App = () => {
               <Route path="/registration" element={<Registration />} />
               <Route path="/login" element={<Login />} />
               <Route path="/select-country" element={<ProtectedRoute><CountrySelect /></ProtectedRoute>} />
-              <Route path="/tutorial" element={<ProtectedRoute><Tutorial /></ProtectedRoute>} />
+              <Route path="/tutorial" element={<ProtectedRoute><React.Suspense fallback={<div /> }><Tutorial /></React.Suspense></ProtectedRoute>} />
               <Route path="/game" element={<ProtectedRoute><GameMap /></ProtectedRoute>} />
               <Route path="/education" element={<PrePlantingEducation />} />
               <Route path="/production" element={<ProductionDashboard />} />
