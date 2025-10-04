@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PWAProvider } from "@/components/PWAProvider";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { IOSInstallPrompt } from "@/components/IOSInstallPrompt";
 import { NetworkStatus } from "@/components/NetworkStatus";
 import Home from './pages/Home';
 import CountrySelect from './pages/CountrySelect';
@@ -21,6 +22,7 @@ const App = () => (
       <Sonner />
       <NetworkStatus />
       <PWAInstallPrompt />
+      <IOSInstallPrompt />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
