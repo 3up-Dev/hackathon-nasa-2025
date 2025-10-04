@@ -39,20 +39,25 @@ All colors MUST be HSL.
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Game Colors - Plantando o Futuro */
+    --game-bg: 48 35% 94%;
+    --game-fg: 0 0% 11%;
+    --game-green-700: 122 51% 33%;
+    --game-green-400: 122 39% 58%;
+    --game-brown: 14 25% 53%;
+    --game-gold: 45 98% 58%;
+    --game-blue: 207 82% 62%;
+    --game-red: 0 65% 69%;
+    --game-gray-700: 200 18% 26%;
+    --game-gray-300: 200 18% 82%;
   }
 
   .dark {
