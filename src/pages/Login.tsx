@@ -45,21 +45,20 @@ export default function Login() {
   return (
     <GameLayout>
       <div className="relative h-full bg-game-bg overflow-auto">
+        {/* Back button - aligned with language selector */}
+        <button
+          onClick={() => navigate('/')}
+          className="absolute top-4 left-4 z-50 w-10 h-10 md:w-12 md:h-12 rounded-lg bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-transform"
+          aria-label="Voltar"
+        >
+          ←
+        </button>
+
         <div className="flex flex-col items-center justify-center min-h-full p-6">
           <div className="w-full max-w-md mx-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="font-pixel text-base md:text-lg text-game-fg">
-                Entrar
-              </h1>
-              
-              <button
-                onClick={() => navigate('/')}
-                className="flex items-center gap-2 text-game-gray-700 hover:text-game-fg transition-colors"
-              >
-                <span className="font-sans text-sm">Voltar</span>
-                <span className="text-xl">→</span>
-              </button>
-            </div>
+            <h1 className="font-pixel text-base md:text-lg text-game-fg text-center mb-6">
+              Entrar
+            </h1>
 
             {/* Decorative elements */}
             <div className="flex gap-4 mb-6 text-3xl md:text-4xl opacity-70 justify-center">
