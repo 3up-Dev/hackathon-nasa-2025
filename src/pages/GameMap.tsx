@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 
 export default function GameMap() {
   const [popupState, setPopupState] = useState<string | null>(null);
-  const { t } = useLanguage();
+  const { t, lang, toggleLanguage } = useLanguage();
   const { indicators, selectedSector, selectedCrop, plantedStates } = useGameState();
   const navigate = useNavigate();
 
@@ -41,15 +41,25 @@ export default function GameMap() {
       <div className="relative h-full bg-game-bg flex flex-col">
         {/* Header with indicators */}
         <div className="p-4 bg-white border-b-2 border-game-gray-300 shadow-md">
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate('/')}
+                className="flex items-center justify-center w-8 h-8 rounded-lg bg-game-gray-300 hover:bg-game-gray-700 hover:text-white transition-colors"
+                aria-label="Voltar"
+              >
+                ←
+              </button>
+              <h2 className="font-pixel text-xs text-game-fg">{t('map_title')}</h2>
+            </div>
+            
             <button
-              onClick={() => navigate('/')}
-              className="flex items-center justify-center w-8 h-8 rounded-lg bg-game-gray-300 hover:bg-game-gray-700 hover:text-white transition-colors"
-              aria-label="Voltar"
+              onClick={toggleLanguage}
+              className="text-2xl hover:scale-110 transition-transform"
+              aria-label="Toggle language"
             >
-              ←
+              {lang === 'pt' ? '🇧🇷' : '🇺🇸'}
             </button>
-            <h2 className="font-pixel text-xs text-game-fg">{t('map_title')}</h2>
           </div>
         </div>
 
