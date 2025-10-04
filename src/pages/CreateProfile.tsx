@@ -181,10 +181,7 @@ export default function CreateProfile() {
               </div>
             </div>
           )}
-        </div>
 
-        {/* Footer - Fixed */}
-        <div className="p-4 border-t-4 border-game-fg bg-white space-y-4">
           {/* Viability Report */}
           {canCreate && viabilityResult && (
             <div className={cn(
@@ -265,6 +262,10 @@ export default function CreateProfile() {
               )}
             </div>
           )}
+        </div>
+
+        {/* Footer - Fixed */}
+        <div className="p-4 border-t-4 border-game-fg bg-white space-y-4">
 
           {/* Create Button */}
           <PixelButton
