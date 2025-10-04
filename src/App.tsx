@@ -19,9 +19,6 @@ import NotFound from './pages/NotFound';
 
 const App = () => (
   <PWAProvider>
-    <NetworkStatus />
-    <PWAInstallPrompt />
-    <IOSInstallPrompt />
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
