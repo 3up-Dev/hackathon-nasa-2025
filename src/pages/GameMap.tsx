@@ -3,7 +3,6 @@ import { GameLayout } from '@/components/layout/GameLayout';
 import { BrazilMap } from '@/components/game/BrazilMap';
 import { SectorSelector } from '@/components/game/SectorSelector';
 import { CropSelector } from '@/components/game/CropSelector';
-import { IndicatorCard } from '@/components/game/IndicatorCard';
 import { ViabilityPopup } from '@/components/game/ViabilityPopup';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useGameState } from '@/hooks/useGameState';
@@ -51,26 +50,6 @@ export default function GameMap() {
               ←
             </button>
             <h2 className="font-pixel text-xs text-game-fg">{t('map_title')}</h2>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            <IndicatorCard
-              icon="📈"
-              label={t('prod_total')}
-              value={indicators.production}
-              color="green"
-            />
-            <IndicatorCard
-              icon="♻️"
-              label={t('sustentabilidade')}
-              value={indicators.sustainability}
-              color="blue"
-            />
-            <IndicatorCard
-              icon="💧"
-              label={t('agua')}
-              value={indicators.water}
-              color="brown"
-            />
           </div>
         </div>
 
