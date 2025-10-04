@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { TutorialSlide } from '@/components/tutorial/TutorialSlide';
@@ -8,7 +7,6 @@ import { supabase } from '@/integrations/supabase/client';
 
 export default function Tutorial() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const navigate = useNavigate();
   const { t } = useLanguage();
 
   const slides = [
@@ -34,18 +32,18 @@ export default function Tutorial() {
       setCurrentSlide(currentSlide + 1);
     } else {
       localStorage.setItem('tutorialCompleted', '1');
-      navigate('/select-country');
+      window.location.href = '/select-country';
     }
   };
 
   const handleSkip = () => {
     localStorage.setItem('tutorialCompleted', '1');
-    navigate('/select-country');
+    window.location.href = '/select-country';
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate('/');
+    window.location.href = '/';
   };
 
   return (
@@ -86,11 +84,18 @@ export default function Tutorial() {
         <div className="absolute bottom-8 left-8 right-8 flex gap-4">
           <PixelButton
             variant="secondary"
-            onClick={() => currentSlide === 0 ? navigate('/select-country') : setCurrentSlide(currentSlide - 1)}
+            onClick={() => {
+              if (currentSlide === 0) {
+                window.location.href = '/select-country';
+              } else {
+                setCurrentSlide(currentSlide - 1);
+              }
+            }}
             className="w-20"
           >
             ←
-          </PixelButton>
+          </PixelButton
+          >
           <PixelButton variant="primary" onClick={handleNext} className="flex-1">
             {currentSlide === slides.length - 1 ? t('cta_start') : t('cta_next')}
           </PixelButton>
