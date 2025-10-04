@@ -54,7 +54,7 @@ export default function GameMap() {
         </div>
 
         {/* Map area */}
-        <div className="flex-1 overflow-hidden pb-[140px] pt-[140px]">
+        <div className="flex-1 overflow-hidden pb-[100px] pt-[100px]">
           <BrazilMap onStateClick={handleStateClick} />
         </div>
 
@@ -66,7 +66,7 @@ export default function GameMap() {
 
         {/* Finish button - shown when at least one planting */}
         {plantedStates.length > 0 && (
-          <div className="absolute top-[180px] right-4 z-10">
+          <div className="absolute top-[120px] right-4 z-10">
             <PixelButton
               variant="primary"
               onClick={handleFinish}
