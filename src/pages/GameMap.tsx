@@ -40,7 +40,7 @@ export default function GameMap() {
     <GameLayout>
       <div className="relative h-full bg-game-bg flex flex-col">
         {/* Header with indicators */}
-        <div className="p-4 bg-white border-b-2 border-game-gray-300 shadow-md">
+        <div className="pt-safe p-4 bg-white border-b-2 border-game-gray-300 shadow-md">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <button
