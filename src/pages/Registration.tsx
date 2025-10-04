@@ -1,13 +1,17 @@
-// Registration page - Updated version without React Router hooks
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { z } from 'zod';
+import { cn } from '@/lib/utils';
 
 const registrationSchema = z.object({
   fullName: z.string().trim().min(3, 'Nome deve ter pelo menos 3 caracteres').max(100),
@@ -25,7 +29,7 @@ export default function Registration() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [birthDate, setBirthDate] = useState('');
+  const [birthDate, setBirthDate] = useState<Date | undefined>(undefined);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -84,13 +88,10 @@ export default function Registration() {
         return;
       }
 
-      // Parse birth date
-      const parsedBirthDate = new Date(birthDate);
-
       // Validate form data
       const validatedData = registrationSchema.parse({
         ...formData,
-        birthDate: parsedBirthDate,
+        birthDate: birthDate,
       });
 
       // Create auth user
@@ -206,17 +207,33 @@ export default function Registration() {
                 <Label htmlFor="birthDate" className="font-pixel text-xs text-game-fg">
                   Data de Nascimento
                 </Label>
-                <Input
-                  id="birthDate"
-                  type="date"
-                  required
-                  value={birthDate}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  className="mt-1"
-                  max={new Date().toISOString().split('T')[0]}
-                  min="1900-01-01"
-                  disabled={loading}
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full mt-1 justify-start text-left font-normal",
+                        !birthDate && "text-muted-foreground"
+                      )}
+                      disabled={loading}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {birthDate ? format(birthDate, "dd/MM/yyyy") : <span>Selecione a data</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={birthDate}
+                      onSelect={setBirthDate}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                      }
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div>
