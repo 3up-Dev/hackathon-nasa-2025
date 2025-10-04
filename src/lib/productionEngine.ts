@@ -1,4 +1,6 @@
 import { Crop } from '@/data/crops';
+import { supabase } from '@/integrations/supabase/client';
+import { BrazilState } from '@/data/states';
 
 export interface ProductionTask {
   id: string;
@@ -8,6 +10,13 @@ export interface ProductionTask {
   completed: boolean;
   penalty: number;
   reward: number;
+}
+
+export interface RealClimateData {
+  temperature: number;
+  precipitation: number;
+  humidity: number;
+  evapotranspiration: number;
 }
 
 export interface ProductionState {
@@ -21,6 +30,8 @@ export interface ProductionState {
   isComplete: boolean;
   startedAt: number;
   completedTasks: string[];
+  realClimateData?: RealClimateData;
+  climateEvents?: ClimateEvent[];
 }
 
 export interface ClimateEvent {
@@ -90,7 +101,7 @@ export class ProductionEngine {
     return this.state;
   }
 
-  advanceTime(days: number, crop: Crop): ProductionState {
+  async advanceTime(days: number, crop: Crop, stateLocation?: { latitude: number; longitude: number }): Promise<ProductionState> {
     if (!this.state) throw new Error('No active production');
 
     const newDay = this.state.currentDay + days;
@@ -99,30 +110,130 @@ export class ProductionEngine {
     const incompleteTasks = this.state.tasks.filter(t => !t.completed);
     const healthPenalty = incompleteTasks.reduce((acc, task) => acc + task.penalty, 0);
     
-    // Generate new tasks every 7 days
+    // Fetch real climate data for this period
+    let realClimateData: RealClimateData | undefined;
+    let detectedAnomalies: { drought: boolean; flood: boolean; heatWave: boolean; coldSnap: boolean } | undefined;
+    
+    if (stateLocation) {
+      try {
+        const climateResult = await this.fetchRealClimateData(stateLocation, days);
+        if (climateResult) {
+          realClimateData = climateResult.data;
+          detectedAnomalies = climateResult.anomalies;
+        }
+      } catch (error) {
+        console.error('Error fetching climate data:', error);
+      }
+    }
+    
+    // Calculate health based on real climate data
+    let healthChange = -healthPenalty;
+    let waterChange = 0;
+    let sustainabilityChange = 0;
+    const climateEvents: ClimateEvent[] = this.state.climateEvents || [];
+    
+    if (realClimateData) {
+      // Compare real temperature with crop ideal range
+      const [minTemp, maxTemp] = crop.idealTemp;
+      const tempMid = (minTemp + maxTemp) / 2;
+      const tempDiff = Math.abs(realClimateData.temperature - tempMid);
+      if (tempDiff > 10) {
+        healthChange -= 15;
+      } else if (tempDiff > 5) {
+        healthChange -= 5;
+      }
+      
+      // Check precipitation vs crop needs
+      const [minRain, maxRain] = crop.idealRain;
+      const precipNeeded = minRain / 365 * days; // Daily average
+      if (realClimateData.precipitation < precipNeeded * 0.5) {
+        healthChange -= 10;
+        waterChange += 50; // Need more irrigation
+      } else if (realClimateData.precipitation > precipNeeded * 2) {
+        healthChange -= 8;
+        sustainabilityChange -= 5;
+      }
+      
+      // Calculate real water consumption using evapotranspiration
+      const stage = this.getCurrentStage(crop);
+      const currentStageData = crop.stages[stage.stageIndex];
+      const cropCoefficient = currentStageData.waterNeeds === 'high' ? 1.2 : 
+                             currentStageData.waterNeeds === 'medium' ? 0.9 : 0.6;
+      waterChange += realClimateData.evapotranspiration * cropCoefficient * days;
+      
+      // Generate climate events from detected anomalies
+      if (detectedAnomalies) {
+        if (detectedAnomalies.drought) {
+          const droughtEvent: ClimateEvent = {
+            type: 'drought',
+            severity: 'high',
+            description: { pt: '🌵 Seca detectada pelos dados da NASA', en: '🌵 Drought detected by NASA data' },
+            impact: { health: -15, water: 60, sustainability: -8 }
+          };
+          climateEvents.push(droughtEvent);
+          healthChange += droughtEvent.impact.health;
+          waterChange += droughtEvent.impact.water;
+          sustainabilityChange += droughtEvent.impact.sustainability;
+        }
+        
+        if (detectedAnomalies.flood) {
+          const floodEvent: ClimateEvent = {
+            type: 'flood',
+            severity: 'high',
+            description: { pt: '🌊 Excesso de chuva detectado pela NASA', en: '🌊 Excess rainfall detected by NASA' },
+            impact: { health: -20, water: -30, sustainability: -12 }
+          };
+          climateEvents.push(floodEvent);
+          healthChange += floodEvent.impact.health;
+          waterChange += floodEvent.impact.water;
+          sustainabilityChange += floodEvent.impact.sustainability;
+        }
+        
+        if (detectedAnomalies.heatWave) {
+          const heatEvent: ClimateEvent = {
+            type: 'heat',
+            severity: 'high',
+            description: { pt: '🌡️ Onda de calor detectada pela NASA', en: '🌡️ Heat wave detected by NASA' },
+            impact: { health: -12, water: 40, sustainability: -5 }
+          };
+          climateEvents.push(heatEvent);
+          healthChange += heatEvent.impact.health;
+          waterChange += heatEvent.impact.water;
+          sustainabilityChange += heatEvent.impact.sustainability;
+        }
+        
+        if (detectedAnomalies.coldSnap) {
+          const coldEvent: ClimateEvent = {
+            type: 'cold',
+            severity: 'medium',
+            description: { pt: '❄️ Frio intenso detectado pela NASA', en: '❄️ Cold snap detected by NASA' },
+            impact: { health: -10, water: -10, sustainability: -3 }
+          };
+          climateEvents.push(coldEvent);
+          healthChange += coldEvent.impact.health;
+          waterChange += coldEvent.impact.water;
+          sustainabilityChange += coldEvent.impact.sustainability;
+        }
+      }
+    } else {
+      // Fallback to old calculation if no real data
+      const stage = this.getCurrentStage(crop);
+      const currentStageData = crop.stages[stage.stageIndex];
+      const waterMultiplier = currentStageData.waterNeeds === 'high' ? 1.5 : 
+                             currentStageData.waterNeeds === 'medium' ? 1.0 : 0.7;
+      waterChange = days * 10 * waterMultiplier;
+    }
+    
+    // Generate new tasks (weekly regular + climate-based)
     let newTasks = this.state.tasks;
     if (newDay % 7 === 0 && newDay < crop.growthDays) {
       newTasks = this.generateTasks();
-    }
-    
-    // Calculate water consumption based on crop and stage
-    const stage = this.getCurrentStage(crop);
-    const currentStageData = crop.stages[stage.stageIndex];
-    const waterMultiplier = currentStageData.waterNeeds === 'high' ? 1.5 : 
-                           currentStageData.waterNeeds === 'medium' ? 1.0 : 0.7;
-    const waterConsumption = days * 10 * waterMultiplier;
-    
-    // Random climate events (10% chance per week)
-    const climateEvent = Math.random() < 0.1 ? this.generateClimateEvent() : null;
-    
-    let healthChange = -healthPenalty;
-    let waterChange = waterConsumption;
-    let sustainabilityChange = 0;
-    
-    if (climateEvent) {
-      healthChange += climateEvent.impact.health;
-      waterChange += climateEvent.impact.water;
-      sustainabilityChange += climateEvent.impact.sustainability;
+      
+      // Add climate-based tasks
+      if (realClimateData) {
+        const climateTasks = this.generateClimateBasedTasks(realClimateData, crop);
+        newTasks = [...newTasks, ...climateTasks];
+      }
     }
     
     this.state = {
@@ -132,10 +243,116 @@ export class ProductionEngine {
       tasks: newTasks,
       waterUsed: this.state.waterUsed + waterChange,
       sustainabilityScore: Math.max(0, Math.min(100, this.state.sustainabilityScore + sustainabilityChange)),
+      realClimateData,
+      climateEvents,
     };
     
     this.saveState();
     return this.state;
+  }
+
+  private async fetchRealClimateData(
+    location: { latitude: number; longitude: number }, 
+    daysCount: number
+  ): Promise<{ data: RealClimateData; anomalies: any } | null> {
+    try {
+      const { data, error } = await supabase.functions.invoke('get-nasa-climate-data', {
+        body: {
+          latitude: location.latitude,
+          longitude: location.longitude,
+          daysCount,
+        }
+      });
+
+      if (error) throw error;
+      
+      if (data && data.isRealData) {
+        return {
+          data: {
+            temperature: data.temperature,
+            precipitation: data.precipitation,
+            humidity: data.humidity,
+            evapotranspiration: data.evapotranspiration,
+          },
+          anomalies: data.anomalies,
+        };
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error fetching NASA climate data:', error);
+      return null;
+    }
+  }
+
+  private generateClimateBasedTasks(climateData: RealClimateData, crop: Crop): ProductionTask[] {
+    const tasks: ProductionTask[] = [];
+    
+    // Low rainfall -> urgent irrigation
+    const dailyPrecip = climateData.precipitation;
+    if (dailyPrecip < 2) {
+      tasks.push({
+        id: `urgent-irrigation-${Date.now()}`,
+        type: 'irrigation',
+        title: { pt: '⚠️ Irrigação Urgente', en: '⚠️ Urgent Irrigation' },
+        description: { 
+          pt: `Baixa precipitação detectada (${dailyPrecip.toFixed(1)}mm). Irrigar imediatamente!`,
+          en: `Low precipitation detected (${dailyPrecip.toFixed(1)}mm). Irrigate immediately!`
+        },
+        completed: false,
+        penalty: 10,
+        reward: 8,
+      });
+    }
+    
+    // Temperature out of ideal range
+    const [minTemp, maxTemp] = crop.idealTemp;
+    const tempMid = (minTemp + maxTemp) / 2;
+    if (climateData.temperature > maxTemp) {
+      tasks.push({
+        id: `heat-control-${Date.now()}`,
+        type: 'temperature',
+        title: { pt: '🌡️ Controle de Calor', en: '🌡️ Heat Control' },
+        description: {
+          pt: `Temperatura alta (${climateData.temperature}°C). Implementar sombreamento!`,
+          en: `High temperature (${climateData.temperature}°C). Implement shading!`
+        },
+        completed: false,
+        penalty: 8,
+        reward: 6,
+      });
+    } else if (climateData.temperature < minTemp) {
+      tasks.push({
+        id: `cold-protection-${Date.now()}`,
+        type: 'temperature',
+        title: { pt: '❄️ Proteção contra Frio', en: '❄️ Cold Protection' },
+        description: {
+          pt: `Temperatura baixa (${climateData.temperature}°C). Proteger cultivo!`,
+          en: `Low temperature (${climateData.temperature}°C). Protect crops!`
+        },
+        completed: false,
+        penalty: 8,
+        reward: 6,
+      });
+    }
+    
+    // Low humidity
+    if (climateData.humidity < 40) {
+      tasks.push({
+        id: `humidity-control-${Date.now()}`,
+        type: 'humidity',
+        title: { pt: '💧 Aumentar Umidade', en: '💧 Increase Humidity' },
+        description: {
+          pt: `Umidade baixa (${climateData.humidity}%). Umidificar ambiente!`,
+          en: `Low humidity (${climateData.humidity}%). Humidify environment!`
+        },
+        completed: false,
+        penalty: 5,
+        reward: 4,
+      });
+    }
+    
+    return tasks;
   }
 
   completeTask(taskId: string): ProductionState {

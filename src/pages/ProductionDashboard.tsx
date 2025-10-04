@@ -104,8 +104,12 @@ export default function ProductionDashboard() {
     );
   }
 
-  const handleAdvanceTime = (days: number) => {
-    const newState = productionEngine.advanceTime(days, crop);
+  const handleAdvanceTime = async (days: number) => {
+    if (!state) return;
+    const newState = await productionEngine.advanceTime(days, crop, {
+      latitude: state.lat,
+      longitude: state.lon,
+    });
     setProductionState(newState);
     setForceUpdate((prev) => prev + 1);
   };
