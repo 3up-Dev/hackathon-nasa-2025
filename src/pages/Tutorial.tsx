@@ -32,12 +32,12 @@ export default function Tutorial() {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
     } else {
-      navigate('/registration');
+      navigate('/select-country');
     }
   };
 
   const handleSkip = () => {
-    navigate('/registration');
+    navigate('/select-country');
   };
 
   return (
