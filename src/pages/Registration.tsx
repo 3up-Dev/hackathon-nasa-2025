@@ -140,7 +140,7 @@ export default function Registration() {
       <div className="relative h-full bg-game-bg overflow-auto">
         {/* Back button - aligned with language selector */}
         <button
-          onClick={() => navigate('/tutorial')}
+          onClick={() => navigate('/login')}
           className="absolute top-4 left-4 z-50 w-10 h-10 md:w-12 md:h-12 rounded-lg bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-transform"
           aria-label="Voltar"
         >
