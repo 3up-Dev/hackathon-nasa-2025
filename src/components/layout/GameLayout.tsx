@@ -24,7 +24,7 @@ export const GameLayout = ({ children }: GameLayoutProps) => {
         {/* Language toggle - dentro do container */}
         <button
           onClick={toggleLanguage}
-          className="absolute top-4 right-4 z-50 w-10 h-10 md:w-12 md:h-12 rounded-lg bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl md:text-2xl hover:scale-110 transition-transform"
+          className="absolute top-4 right-4 z-50 w-10 h-10 md:w-12 md:h-12 rounded-lg bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg md:text-xl hover:scale-110 transition-transform"
           aria-label="Toggle language"
           style={{ 
             WebkitTapHighlightColor: 'transparent'
