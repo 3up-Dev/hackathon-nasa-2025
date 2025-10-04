@@ -14,17 +14,7 @@ export default function ProfileManager() {
   const { profiles, loading, loadProfiles, setActiveProfile, deleteProfile } = useGameProfiles();
 
   useEffect(() => {
-    const checkFirstTime = async () => {
-      await loadProfiles();
-      
-      // Verificar se é a primeira vez (sem perfis e sem tutorial completado)
-      const tutorialCompleted = localStorage.getItem('tutorialCompleted');
-      if (!tutorialCompleted) {
-        navigate('/tutorial');
-      }
-    };
-    
-    checkFirstTime();
+    loadProfiles();
   }, []);
 
   const handleLogout = async () => {

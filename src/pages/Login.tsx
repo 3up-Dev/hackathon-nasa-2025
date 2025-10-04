@@ -18,16 +18,38 @@ export default function Login() {
 
   useEffect(() => {
     // Check if user is already authenticated
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
-        window.location.href = '/tutorial';
+        // Check if user has profiles
+        const { data: profiles } = await supabase
+          .from('game_profiles')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .limit(1);
+        
+        if (profiles && profiles.length > 0) {
+          window.location.href = '/profiles';
+        } else {
+          window.location.href = '/tutorial';
+        }
       }
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
-        window.location.href = '/tutorial';
+        // Check if user has profiles
+        const { data: profiles } = await supabase
+          .from('game_profiles')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .limit(1);
+        
+        if (profiles && profiles.length > 0) {
+          window.location.href = '/profiles';
+        } else {
+          window.location.href = '/tutorial';
+        }
       }
     });
 
@@ -49,8 +71,19 @@ export default function Login() {
 
       if (data.user) {
         setSuccess(true);
+        // Check if user has profiles
+        const { data: profiles } = await supabase
+          .from('game_profiles')
+          .select('id')
+          .eq('user_id', data.user.id)
+          .limit(1);
+        
         setTimeout(() => {
-          window.location.href = '/tutorial';
+          if (profiles && profiles.length > 0) {
+            window.location.href = '/profiles';
+          } else {
+            window.location.href = '/tutorial';
+          }
         }, 500);
       }
     } catch (err) {
