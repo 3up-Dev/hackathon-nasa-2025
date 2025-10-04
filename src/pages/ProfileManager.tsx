@@ -68,7 +68,13 @@ export default function ProfileManager() {
 
         {profiles.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-            <div className="text-6xl mb-4">🌾</div>
+            <div className="flex gap-4 mb-4 text-4xl opacity-70 justify-center">
+              <span className="animate-bounce delay-0">🌾</span>
+              <span className="animate-bounce delay-100">🌽</span>
+              <span className="animate-bounce delay-200">🌿</span>
+              <span className="animate-bounce delay-300">🐄</span>
+              <span className="animate-bounce delay-0">🐟</span>
+            </div>
             <h2 className="font-pixel text-sm text-game-fg mb-2">
               Nenhum perfil criado
             </h2>
