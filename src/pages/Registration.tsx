@@ -99,9 +99,16 @@ export default function Registration() {
               <span className="font-sans text-sm">Voltar</span>
             </button>
             
-            <h1 className="font-pixel text-lg text-game-fg mb-8 text-center">
+            <h1 className="font-pixel text-lg text-game-fg mb-4 text-center">
               Criar Conta
             </h1>
+
+            {/* Decorative elements */}
+            <div className="flex gap-4 mb-8 text-4xl opacity-70 justify-center">
+              <span className="animate-bounce delay-0">🌾</span>
+              <span className="animate-bounce delay-100">🌽</span>
+              <span className="animate-bounce delay-200">🌿</span>
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
