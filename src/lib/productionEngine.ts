@@ -38,9 +38,14 @@ const STORAGE_KEY = 'plantando-futuro-production';
 
 export class ProductionEngine {
   private state: ProductionState | null = null;
+  private onStateChange?: (state: ProductionState) => void | Promise<void>;
 
   constructor() {
     this.loadState();
+  }
+
+  setOnStateChange(callback: (state: ProductionState) => void | Promise<void>): void {
+    this.onStateChange = callback;
   }
 
   private loadState(): void {
@@ -58,6 +63,10 @@ export class ProductionEngine {
     if (this.state) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+        // Trigger database sync callback if set
+        if (this.onStateChange) {
+          this.onStateChange(this.state);
+        }
       } catch (error) {
         console.error('Error saving production state:', error);
       }

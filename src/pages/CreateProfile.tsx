@@ -55,7 +55,7 @@ export default function CreateProfile() {
     });
 
     if (profileId) {
-      navigate('/game');
+      navigate(`/production?crop=${selectedCrop}&state=${selectedState}`);
     }
     setCreating(false);
   };

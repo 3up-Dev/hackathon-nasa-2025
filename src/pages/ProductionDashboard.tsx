@@ -11,10 +11,12 @@ import { brazilStates, BrazilState } from '@/data/states';
 import { productionEngine, ProductionState } from '@/lib/productionEngine';
 import { SimpleProgress } from '@/components/ui/simple-progress';
 import { Heart, Droplets, Leaf, Sparkles } from 'lucide-react';
+import { useGameProfiles } from '@/hooks/useGameProfiles';
 
 export default function ProductionDashboard() {
   const lang: 'pt' | 'en' = 'pt';
   const t = (key: keyof typeof translations['pt']) => translations[lang][key] || key;
+  const { currentProfile, updateCurrentProfile } = useGameProfiles();
 
   const [crop, setCrop] = useState<Crop | null>(null);
   const [state, setState] = useState<BrazilState | null>(null);
@@ -42,6 +44,20 @@ export default function ProductionDashboard() {
     setCrop(selectedCrop);
     setState(selectedState);
 
+    // Setup production engine with database sync
+    productionEngine.setOnStateChange(async (newState) => {
+      if (currentProfile) {
+        await updateCurrentProfile({
+          production_state: newState,
+          indicators: {
+            production: Math.round((newState.health / 100) * 10),
+            sustainability: Math.round((newState.sustainabilityScore / 100) * 10),
+            water: Math.max(1, Math.round(10 - (newState.waterUsed / 1000)))
+          }
+        });
+      }
+    });
+
     // Check if production already started
     const currentState = productionEngine.getState();
     if (!currentState || currentState.cropId !== cropId) {
@@ -50,7 +66,7 @@ export default function ProductionDashboard() {
     } else {
       setProductionState(currentState);
     }
-  }, []);
+  }, [currentProfile, updateCurrentProfile]);
 
   if (!crop || !state || !productionState) {
     return (
@@ -74,8 +90,29 @@ export default function ProductionDashboard() {
     setForceUpdate((prev) => prev + 1);
   };
 
-  const handleHarvest = () => {
-    productionEngine.finishProduction();
+  const handleHarvest = async () => {
+    const finalState = productionEngine.finishProduction();
+    
+    // Update profile with final results
+    if (currentProfile) {
+      const finalScore = Math.round(
+        (finalState.health * 0.4) + 
+        (finalState.sustainabilityScore * 0.3) + 
+        ((100 - Math.min(100, finalState.waterUsed / 50)) * 0.3)
+      );
+      
+      await updateCurrentProfile({
+        production_state: finalState,
+        total_score: (currentProfile.total_score || 0) + finalScore,
+        planted_states: [...new Set([...currentProfile.planted_states, state!.id])],
+        indicators: {
+          production: Math.round((finalState.health / 100) * 10),
+          sustainability: Math.round((finalState.sustainabilityScore / 100) * 10),
+          water: Math.max(1, Math.round(10 - (finalState.waterUsed / 1000)))
+        }
+      });
+    }
+    
     window.location.href = `/harvest?crop=${crop.id}&state=${state.id}`;
   };
 

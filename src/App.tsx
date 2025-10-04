@@ -92,7 +92,6 @@ const App = () => {
           <Route path="/profile/new" element={<ProtectedRoute><CreateProfile /></ProtectedRoute>} />
           <Route path="/select-country" element={<ProtectedRoute><CountrySelect /></ProtectedRoute>} />
           <Route path="/tutorial" element={<ProtectedRoute><React.Suspense fallback={<div />}><Tutorial /></React.Suspense></ProtectedRoute>} />
-          <Route path="/game" element={<ProtectedRoute><GameMap /></ProtectedRoute>} />
           <Route path="/education" element={<PrePlantingEducation />} />
           <Route path="/production" element={<ProductionDashboard />} />
           <Route path="/harvest" element={<ProtectedRoute><HarvestResults /></ProtectedRoute>} />
