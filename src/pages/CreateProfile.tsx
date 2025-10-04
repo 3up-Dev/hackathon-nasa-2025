@@ -8,8 +8,6 @@ import { useGameProfiles } from '@/hooks/useGameProfiles';
 import { useLanguage } from '@/hooks/useLanguage';
 import { crops } from '@/data/crops';
 import { states } from '@/data/states';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 export default function CreateProfile() {
   const navigate = useNavigate();
@@ -17,7 +15,6 @@ export default function CreateProfile() {
   const { createProfile } = useGameProfiles();
   
   const [step, setStep] = useState(1);
-  const [profileName, setProfileName] = useState('');
   const [selectedSector, setSelectedSector] = useState<string | null>(null);
   const [selectedCrop, setSelectedCrop] = useState<string | null>(null);
   const [selectedState, setSelectedState] = useState<string | null>(null);
@@ -32,21 +29,24 @@ export default function CreateProfile() {
   };
 
   const handleNext = () => {
-    if (step === 1 && profileName.trim()) {
+    if (step === 1 && selectedSector) {
       setStep(2);
-    } else if (step === 2 && selectedSector) {
+    } else if (step === 2 && selectedCrop) {
       setStep(3);
-    } else if (step === 3 && selectedCrop) {
-      setStep(4);
     }
   };
 
   const handleCreateProfile = async () => {
-    if (!profileName || !selectedSector || !selectedCrop || !selectedState) return;
+    if (!selectedSector || !selectedCrop || !selectedState) return;
+    
+    // Gerar nome automaticamente no formato BR/ESTADO/CULTURA
+    const cropData = crops.find(c => c.id === selectedCrop);
+    const cropName = cropData?.name[lang] || selectedCrop;
+    const generatedName = `BR/${selectedState}/${cropName}`;
     
     setCreating(true);
     const profileId = await createProfile({
-      profile_name: profileName.trim(),
+      profile_name: generatedName,
       sector: selectedSector,
       crop_id: selectedCrop,
       state_id: selectedState,
@@ -59,10 +59,9 @@ export default function CreateProfile() {
   };
 
   const canProceed = () => {
-    if (step === 1) return profileName.trim().length > 0;
-    if (step === 2) return selectedSector !== null;
-    if (step === 3) return selectedCrop !== null;
-    if (step === 4) return selectedState !== null;
+    if (step === 1) return selectedSector !== null;
+    if (step === 2) return selectedCrop !== null;
+    if (step === 3) return selectedState !== null;
     return false;
   };
 
@@ -87,7 +86,7 @@ export default function CreateProfile() {
           
           {/* Progress indicator */}
           <div className="flex gap-2">
-            {[1, 2, 3, 4].map((s) => (
+            {[1, 2, 3].map((s) => (
               <div
                 key={s}
                 className={`h-1 flex-1 rounded ${
@@ -100,40 +99,6 @@ export default function CreateProfile() {
 
         <div className="flex-1 overflow-y-auto p-4">
           {step === 1 && (
-            <div className="max-w-md mx-auto">
-              <div className="text-center mb-8">
-                <div className="text-6xl mb-4">✍️</div>
-                <h2 className="font-pixel text-base text-game-fg mb-2">
-                  Nome do Perfil
-                </h2>
-                <p className="font-sans text-sm text-game-gray-700">
-                  Escolha um nome para identificar este perfil
-                </p>
-              </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="profile-name" className="font-pixel text-xs">
-                    Nome do Perfil
-                  </Label>
-                  <Input
-                    id="profile-name"
-                    type="text"
-                    placeholder="Ex: Minha Fazenda de Café"
-                    value={profileName}
-                    onChange={(e) => setProfileName(e.target.value)}
-                    className="mt-1 font-sans"
-                    maxLength={50}
-                  />
-                  <p className="text-xs text-game-gray-700 mt-1">
-                    {profileName.length}/50 caracteres
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
             <div className="max-w-md mx-auto">
               <div className="text-center mb-8">
                 <div className="text-6xl mb-4">🌾</div>
@@ -174,7 +139,7 @@ export default function CreateProfile() {
             </div>
           )}
 
-          {step === 3 && (
+          {step === 2 && (
             <div className="max-w-md mx-auto">
               <div className="text-center mb-8">
                 <div className="text-6xl mb-4">
@@ -213,7 +178,7 @@ export default function CreateProfile() {
             </div>
           )}
 
-          {step === 4 && (
+          {step === 3 && (
             <div>
               <div className="text-center mb-6">
                 <div className="text-6xl mb-4">📍</div>
@@ -236,7 +201,7 @@ export default function CreateProfile() {
         </div>
 
         <div className="p-4 border-t-4 border-game-fg bg-white">
-          {step < 4 ? (
+          {step < 3 ? (
             <PixelButton
               onClick={handleNext}
               disabled={!canProceed()}
@@ -250,8 +215,8 @@ export default function CreateProfile() {
               <div className="bg-game-bg rounded-lg p-4 border-2 border-game-fg">
                 <h3 className="font-pixel text-xs text-game-fg mb-3">Resumo:</h3>
                 <div className="space-y-2 font-sans text-sm">
-                  <p><strong>Nome:</strong> {profileName}</p>
-                  <p><strong>Cultura:</strong> {selectedCropData?.name[lang]}</p>
+                  <p><strong>Nome do Perfil:</strong> BR/{selectedState}/{selectedCropData?.name[lang]}</p>
+                  <p><strong>Setor:</strong> {selectedSector}</p>
                   <p><strong>Estado:</strong> {selectedStateData?.name}</p>
                 </div>
               </div>
