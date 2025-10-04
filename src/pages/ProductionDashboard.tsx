@@ -105,18 +105,9 @@ export default function ProductionDashboard() {
     initializeProduction();
   }, [currentProfile?.id]);
 
-  if (!crop || !state || !productionState) {
-    return (
-      <GameLayout>
-        <div className="flex items-center justify-center h-full">
-          <div className="text-6xl animate-pulse">🌱</div>
-        </div>
-      </GameLayout>
-    );
-  }
 
   const handleAdvanceTime = useCallback(async (days: number) => {
-    if (!state) return;
+    if (!state || !crop) return;
     
     try {
       console.log('Advancing time by', days, 'days');
@@ -262,6 +253,17 @@ export default function ProductionDashboard() {
     
     window.location.href = `/harvest?crop=${crop.id}&state=${state.id}`;
   };
+
+  // Guard after hooks to keep hook order stable
+  if (!crop || !state || !productionState) {
+    return (
+      <GameLayout>
+        <div className="flex items-center justify-center h-full">
+          <div className="text-6xl animate-pulse">🌱</div>
+        </div>
+      </GameLayout>
+    );
+  }
 
   const isReadyToHarvest = productionState.currentDay >= crop.growthDays;
   const progressPercent = Math.min(100, (productionState.currentDay / crop.growthDays) * 100);
