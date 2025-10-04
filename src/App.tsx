@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PWAProvider } from "@/components/PWAProvider";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
