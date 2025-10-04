@@ -10,26 +10,33 @@ export interface ViabilityResult {
     sustainability: number;
     water: number;
   };
+  isRealData?: boolean;
 }
 
 export const calculateViability = (
   crop: Crop,
-  state: BrazilState
+  state: BrazilState,
+  realClimateData?: { temperature: number; precipitation: number; isRealData: boolean }
 ): ViabilityResult => {
   const reasons: string[] = [];
   let isViable = true;
 
+  // Use real data if available, otherwise use simulated data
+  const temp = realClimateData?.temperature ?? state.temp;
+  const rain = realClimateData?.precipitation ?? state.rain;
+  const isRealData = realClimateData?.isRealData ?? false;
+
   // Temperature check
-  if (state.temp < crop.idealTemp[0]) {
+  if (temp < crop.idealTemp[0]) {
     isViable = false;
     reasons.push('reason_low_temp');
-  } else if (state.temp > crop.idealTemp[1]) {
+  } else if (temp > crop.idealTemp[1]) {
     isViable = false;
     reasons.push('reason_high_temp');
   }
 
   // Rainfall check
-  if (state.rain < crop.idealRain[0]) {
+  if (rain < crop.idealRain[0]) {
     isViable = false;
     reasons.push('reason_low_rain');
   }
@@ -52,6 +59,7 @@ export const calculateViability = (
     reasons: reasons.slice(0, 2), // Max 2 reasons
     suggestedStates: [], // Will be filled by hook
     scores,
+    isRealData,
   };
 };
 

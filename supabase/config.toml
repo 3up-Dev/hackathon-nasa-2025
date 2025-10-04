@@ -1,1 +1,4 @@
 project_id = "gmoxjkzjwfbuatjxsbsq"
+
+[functions.get-nasa-climate-data]
+verify_jwt = false

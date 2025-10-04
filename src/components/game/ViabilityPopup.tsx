@@ -5,7 +5,9 @@ import { useGameState } from '@/hooks/useGameState';
 import { crops } from '@/data/crops';
 import { brazilStates } from '@/data/states';
 import { calculateViability } from '@/data/gameLogic';
-import { useMemo } from 'react';
+import { useClimateData } from '@/hooks/useClimateData';
+import { useMemo, useState } from 'react';
+import { Satellite } from 'lucide-react';
 
 interface ViabilityPopupProps {
   open: boolean;
@@ -16,14 +18,18 @@ interface ViabilityPopupProps {
 export const ViabilityPopup = ({ open, onClose, stateId }: ViabilityPopupProps) => {
   const { t, lang } = useLanguage();
   const { selectedCrop, addPlanting } = useGameState();
+  const [useRealData, setUseRealData] = useState(true);
 
   const state = brazilStates.find((s) => s.id === stateId);
   const crop = crops.find((c) => c.id === selectedCrop);
 
+  // Fetch real NASA climate data
+  const { data: climateData, loading: loadingClimate } = useClimateData(state, open && useRealData);
+
   const viability = useMemo(() => {
     if (!crop || !state) return null;
-    return calculateViability(crop, state);
-  }, [crop, state]);
+    return calculateViability(crop, state, climateData || undefined);
+  }, [crop, state, climateData]);
 
   if (!state || !crop || !viability) return null;
 
@@ -41,6 +47,9 @@ export const ViabilityPopup = ({ open, onClose, stateId }: ViabilityPopupProps) 
     .map((s) => s.name)
     .join(', ');
 
+  const displayTemp = climateData?.temperature ?? state.temp;
+  const displayRain = climateData?.precipitation ?? state.rain;
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-[342px] rounded-2xl border-4 border-game-green-700">
@@ -52,7 +61,20 @@ export const ViabilityPopup = ({ open, onClose, stateId }: ViabilityPopupProps) 
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          <p className="font-sans text-base font-bold text-game-fg text-center">{state.name}</p>
+          <div className="flex items-center justify-between">
+            <p className="font-sans text-base font-bold text-game-fg">{state.name}</p>
+            {viability?.isRealData && !loadingClimate && (
+              <div className="flex items-center gap-1 px-2 py-1 bg-blue-500 bg-opacity-20 rounded-full">
+                <Satellite className="w-3 h-3 text-blue-600" />
+                <span className="font-sans text-xs text-blue-600 font-semibold">NASA</span>
+              </div>
+            )}
+            {loadingClimate && (
+              <span className="font-sans text-xs text-game-gray-700">
+                {lang === 'pt' ? 'Carregando...' : 'Loading...'}
+              </span>
+            )}
+          </div>
           
           {/* Data rows */}
           <div className="space-y-3">
@@ -60,7 +82,7 @@ export const ViabilityPopup = ({ open, onClose, stateId }: ViabilityPopupProps) 
               <span className="text-2xl">🌡️</span>
               <div className="flex-1">
                 <p className="font-sans text-xs text-game-gray-700">{t('popup_temp')}</p>
-                <p className="font-sans text-sm font-semibold text-game-fg">{state.temp}°C</p>
+                <p className="font-sans text-sm font-semibold text-game-fg">{displayTemp}°C</p>
               </div>
             </div>
 
@@ -68,7 +90,7 @@ export const ViabilityPopup = ({ open, onClose, stateId }: ViabilityPopupProps) 
               <span className="text-2xl">☔</span>
               <div className="flex-1">
                 <p className="font-sans text-xs text-game-gray-700">{t('popup_rain')}</p>
-                <p className="font-sans text-sm font-semibold text-game-fg">{state.rain} mm/ano</p>
+                <p className="font-sans text-sm font-semibold text-game-fg">{displayRain} mm/ano</p>
               </div>
             </div>
 
