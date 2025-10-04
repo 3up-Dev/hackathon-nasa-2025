@@ -47,7 +47,7 @@ export default function Home() {
 
         {/* Footer decoration */}
         <div className="absolute bottom-8 text-xs font-sans text-game-gray-700 opacity-50">
-          Hackathon 2025
+          Hackathon NASA 2025
         </div>
       </div>
     </GameLayout>
