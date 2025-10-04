@@ -66,6 +66,7 @@ export default function Registration() {
     try {
       if (!birthDate) {
         toast.error('Selecione sua data de nascimento');
+        setLoading(false);
         return;
       }
 
@@ -75,6 +76,8 @@ export default function Registration() {
         birthDate,
       });
 
+      console.log('Creating user...');
+      
       // Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: validatedData.email,
@@ -87,11 +90,17 @@ export default function Registration() {
         },
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error('Auth error:', authError);
+        throw authError;
+      }
 
       if (!authData.user) {
         throw new Error('Erro ao criar usuário');
       }
+
+      console.log('User created:', authData.user.id);
+      console.log('Creating profile...');
 
       // Create profile
       const { error: profileError } = await supabase
@@ -104,11 +113,16 @@ export default function Registration() {
           phone: validatedData.phone,
         });
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error('Profile error:', profileError);
+        throw profileError;
+      }
 
+      console.log('Profile created successfully');
       toast.success('Conta criada com sucesso!');
       navigate('/game');
     } catch (error) {
+      console.error('Registration error:', error);
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
       } else if (error instanceof Error) {
