@@ -2,6 +2,10 @@ import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+// Debounce storage for profile updates
+let updateCurrentProfileTimer: ReturnType<typeof setTimeout> | null = null;
+let pendingProfileUpdate: Partial<GameProfile> | null = null;
+
 interface Indicators {
   production: number;
   sustainability: number;
@@ -185,34 +189,44 @@ export const useGameProfiles = create<GameProfilesState>((set, get) => ({
     const { currentProfile } = get();
     if (!currentProfile) return;
 
-    try {
-      const updateData: any = { ...data };
-      if (data.indicators) {
-        updateData.indicators = data.indicators as unknown as any;
+    // Merge updates and debounce the write
+    pendingProfileUpdate = { ...(pendingProfileUpdate || {}), ...data };
+    if (updateCurrentProfileTimer) clearTimeout(updateCurrentProfileTimer);
+
+    updateCurrentProfileTimer = setTimeout(async () => {
+      const toUpdate = pendingProfileUpdate;
+      pendingProfileUpdate = null;
+      if (!toUpdate) return;
+
+      try {
+        const updateData: any = { ...toUpdate };
+        if (toUpdate.indicators) {
+          updateData.indicators = toUpdate.indicators as unknown as any;
+        }
+        
+        const { error } = await supabase
+          .from('game_profiles')
+          .update({
+            ...updateData,
+            last_played_at: new Date().toISOString()
+          })
+          .eq('id', get().currentProfile!.id);
+
+        if (error) throw error;
+
+        set({ 
+          currentProfile: { 
+            ...get().currentProfile!, 
+            ...toUpdate,
+            last_played_at: new Date().toISOString()
+          } 
+        });
+        await get().loadProfiles();
+      } catch (error: any) {
+        console.error('Error updating profile:', error);
+        toast.error('Erro ao atualizar perfil');
       }
-      
-      const { error } = await supabase
-        .from('game_profiles')
-        .update({
-          ...updateData,
-          last_played_at: new Date().toISOString()
-        })
-        .eq('id', currentProfile.id);
-
-      if (error) throw error;
-
-      set({ 
-        currentProfile: { 
-          ...currentProfile, 
-          ...data,
-          last_played_at: new Date().toISOString()
-        } 
-      });
-      await get().loadProfiles();
-    } catch (error: any) {
-      console.error('Error updating profile:', error);
-      toast.error('Erro ao atualizar perfil');
-    }
+    }, 500);
   },
 
   deleteProfile: async (profileId: string) => {

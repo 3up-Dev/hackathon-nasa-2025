@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { ProductionChecklist } from '@/components/game/ProductionChecklist';
@@ -24,6 +24,12 @@ export default function ProductionDashboard() {
   const [state, setState] = useState<BrazilState | null>(null);
   const [productionState, setProductionState] = useState<ProductionState | null>(null);
   const [forceUpdate, setForceUpdate] = useState(0);
+
+  // Keep a stable reference to updateCurrentProfile to avoid effect loops
+  const updateProfileRef = useRef(updateCurrentProfile);
+  useEffect(() => {
+    updateProfileRef.current = updateCurrentProfile;
+  }, [updateCurrentProfile]);
 
   useEffect(() => {
     const initializeProduction = async () => {
@@ -54,7 +60,7 @@ export default function ProductionDashboard() {
         setForceUpdate((prev) => prev + 1);
         // Sync to profile if available
         if (currentProfile) {
-          await updateCurrentProfile({
+          await updateProfileRef.current({
             production_state: newState,
             indicators: {
               production: Math.round((newState.health / 100) * 10),
@@ -97,7 +103,7 @@ export default function ProductionDashboard() {
 
     // Initialize immediately using URL params, then sync to profile when available
     initializeProduction();
-  }, [currentProfile, updateCurrentProfile]);
+  }, [currentProfile?.id]);
 
   if (!crop || !state || !productionState) {
     return (
@@ -109,7 +115,7 @@ export default function ProductionDashboard() {
     );
   }
 
-  const handleAdvanceTime = async (days: number) => {
+  const handleAdvanceTime = useCallback(async (days: number) => {
     if (!state) return;
     
     try {
@@ -178,9 +184,9 @@ export default function ProductionDashboard() {
         variant: 'destructive',
       });
     }
-  };
+  }, [state, crop, lang]);
 
-  const handleCompleteTask = (taskId: string) => {
+  const handleCompleteTask = useCallback((taskId: string) => {
     console.log('handleCompleteTask called with taskId:', taskId);
     
     if (!productionState) {
@@ -229,7 +235,7 @@ export default function ProductionDashboard() {
         variant: 'destructive',
       });
     }
-  };
+  }, [productionState, lang]);
 
   const handleHarvest = async () => {
     const finalState = productionEngine.finishProduction();
