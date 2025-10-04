@@ -1,6 +1,4 @@
 import React from 'react';
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PWAProvider } from "@/components/PWAProvider";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
@@ -21,8 +19,6 @@ import NotFound from './pages/NotFound';
 
 const App = () => (
   <PWAProvider>
-    <Toaster />
-    <Sonner />
     <NetworkStatus />
     <PWAInstallPrompt />
     <IOSInstallPrompt />
