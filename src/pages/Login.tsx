@@ -47,18 +47,18 @@ export default function Login() {
       <div className="relative h-full bg-game-bg overflow-auto">
         <div className="flex flex-col items-center justify-center min-h-full p-6">
           <div className="w-full max-w-md mx-auto">
-            <div className="flex items-center mb-6">
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="font-pixel text-base md:text-lg text-game-fg">
+                Entrar
+              </h1>
+              
               <button
                 onClick={() => navigate('/')}
                 className="flex items-center gap-2 text-game-gray-700 hover:text-game-fg transition-colors"
               >
-                <span className="text-xl">←</span>
                 <span className="font-sans text-sm">Voltar</span>
+                <span className="text-xl">→</span>
               </button>
-              
-              <h1 className="font-pixel text-base md:text-lg text-game-fg flex-1 text-center">
-                Entrar
-              </h1>
             </div>
 
             {/* Decorative elements */}
