@@ -114,7 +114,7 @@ export default function PrePlantingEducation() {
             </h3>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <div className="bg-game-gray-200 border-2 border-game-fg rounded-lg p-4">
               <Thermometer className="w-6 h-6 text-game-brown mb-2" />
               <p className="font-sans text-xs text-game-gray-700 mb-1">{t('popup_temp')}</p>
