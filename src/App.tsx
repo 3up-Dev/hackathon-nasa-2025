@@ -1,7 +1,6 @@
 import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PWAProvider } from "@/components/PWAProvider";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
@@ -22,29 +21,27 @@ import NotFound from './pages/NotFound';
 
 const App = () => (
   <PWAProvider>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <NetworkStatus />
-      <PWAInstallPrompt />
-      <IOSInstallPrompt />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/registration" element={<Registration />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/select-country" element={<ProtectedRoute><CountrySelect /></ProtectedRoute>} />
-          <Route path="/tutorial" element={<ProtectedRoute><Tutorial /></ProtectedRoute>} />
-          <Route path="/game" element={<ProtectedRoute><GameMap /></ProtectedRoute>} />
-          <Route path="/education" element={<ProtectedRoute><PrePlantingEducation /></ProtectedRoute>} />
-          <Route path="/production" element={<ProtectedRoute><ProductionDashboard /></ProtectedRoute>} />
-          <Route path="/harvest" element={<ProtectedRoute><HarvestResults /></ProtectedRoute>} />
-          <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <Toaster />
+    <Sonner />
+    <NetworkStatus />
+    <PWAInstallPrompt />
+    <IOSInstallPrompt />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/registration" element={<Registration />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/select-country" element={<ProtectedRoute><CountrySelect /></ProtectedRoute>} />
+        <Route path="/tutorial" element={<ProtectedRoute><Tutorial /></ProtectedRoute>} />
+        <Route path="/game" element={<ProtectedRoute><GameMap /></ProtectedRoute>} />
+        <Route path="/education" element={<ProtectedRoute><PrePlantingEducation /></ProtectedRoute>} />
+        <Route path="/production" element={<ProtectedRoute><ProductionDashboard /></ProtectedRoute>} />
+        <Route path="/harvest" element={<ProtectedRoute><HarvestResults /></ProtectedRoute>} />
+        <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
   </PWAProvider>
 );
 
