@@ -30,7 +30,7 @@ export default function Home() {
           <PixelButton
             variant="primary"
             size="lg"
-            onClick={() => navigate('/select-country')}
+            onClick={() => navigate('/tutorial')}
             className="w-full"
           >
             {t('cta_start')}
