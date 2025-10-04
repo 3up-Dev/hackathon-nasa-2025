@@ -377,8 +377,8 @@ export default function ProductionDashboard() {
           </PixelButton>
         )}
 
-        <PixelButton variant="ghost" onClick={() => (window.location.href = '/')} className="w-full">
-          {lang === 'pt' ? 'Voltar ao Início' : 'Back to Home'}
+        <PixelButton variant="ghost" onClick={() => (window.location.href = '/profiles')} className="w-full">
+          {lang === 'pt' ? 'Voltar aos Perfis' : 'Back to Profiles'}
         </PixelButton>
       </div>
     </GameLayout>
