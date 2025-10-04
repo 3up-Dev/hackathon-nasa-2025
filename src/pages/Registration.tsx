@@ -192,6 +192,11 @@ export default function Registration() {
                       fromYear={1900}
                       toYear={new Date().getFullYear()}
                       className={cn("p-3 pointer-events-auto")}
+                      classNames={{
+                        caption: "flex justify-center pt-1 relative items-center",
+                        caption_label: "hidden",
+                        caption_dropdowns: "flex gap-2",
+                      }}
                     />
                   </PopoverContent>
                 </Popover>
