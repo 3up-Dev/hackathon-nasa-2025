@@ -66,9 +66,18 @@ export default function Tutorial() {
           ))}
         </div>
 
-        {/* Next button */}
-        <div className="absolute bottom-8 left-8 right-8">
-          <PixelButton variant="primary" onClick={handleNext} className="w-full">
+        {/* Navigation buttons */}
+        <div className="absolute bottom-8 left-8 right-8 flex gap-4">
+          {currentSlide > 0 && (
+            <PixelButton
+              variant="secondary"
+              onClick={() => setCurrentSlide(currentSlide - 1)}
+              className="w-20"
+            >
+              ←
+            </PixelButton>
+          )}
+          <PixelButton variant="primary" onClick={handleNext} className="flex-1">
             {currentSlide === slides.length - 1 ? t('cta_start') : t('cta_next')}
           </PixelButton>
         </div>
