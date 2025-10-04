@@ -1,15 +1,15 @@
+import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 
 export default function Login() {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -19,41 +19,44 @@ export default function Login() {
     // Check if user is already authenticated
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        navigate('/tutorial', { replace: true });
+        window.location.href = '/tutorial';
       }
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
-        navigate('/tutorial', { replace: true });
+        window.location.href = '/tutorial';
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       });
 
-      if (error) throw error;
+      if (signInError) throw signInError;
 
       if (data.user) {
-        toast.success('Login realizado com sucesso!');
-        navigate('/tutorial');
+        setSuccess(true);
+        setTimeout(() => {
+          window.location.href = '/tutorial';
+        }, 500);
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
       } else {
-        toast.error('Erro ao fazer login');
+        setError('Erro ao fazer login');
       }
     } finally {
       setLoading(false);
@@ -63,9 +66,9 @@ export default function Login() {
   return (
     <GameLayout>
       <div className="relative h-full bg-game-bg overflow-auto">
-        {/* Back button - aligned with language selector */}
+        {/* Back button */}
         <button
-          onClick={() => navigate('/')}
+          onClick={() => (window.location.href = '/')}
           className="absolute top-4 left-4 z-50 w-10 h-10 md:w-12 md:h-12 rounded-lg bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-transform"
           aria-label="Voltar"
         >
@@ -85,6 +88,22 @@ export default function Login() {
               <span className="animate-bounce delay-200">🌿</span>
             </div>
 
+            {/* Error message */}
+            {error && (
+              <div className="mb-4 p-3 bg-game-brown/20 border-2 border-game-brown rounded-lg">
+                <p className="font-sans text-sm text-game-brown text-center">{error}</p>
+              </div>
+            )}
+
+            {/* Success message */}
+            {success && (
+              <div className="mb-4 p-3 bg-game-green-400/20 border-2 border-game-green-700 rounded-lg">
+                <p className="font-sans text-sm text-game-green-700 text-center">
+                  Login realizado com sucesso! Redirecionando...
+                </p>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
               <div>
                 <Label htmlFor="email" className="font-pixel text-xs text-game-fg">
@@ -97,6 +116,7 @@ export default function Login() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="mt-1"
+                  disabled={loading}
                 />
               </div>
 
@@ -111,6 +131,7 @@ export default function Login() {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="mt-1"
+                  disabled={loading}
                 />
               </div>
 
@@ -127,8 +148,9 @@ export default function Login() {
                 <div className="text-center">
                   <button
                     type="button"
-                    onClick={() => navigate('/registration')}
+                    onClick={() => (window.location.href = '/registration')}
                     className="font-sans text-sm text-game-gray-700 hover:text-game-fg transition-colors"
+                    disabled={loading}
                   >
                     Não tem conta? Criar conta
                   </button>

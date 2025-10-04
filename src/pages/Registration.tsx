@@ -1,19 +1,12 @@
+import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
-import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import { z } from 'zod';
-import { cn } from '@/lib/utils';
 
 const registrationSchema = z.object({
   fullName: z.string().trim().min(3, 'Nome deve ter pelo menos 3 caracteres').max(100),
@@ -28,9 +21,10 @@ const registrationSchema = z.object({
 });
 
 export default function Registration() {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [birthDate, setBirthDate] = useState<Date>();
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [birthDate, setBirthDate] = useState('');
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -42,19 +36,19 @@ export default function Registration() {
     // Check if user is already authenticated
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        navigate('/tutorial', { replace: true });
+        window.location.href = '/tutorial';
       }
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
-        navigate('/tutorial', { replace: true });
+        window.location.href = '/tutorial';
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, []);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, '');
@@ -80,22 +74,24 @@ export default function Registration() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     try {
       if (!birthDate) {
-        toast.error('Selecione sua data de nascimento');
+        setError('Selecione sua data de nascimento');
         setLoading(false);
         return;
       }
 
+      // Parse birth date
+      const parsedBirthDate = new Date(birthDate);
+
       // Validate form data
       const validatedData = registrationSchema.parse({
         ...formData,
-        birthDate,
+        birthDate: parsedBirthDate,
       });
 
-      console.log('Creating user...');
-      
       // Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: validatedData.email,
@@ -109,16 +105,12 @@ export default function Registration() {
       });
 
       if (authError) {
-        console.error('Auth error:', authError);
         throw authError;
       }
 
       if (!authData.user) {
         throw new Error('Erro ao criar usuário');
       }
-
-      console.log('User created:', authData.user.id);
-      console.log('Creating profile...');
 
       // Create profile
       const { error: profileError } = await supabase
@@ -132,21 +124,20 @@ export default function Registration() {
         });
 
       if (profileError) {
-        console.error('Profile error:', profileError);
         throw profileError;
       }
 
-      console.log('Profile created successfully');
-      toast.success('Conta criada com sucesso!');
-      navigate('/login');
-    } catch (error) {
-      console.error('Registration error:', error);
-      if (error instanceof z.ZodError) {
-        toast.error(error.errors[0].message);
-      } else if (error instanceof Error) {
-        toast.error(error.message);
+      setSuccess(true);
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setError(err.errors[0].message);
+      } else if (err instanceof Error) {
+        setError(err.message);
       } else {
-        toast.error('Erro ao criar conta');
+        setError('Erro ao criar conta');
       }
     } finally {
       setLoading(false);
@@ -156,9 +147,9 @@ export default function Registration() {
   return (
     <GameLayout>
       <div className="relative h-full bg-game-bg overflow-auto">
-        {/* Back button - aligned with language selector */}
+        {/* Back button */}
         <button
-          onClick={() => navigate('/login')}
+          onClick={() => (window.location.href = '/login')}
           className="absolute top-4 left-4 z-50 w-10 h-10 md:w-12 md:h-12 rounded-lg bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-transform"
           aria-label="Voltar"
         >
@@ -178,6 +169,22 @@ export default function Registration() {
               <span className="animate-bounce delay-200">🌿</span>
             </div>
 
+            {/* Error message */}
+            {error && (
+              <div className="mb-4 p-3 bg-game-brown/20 border-2 border-game-brown rounded-lg">
+                <p className="font-sans text-sm text-game-brown text-center">{error}</p>
+              </div>
+            )}
+
+            {/* Success message */}
+            {success && (
+              <div className="mb-4 p-3 bg-game-green-400/20 border-2 border-game-green-700 rounded-lg">
+                <p className="font-sans text-sm text-game-green-700 text-center">
+                  Conta criada com sucesso! Redirecionando para login...
+                </p>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
               <div>
                 <Label htmlFor="fullName" className="font-pixel text-xs text-game-fg">
@@ -190,6 +197,7 @@ export default function Registration() {
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   className="mt-1"
+                  disabled={loading}
                 />
               </div>
 
@@ -197,40 +205,17 @@ export default function Registration() {
                 <Label htmlFor="birthDate" className="font-pixel text-xs text-game-fg">
                   Data de Nascimento
                 </Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal mt-1",
-                        !birthDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {birthDate ? format(birthDate, "PPP", { locale: ptBR }) : <span>Selecione a data</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={birthDate}
-                      onSelect={setBirthDate}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("1900-01-01")
-                      }
-                      initialFocus
-                      captionLayout="dropdown-buttons"
-                      fromYear={1900}
-                      toYear={new Date().getFullYear()}
-                      className={cn("p-3 pointer-events-auto")}
-                      classNames={{
-                        caption: "flex justify-center pt-1 relative items-center",
-                        caption_label: "hidden",
-                        caption_dropdowns: "flex gap-2",
-                      }}
-                    />
-                  </PopoverContent>
-                </Popover>
+                <Input
+                  id="birthDate"
+                  type="date"
+                  required
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  className="mt-1"
+                  max={new Date().toISOString().split('T')[0]}
+                  min="1900-01-01"
+                  disabled={loading}
+                />
               </div>
 
               <div>
@@ -244,6 +229,7 @@ export default function Registration() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="mt-1"
+                  disabled={loading}
                 />
               </div>
 
@@ -260,6 +246,7 @@ export default function Registration() {
                   className="mt-1"
                   placeholder="(00) 00000-0000"
                   maxLength={15}
+                  disabled={loading}
                 />
               </div>
 
@@ -274,6 +261,8 @@ export default function Registration() {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="mt-1"
+                  disabled={loading}
+                  minLength={6}
                 />
               </div>
 
@@ -286,6 +275,17 @@ export default function Registration() {
                 >
                   {loading ? 'Criando...' : 'Criar Conta'}
                 </PixelButton>
+              </div>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => (window.location.href = '/login')}
+                  className="font-sans text-sm text-game-gray-700 hover:text-game-fg transition-colors"
+                  disabled={loading}
+                >
+                  Já tem conta? Entrar
+                </button>
               </div>
             </form>
           </div>
