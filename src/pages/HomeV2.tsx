@@ -66,7 +66,7 @@ export default function Home() {
               <PixelButton
                 variant="primary"
                 size="lg"
-                onClick={() => window.location.href = '/tutorial'}
+                onClick={() => window.location.href = '/profiles'}
                 className="w-full"
               >
                 Continuar Jogo

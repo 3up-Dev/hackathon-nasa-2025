@@ -18,13 +18,13 @@ export default function Tutorial() {
       setCurrentSlide(currentSlide + 1);
     } else {
       localStorage.setItem('tutorialCompleted', '1');
-      window.location.href = '/select-country';
+      window.location.href = '/profile/new';
     }
   };
 
   const handleSkip = () => {
     localStorage.setItem('tutorialCompleted', '1');
-    window.location.href = '/select-country';
+    window.location.href = '/profile/new';
   };
 
   const handleLogout = async () => {
@@ -72,7 +72,7 @@ export default function Tutorial() {
             variant="secondary"
             onClick={() => {
               if (currentSlide === 0) {
-                window.location.href = '/select-country';
+                window.location.href = '/';
               } else {
                 setCurrentSlide(currentSlide - 1);
               }
@@ -80,8 +80,7 @@ export default function Tutorial() {
             className="w-20"
           >
             ←
-          </PixelButton
-          >
+          </PixelButton>
           <PixelButton variant="primary" onClick={handleNext} className="flex-1">
             {currentSlide === slides.length - 1 ? 'Começar' : 'Próximo'}
           </PixelButton>

@@ -10,6 +10,8 @@ import CountrySelect from './pages/CountrySelect';
 const Tutorial = React.lazy(() => import('./pages/Tutorial'));
 import Registration from './pages/Registration';
 import Login from './pages/Login';
+import ProfileManager from './pages/ProfileManager';
+import CreateProfile from './pages/CreateProfile';
 import GameMap from './pages/GameMap';
 import PrePlantingEducation from './pages/PrePlantingEducation';
 import ProductionDashboard from './pages/ProductionDashboard';
@@ -86,8 +88,10 @@ const App = () => {
           <Route path="/test" element={<TestLanding />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/profiles" element={<ProtectedRoute><ProfileManager /></ProtectedRoute>} />
+          <Route path="/profile/new" element={<ProtectedRoute><CreateProfile /></ProtectedRoute>} />
           <Route path="/select-country" element={<ProtectedRoute><CountrySelect /></ProtectedRoute>} />
-          <Route path="/tutorial" element={<ProtectedRoute><React.Suspense fallback={<div /> }><Tutorial /></React.Suspense></ProtectedRoute>} />
+          <Route path="/tutorial" element={<ProtectedRoute><React.Suspense fallback={<div />}><Tutorial /></React.Suspense></ProtectedRoute>} />
           <Route path="/game" element={<ProtectedRoute><GameMap /></ProtectedRoute>} />
           <Route path="/education" element={<PrePlantingEducation />} />
           <Route path="/production" element={<ProductionDashboard />} />

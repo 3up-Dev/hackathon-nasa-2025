@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      game_profiles: {
+        Row: {
+          completed_tutorial: boolean | null
+          created_at: string
+          crop_id: string
+          id: string
+          indicators: Json | null
+          is_active: boolean | null
+          last_played_at: string
+          planted_states: string[] | null
+          production_state: Json | null
+          profile_name: string
+          sector: string
+          selected_crop: string | null
+          selected_sector: string | null
+          state_id: string
+          total_score: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_tutorial?: boolean | null
+          created_at?: string
+          crop_id: string
+          id?: string
+          indicators?: Json | null
+          is_active?: boolean | null
+          last_played_at?: string
+          planted_states?: string[] | null
+          production_state?: Json | null
+          profile_name: string
+          sector: string
+          selected_crop?: string | null
+          selected_sector?: string | null
+          state_id: string
+          total_score?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_tutorial?: boolean | null
+          created_at?: string
+          crop_id?: string
+          id?: string
+          indicators?: Json | null
+          is_active?: boolean | null
+          last_played_at?: string
+          planted_states?: string[] | null
+          production_state?: Json | null
+          profile_name?: string
+          sector?: string
+          selected_crop?: string | null
+          selected_sector?: string | null
+          state_id?: string
+          total_score?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           birth_date: string

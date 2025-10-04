@@ -47,3 +47,6 @@ export const brazilStates: BrazilState[] = [
   { id: 'SC', name: 'Santa Catarina', temp: 18, rain: 1500, soil: 'argiloso', region: 'south', lat: -27.33, lon: -49.44 },
   { id: 'RS', name: 'Rio Grande do Sul', temp: 17, rain: 1400, soil: 'argiloso', region: 'south', lat: -30.01, lon: -51.22 },
 ];
+
+// Export alias for compatibility
+export const states = brazilStates;
