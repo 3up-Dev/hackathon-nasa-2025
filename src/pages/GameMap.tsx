@@ -37,7 +37,16 @@ export default function GameMap() {
       <div className="relative h-full bg-game-bg flex flex-col">
         {/* Header with indicators */}
         <div className="p-4 bg-white border-b-2 border-game-gray-300 shadow-md">
-          <h2 className="font-pixel text-xs text-game-fg mb-3">{t('map_title')}</h2>
+          <div className="flex items-center gap-3 mb-3">
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center justify-center w-8 h-8 rounded-lg bg-game-gray-300 hover:bg-game-gray-700 hover:text-white transition-colors"
+              aria-label="Voltar"
+            >
+              ←
+            </button>
+            <h2 className="font-pixel text-xs text-game-fg">{t('map_title')}</h2>
+          </div>
           <div className="grid grid-cols-3 gap-2">
             <IndicatorCard
               icon="📈"
