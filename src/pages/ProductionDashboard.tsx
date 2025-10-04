@@ -228,31 +228,30 @@ export default function ProductionDashboard() {
     }
   }, [productionState, lang]);
 
-  const handleHarvest = async () => {
+  const handleHarvest = useCallback(async () => {
+    if (!crop || !state || !currentProfile) return;
+    
     const finalState = productionEngine.finishProduction();
     
-    // Update profile with final results
-    if (currentProfile) {
-      const finalScore = Math.round(
-        (finalState.health * 0.4) + 
-        (finalState.sustainabilityScore * 0.3) + 
-        ((100 - Math.min(100, finalState.waterUsed / 50)) * 0.3)
-      );
-      
-      await updateCurrentProfile({
-        production_state: finalState,
-        total_score: (currentProfile.total_score || 0) + finalScore,
-        planted_states: [...new Set([...currentProfile.planted_states, state!.id])],
-        indicators: {
-          production: Math.round((finalState.health / 100) * 10),
-          sustainability: Math.round((finalState.sustainabilityScore / 100) * 10),
-          water: Math.max(1, Math.round(10 - (finalState.waterUsed / 1000)))
-        }
-      });
-    }
+    const finalScore = Math.round(
+      (finalState.health * 0.4) + 
+      (finalState.sustainabilityScore * 0.3) + 
+      ((100 - Math.min(100, finalState.waterUsed / 50)) * 0.3)
+    );
+    
+    await updateCurrentProfile({
+      production_state: finalState,
+      total_score: (currentProfile.total_score || 0) + finalScore,
+      planted_states: [...new Set([...currentProfile.planted_states, state.id])],
+      indicators: {
+        production: Math.round((finalState.health / 100) * 10),
+        sustainability: Math.round((finalState.sustainabilityScore / 100) * 10),
+        water: Math.max(1, Math.round(10 - (finalState.waterUsed / 1000)))
+      }
+    });
     
     window.location.href = `/harvest?crop=${crop.id}&state=${state.id}`;
-  };
+  }, [crop, state, currentProfile, updateCurrentProfile]);
 
   // Guard after hooks to keep hook order stable
   if (!crop || !state || !productionState) {
