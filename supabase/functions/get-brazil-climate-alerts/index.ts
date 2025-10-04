@@ -18,6 +18,37 @@ interface ClimateEvent {
   detectedAt?: string;
 }
 
+// Mapping of full state names to state IDs
+const STATE_NAMES_TO_IDS: Record<string, string> = {
+  'Acre': 'AC',
+  'Alagoas': 'AL',
+  'Amapá': 'AP',
+  'Amazonas': 'AM',
+  'Bahia': 'BA',
+  'Ceará': 'CE',
+  'Distrito Federal': 'DF',
+  'Espírito Santo': 'ES',
+  'Goiás': 'GO',
+  'Maranhão': 'MA',
+  'Mato Grosso': 'MT',
+  'Mato Grosso do Sul': 'MS',
+  'Minas Gerais': 'MG',
+  'Pará': 'PA',
+  'Paraíba': 'PB',
+  'Paraná': 'PR',
+  'Pernambuco': 'PE',
+  'Piauí': 'PI',
+  'Rio de Janeiro': 'RJ',
+  'Rio Grande do Norte': 'RN',
+  'Rio Grande do Sul': 'RS',
+  'Rondônia': 'RO',
+  'Roraima': 'RR',
+  'Santa Catarina': 'SC',
+  'São Paulo': 'SP',
+  'Sergipe': 'SE',
+  'Tocantins': 'TO',
+};
+
 // State boundaries approximation (simplified for filtering)
 const STATE_BOUNDARIES: Record<string, { minLat: number; maxLat: number; minLon: number; maxLon: number }> = {
   AC: { minLat: -11.0, maxLat: -7.0, minLon: -74.0, maxLon: -66.5 },
@@ -180,45 +211,68 @@ serve(async (req) => {
       
       if (inmetResponse.ok) {
         const inmetData = await inmetResponse.json();
-        console.log('INMET data received:', inmetData);
+        console.log('INMET data received:', JSON.stringify(inmetData).substring(0, 500));
         
-        // Parse INMET alerts (format may vary - adjust as needed)
-        if (Array.isArray(inmetData)) {
-          for (const alert of inmetData) {
-            // Check if alert affects the requested state
-            const affectedStates = alert.estados || alert.states || [];
+        // Parse INMET alerts - the API returns { hoje: [...], amanha: [...] }
+        const todayAlerts = inmetData.hoje || [];
+        
+        console.log(`Processing ${todayAlerts.length} alerts from INMET`);
+        
+        for (const alert of todayAlerts) {
+          // Parse affected states - can be string "Ceará,Maranhão,..." or array
+          let affectedStateIds: string[] = [];
+          
+          if (typeof alert.estados === 'string') {
+            // Split by comma and map full names to IDs
+            const stateNames = alert.estados.split(',').map((s: string) => s.trim());
+            affectedStateIds = stateNames
+              .map((name: string) => STATE_NAMES_TO_IDS[name])
+              .filter((id: string | undefined): id is string => Boolean(id));
             
-            if (affectedStates.includes(stateId)) {
-              const severity = alert.nivel === 'Perigo' ? 'high' : alert.nivel === 'Alerta' ? 'medium' : 'low';
-              const alertType = alert.fenomeno?.toLowerCase() || 'storm';
-              
-              let eventType: ClimateEvent['type'] = 'storm';
-              if (alertType.includes('chuva')) {
-                eventType = alertType.includes('intens') ? 'flood' : 'storm';
-              } else if (alertType.includes('seca')) {
-                eventType = 'drought';
-              } else if (alertType.includes('calor')) {
-                eventType = 'heat';
-              } else if (alertType.includes('frio') || alertType.includes('geada')) {
-                eventType = 'cold';
-              }
-              
-              alerts.push({
-                type: eventType,
-                severity,
-                description: {
-                  pt: `⛈️ Alerta INMET: ${alert.descricao || alert.description || 'Condições meteorológicas adversas'}`,
-                  en: `⛈️ INMET Alert: ${alert.description || 'Adverse weather conditions'}`,
-                },
-                impact: {
-                  health: severity === 'high' ? -15 : severity === 'medium' ? -10 : -5,
-                  water: eventType === 'flood' ? -30 : eventType === 'drought' ? 80 : 0,
-                  sustainability: -8,
-                },
-                source: 'INMET',
-                detectedAt: new Date().toISOString(),
-              });
+            console.log(`Alert affects states: ${alert.estados} -> IDs: ${affectedStateIds.join(', ')}`);
+          } else if (Array.isArray(alert.estados)) {
+            affectedStateIds = alert.estados;
+          }
+          
+          // Check if alert affects the requested state
+          if (affectedStateIds.includes(stateId)) {
+            console.log(`✓ Alert matches state ${stateId}: ${alert.descricao || alert.severidade}`);
+            
+            const severity = alert.severidade === 'Perigo' || alert.id_severidade >= 5 ? 'high' 
+              : alert.severidade === 'Perigo Potencial' || alert.id_severidade >= 3 ? 'medium' 
+              : 'low';
+            
+            const alertDescription = alert.descricao || alert.description || 'Condições meteorológicas adversas';
+            const alertType = alertDescription.toLowerCase();
+            
+            let eventType: ClimateEvent['type'] = 'storm';
+            if (alertType.includes('chuva') || alertType.includes('precipita')) {
+              eventType = alertType.includes('intens') ? 'flood' : 'storm';
+            } else if (alertType.includes('seca')) {
+              eventType = 'drought';
+            } else if (alertType.includes('calor') || alertType.includes('temperatura')) {
+              eventType = 'heat';
+            } else if (alertType.includes('frio') || alertType.includes('geada')) {
+              eventType = 'cold';
+            } else if (alertType.includes('vento')) {
+              eventType = 'storm';
             }
+            
+            alerts.push({
+              type: eventType,
+              severity,
+              description: {
+                pt: `⛈️ ${alertDescription}`,
+                en: `⛈️ ${alert.description || alertDescription}`,
+              },
+              impact: {
+                health: severity === 'high' ? -15 : severity === 'medium' ? -10 : -5,
+                water: eventType === 'flood' ? -30 : eventType === 'drought' ? 80 : 0,
+                sustainability: -8,
+              },
+              source: 'INMET',
+              detectedAt: alert.data_inicio || new Date().toISOString(),
+            });
           }
         }
       } else {
