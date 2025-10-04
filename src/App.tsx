@@ -2,6 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { NetworkStatus } from "@/components/NetworkStatus";
 import Home from './pages/Home';
 import CountrySelect from './pages/CountrySelect';
 import Tutorial from './pages/Tutorial';
@@ -15,6 +17,8 @@ const App = () => (
   <TooltipProvider>
     <Toaster />
     <Sonner />
+    <NetworkStatus />
+    <PWAInstallPrompt />
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />

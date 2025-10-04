@@ -15,4 +15,17 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    // Otimizações para PWA
+    manifest: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separa vendor chunks para melhor cache
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          supabase: ['@supabase/supabase-js'],
+        },
+      },
+    },
+  },
 }));
