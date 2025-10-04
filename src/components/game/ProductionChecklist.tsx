@@ -9,6 +9,17 @@ interface ProductionChecklistProps {
 }
 
 export const ProductionChecklist = ({ tasks, onTaskComplete, lang }: ProductionChecklistProps) => {
+  console.log('ProductionChecklist rendered with tasks:', tasks.length);
+
+  const handleTaskClick = (taskId: string, completed: boolean) => {
+    console.log('Task clicked:', { taskId, completed });
+    if (!completed) {
+      console.log('Calling onTaskComplete for task:', taskId);
+      onTaskComplete(taskId);
+    } else {
+      console.log('Task already completed, ignoring click');
+    }
+  };
 
   const getIcon = (type: ProductionTask['type']) => {
     switch (type) {
@@ -42,7 +53,7 @@ export const ProductionChecklist = ({ tasks, onTaskComplete, lang }: ProductionC
                 ? 'bg-game-green-400/20 border-game-green-700'
                 : 'bg-game-gray-200 border-game-fg hover:border-game-green-700 cursor-pointer'
             }`}
-            onClick={() => !task.completed && onTaskComplete(task.id)}
+            onClick={() => handleTaskClick(task.id, task.completed)}
           >
             <div className="flex items-center gap-3">
               <div

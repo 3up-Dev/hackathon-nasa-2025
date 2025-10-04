@@ -13,6 +13,7 @@ import { productionEngine, ProductionState } from '@/lib/productionEngine';
 import { SimpleProgress } from '@/components/ui/simple-progress';
 import { Heart, Droplets, Leaf, Sparkles } from 'lucide-react';
 import { useGameProfiles } from '@/hooks/useGameProfiles';
+import { toast } from '@/hooks/use-toast';
 
 export default function ProductionDashboard() {
   const lang: 'pt' | 'en' = 'pt';
@@ -116,9 +117,54 @@ export default function ProductionDashboard() {
   };
 
   const handleCompleteTask = (taskId: string) => {
-    const newState = productionEngine.completeTask(taskId);
-    setProductionState(newState);
-    setForceUpdate((prev) => prev + 1);
+    console.log('handleCompleteTask called with taskId:', taskId);
+    
+    if (!productionState) {
+      console.error('No production state available');
+      toast({
+        title: lang === 'pt' ? 'Erro' : 'Error',
+        description: lang === 'pt' ? 'Estado da produção não encontrado' : 'Production state not found',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const task = productionState.tasks.find(t => t.id === taskId);
+    if (!task) {
+      console.error('Task not found:', taskId);
+      return;
+    }
+
+    if (task.completed) {
+      console.log('Task already completed, ignoring');
+      return;
+    }
+
+    console.log('Completing task:', { taskId, reward: task.reward });
+
+    try {
+      const newState = productionEngine.completeTask(taskId);
+      console.log('Task completed successfully. New health:', newState.health);
+      
+      setProductionState(newState);
+      setForceUpdate((prev) => prev + 1);
+
+      // Show success toast
+      toast({
+        title: lang === 'pt' ? '✓ Tarefa Completada!' : '✓ Task Completed!',
+        description: lang === 'pt' 
+          ? `+${task.reward} saúde adicionada!` 
+          : `+${task.reward} health added!`,
+        className: 'bg-game-green-700 text-white border-game-green-700',
+      });
+    } catch (error) {
+      console.error('Error completing task:', error);
+      toast({
+        title: lang === 'pt' ? 'Erro' : 'Error',
+        description: lang === 'pt' ? 'Erro ao completar tarefa' : 'Error completing task',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleHarvest = async () => {

@@ -382,22 +382,51 @@ export class ProductionEngine {
   }
 
   completeTask(taskId: string): ProductionState {
-    if (!this.state) throw new Error('No active production');
+    console.log('ProductionEngine.completeTask called with taskId:', taskId);
+    
+    if (!this.state) {
+      console.error('No active production state');
+      throw new Error('No active production');
+    }
+    
+    console.log('Current state before completing task:', {
+      health: this.state.health,
+      totalTasks: this.state.tasks.length,
+      completedTasks: this.state.completedTasks.length,
+    });
     
     const task = this.state.tasks.find(t => t.id === taskId);
-    if (!task || task.completed) return this.state;
+    if (!task) {
+      console.error('Task not found with id:', taskId);
+      return this.state;
+    }
+    
+    if (task.completed) {
+      console.log('Task already completed, returning current state');
+      return this.state;
+    }
+    
+    console.log('Completing task:', { title: task.title.pt, reward: task.reward });
     
     const updatedTasks = this.state.tasks.map(t =>
       t.id === taskId ? { ...t, completed: true } : t
     );
     
+    const newHealth = Math.min(100, this.state.health + task.reward);
+    const newSustainability = Math.min(100, this.state.sustainabilityScore + 2);
+    
     this.state = {
       ...this.state,
       tasks: updatedTasks,
-      health: Math.min(100, this.state.health + task.reward),
-      sustainabilityScore: Math.min(100, this.state.sustainabilityScore + 2),
+      health: newHealth,
+      sustainabilityScore: newSustainability,
       completedTasks: [...this.state.completedTasks, taskId],
     };
+    
+    console.log('Task completed successfully. New state:', {
+      health: this.state.health,
+      completedTasks: this.state.completedTasks.length,
+    });
     
     this.saveState();
     return this.state;
