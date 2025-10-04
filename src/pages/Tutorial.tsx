@@ -32,12 +32,12 @@ export default function Tutorial() {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
     } else {
-      navigate('/game');
+      navigate('/registration');
     }
   };
 
   const handleSkip = () => {
-    navigate('/game');
+    navigate('/registration');
   };
 
   return (
