@@ -1,66 +1,71 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-// import { useNavigate, useLocation } from 'react-router-dom';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { translations } from '@/i18n/translations';
 import { crops, Crop } from '@/data/crops';
 import { brazilStates, BrazilState } from '@/data/states';
-import { useClimateData } from '@/hooks/useClimateData';
 import { calculateViability } from '@/data/gameLogic';
-import { Loader2, Thermometer, Droplets, Mountain, Clock, Satellite } from 'lucide-react';
+import { Thermometer, Droplets, Mountain, Clock } from 'lucide-react';
 
 export default function PrePlantingEducation() {
-  // const navigate = useNavigate();
-  // const location = useLocation();
   const lang: 'pt' | 'en' = 'pt';
-  const t = (key: keyof typeof translations['pt'], params?: Record<string, string>) => {
-    let text = (translations as any)[lang][key] || key;
-    if (params) {
-      Object.entries(params).forEach(([param, value]) => {
-        text = text.replace(`{${param}}`, value);
-      });
-    }
-    return text as string;
-  };
+  const t = (key: keyof typeof translations['pt']) => translations[lang][key] || key;
 
-  const [crop, setCrop] = useState<Crop | null>(null);
-  const [state, setState] = useState<BrazilState | null>(null);
+  // Parse URL params directly
+  const params = new URLSearchParams(window.location.search);
+  const cropId = params.get('crop');
+  const stateId = params.get('state');
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const cropId = params.get('crop');
-    const stateId = params.get('state');
-
-    if (!cropId || !stateId) {
-      window.location.href = '/game';
-      return;
-    }
-
-    const selectedCrop = crops.find(c => c.id === cropId);
-    const selectedState = brazilStates.find(s => s.id === stateId);
-
-    if (!selectedCrop || !selectedState) {
-      window.location.href = '/game';
-      return;
-    }
-
-    setCrop(selectedCrop);
-    setState(selectedState);
-  }, []);
-
-  const { data: climateData, loading: loadingClimate } = useClimateData(state!, !!state);
-
-  if (!crop || !state) {
-    return null;
+  if (!cropId || !stateId) {
+    return (
+      <GameLayout>
+        <div className="flex items-center justify-center h-full p-6">
+          <div className="text-center">
+            <p className="font-pixel text-sm text-game-fg mb-4">
+              {lang === 'pt' ? 'Parâmetros inválidos' : 'Invalid parameters'}
+            </p>
+            <PixelButton onClick={() => window.location.href = '/'}>
+              {t('cta_close')}
+            </PixelButton>
+          </div>
+        </div>
+      </GameLayout>
+    );
   }
 
-  const viability = calculateViability(crop, state, climateData);
+  const crop = crops.find(c => c.id === cropId);
+  const selectedState = brazilStates.find(s => s.id === stateId);
+
+  if (!crop || !selectedState) {
+    return (
+      <GameLayout>
+        <div className="flex items-center justify-center h-full p-6">
+          <div className="text-center">
+            <p className="font-pixel text-sm text-game-fg mb-4">
+              {lang === 'pt' ? 'Cultura ou estado não encontrado' : 'Crop or state not found'}
+            </p>
+            <PixelButton onClick={() => window.location.href = '/'}>
+              {t('cta_close')}
+            </PixelButton>
+          </div>
+        </div>
+      </GameLayout>
+    );
+  }
+
+  // Use simulated climate data
+  const climateData = {
+    temperature: selectedState.temp,
+    precipitation: selectedState.rain,
+    humidity: 70,
+    isRealData: false
+  };
+
+  const viability = calculateViability(crop, selectedState, climateData);
   const compatibilityScore = Math.round(viability.isViable ? 85 : 45);
 
   const handleStartProduction = () => {
-    if (!crop || !state) return;
-    window.location.href = `/production?crop=${crop.id}&state=${state.id}`;
+    window.location.href = `/production?crop=${crop.id}&state=${selectedState.id}`;
   };
 
   return (
@@ -72,17 +77,17 @@ export default function PrePlantingEducation() {
             <div className="text-6xl">{crop.icon}</div>
             <div>
               <h2 className="font-pixel text-lg text-game-fg">{crop.name[lang]}</h2>
-              <p className="font-sans text-sm text-game-gray-700">{state.name}</p>
+              <p className="font-sans text-sm text-game-gray-700">{selectedState.name}</p>
             </div>
           </div>
           
           <div className="flex items-center gap-2 mb-2">
             <div className={`px-4 py-2 rounded-lg ${viability.isViable ? 'bg-game-green-700' : 'bg-game-brown'}`}>
               <span className="font-pixel text-xs text-white">
-                {(viability.isViable 
+                {viability.isViable 
                   ? (lang === 'pt' ? `Local viável para ${crop.name[lang]}!` : `Viable location for ${crop.name[lang]}!`)
                   : (lang === 'pt' ? `Local não ideal para ${crop.name[lang]}.` : `Not ideal for ${crop.name[lang]}.`)
-                )}
+                }
               </span>
             </div>
           </div>
@@ -107,53 +112,41 @@ export default function PrePlantingEducation() {
             <h3 className="font-pixel text-base text-game-fg">
               {lang === 'pt' ? 'Dados Climáticos' : 'Climate Data'}
             </h3>
-            {viability.isRealData && !loadingClimate && (
-              <div className="flex items-center gap-1 px-2 py-1 bg-game-green-700 rounded">
-                <Satellite className="w-3 h-3 text-white" />
-                <span className="font-pixel text-xs text-white">NASA</span>
-              </div>
-            )}
           </div>
 
-          {loadingClimate ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-game-green-700" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-game-gray-200 border-2 border-game-fg rounded-lg p-4">
+              <Thermometer className="w-6 h-6 text-game-brown mb-2" />
+              <p className="font-sans text-xs text-game-gray-700 mb-1">{t('popup_temp')}</p>
+              <p className="font-pixel text-lg text-game-fg">
+                {climateData.temperature}°C
+              </p>
+              <p className="font-sans text-xs text-game-gray-600 mt-1">
+                {lang === 'pt' ? 'Ideal' : 'Ideal'}: {crop.idealTemp[0]}-{crop.idealTemp[1]}°C
+              </p>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-game-gray-200 border-2 border-game-fg rounded-lg p-4">
-                <Thermometer className="w-6 h-6 text-game-brown mb-2" />
-                <p className="font-sans text-xs text-game-gray-700 mb-1">{t('popup_temp')}</p>
-                <p className="font-pixel text-lg text-game-fg">
-                  {climateData?.temperature ?? state.temp}°C
-                </p>
-                <p className="font-sans text-xs text-game-gray-600 mt-1">
-                  {lang === 'pt' ? 'Ideal' : 'Ideal'}: {crop.idealTemp[0]}-{crop.idealTemp[1]}°C
-                </p>
-              </div>
 
-              <div className="bg-game-gray-200 border-2 border-game-fg rounded-lg p-4">
-                <Droplets className="w-6 h-6 text-game-green-700 mb-2" />
-                <p className="font-sans text-xs text-game-gray-700 mb-1">{t('popup_rain')}</p>
-                <p className="font-pixel text-lg text-game-fg">
-                  {climateData?.precipitation ?? state.rain}mm
-                </p>
-                <p className="font-sans text-xs text-game-gray-600 mt-1">
-                  {lang === 'pt' ? 'Ideal' : 'Ideal'}: {crop.idealRain[0]}-{crop.idealRain[1]}mm
-                </p>
-              </div>
-
-              <div className="bg-game-gray-200 border-2 border-game-fg rounded-lg p-4">
-                <Mountain className="w-6 h-6 text-game-brown mb-2" />
-                <p className="font-sans text-xs text-game-gray-700 mb-1">{t('popup_soil')}</p>
-                <p className="font-pixel text-sm text-game-fg capitalize">{state.soil}</p>
-                <p className="font-sans text-xs text-game-gray-600 mt-1">
-                  {crop.idealSoil.includes(state.soil) ? '✓ ' : '✗ '}
-                  {lang === 'pt' ? 'Adequado' : 'Suitable'}
-                </p>
-              </div>
+            <div className="bg-game-gray-200 border-2 border-game-fg rounded-lg p-4">
+              <Droplets className="w-6 h-6 text-game-green-700 mb-2" />
+              <p className="font-sans text-xs text-game-gray-700 mb-1">{t('popup_rain')}</p>
+              <p className="font-pixel text-lg text-game-fg">
+                {climateData.precipitation}mm
+              </p>
+              <p className="font-sans text-xs text-game-gray-600 mt-1">
+                {lang === 'pt' ? 'Ideal' : 'Ideal'}: {crop.idealRain[0]}-{crop.idealRain[1]}mm
+              </p>
             </div>
-          )}
+
+            <div className="bg-game-gray-200 border-2 border-game-fg rounded-lg p-4">
+              <Mountain className="w-6 h-6 text-game-brown mb-2" />
+              <p className="font-sans text-xs text-game-gray-700 mb-1">{t('popup_soil')}</p>
+              <p className="font-pixel text-sm text-game-fg capitalize">{selectedState.soil}</p>
+              <p className="font-sans text-xs text-game-gray-600 mt-1">
+                {crop.idealSoil.includes(selectedState.soil) ? '✓ ' : '✗ '}
+                {lang === 'pt' ? 'Adequado' : 'Suitable'}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Informações da Cultura */}
@@ -225,7 +218,7 @@ export default function PrePlantingEducation() {
         <div className="flex gap-4">
           <PixelButton
             variant="ghost"
-            onClick={() => (window.location.href = '/game')}
+            onClick={() => window.location.href = '/'}
             className="flex-1"
           >
             {t('cta_close')}
