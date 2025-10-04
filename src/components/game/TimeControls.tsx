@@ -70,7 +70,14 @@ export const TimeControls = ({
           return (
             <button
               key={option.days}
-              onClick={() => !isDisabled && onAdvanceTime(option.days)}
+              onClick={() => {
+                console.log('⏰ Time button clicked:', option.days, 'days');
+                if (!isDisabled) onAdvanceTime(option.days);
+              }}
+              onPointerUp={() => {
+                console.log('⏰ Time button pointer up:', option.days, 'days');
+                if (!isDisabled) onAdvanceTime(option.days);
+              }}
               disabled={isDisabled}
               className={`relative group border-4 rounded-lg p-3 transition-all ${
                 isDisabled

@@ -48,20 +48,23 @@ export const ProductionChecklist = ({ tasks, onTaskComplete, lang }: ProductionC
         {tasks.map((task) => {
           console.log('🔷 Rendering task:', task.id, 'completed:', task.completed);
           return (
-            <div
+            <button
               key={task.id}
-              className={`border-2 rounded-lg p-3 transition-all ${
+              type="button"
+              disabled={task.completed}
+              className={`w-full text-left border-2 rounded-lg p-3 transition-all ${
                 task.completed
-                  ? 'bg-game-green-400/20 border-game-green-700'
-                  : 'bg-game-gray-200 border-game-fg hover:border-game-green-700 cursor-pointer'
+                  ? 'bg-game-green-400/20 border-game-green-700 cursor-default'
+                  : 'bg-game-gray-200 border-game-fg hover:border-game-green-700 cursor-pointer active:scale-[0.98]'
               }`}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('🔴 DIV CLICKED for task:', task.id);
+              onClick={() => {
+                console.log('🔴 BUTTON CLICKED for task:', task.id);
                 handleTaskClick(task.id, task.completed);
               }}
-              style={{ pointerEvents: 'auto' }}
+              onPointerUp={() => {
+                console.log('🟣 POINTER UP for task:', task.id);
+                handleTaskClick(task.id, task.completed);
+              }}
             >
               <div className="flex items-center gap-3">
                 <div
@@ -100,7 +103,7 @@ export const ProductionChecklist = ({ tasks, onTaskComplete, lang }: ProductionC
                   </div>
                 )}
               </div>
-            </div>
+            </button>
           );
         })}
       </div>

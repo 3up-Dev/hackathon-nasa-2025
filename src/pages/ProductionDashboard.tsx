@@ -112,54 +112,72 @@ export default function ProductionDashboard() {
   const handleAdvanceTime = async (days: number) => {
     if (!state) return;
     
-    console.log('Advancing time by', days, 'days');
-    
-    // 1. Advance time and get NASA POWER climate events
-    const newState = await productionEngine.advanceTime(days, crop, {
-      latitude: state.lat,
-      longitude: state.lon,
-    });
-    
-    // 2. Fetch real-time alerts from FIRMS/INMET
-    console.log('Fetching real-time alerts for', state.id);
-    const realTimeAlerts = await productionEngine.fetchRealTimeAlerts(state.id);
-    console.log('Real-time alerts fetched:', realTimeAlerts.length);
-    
-    // 3. Merge NASA POWER events with real-time alerts
-    const mergedEvents = [
-      ...(newState.climateEvents || []),
-      ...realTimeAlerts,
-    ];
-    
-    // 4. Apply real-time alert impacts to state
-    let additionalHealthImpact = 0;
-    let additionalWaterImpact = 0;
-    let additionalSustainabilityImpact = 0;
-    
-    for (const alert of realTimeAlerts) {
-      additionalHealthImpact += alert.impact.health;
-      additionalWaterImpact += alert.impact.water;
-      additionalSustainabilityImpact += alert.impact.sustainability;
+    try {
+      console.log('Advancing time by', days, 'days');
+      
+      // 1. Advance time and get NASA POWER climate events
+      const newState = await productionEngine.advanceTime(days, crop, {
+        latitude: state.lat,
+        longitude: state.lon,
+      });
+      
+      // 2. Fetch real-time alerts from FIRMS/INMET
+      console.log('Fetching real-time alerts for', state.id);
+      const realTimeAlerts = await productionEngine.fetchRealTimeAlerts(state.id);
+      console.log('Real-time alerts fetched:', realTimeAlerts.length);
+      
+      // 3. Merge NASA POWER events with real-time alerts
+      const mergedEvents = [
+        ...(newState.climateEvents || []),
+        ...realTimeAlerts,
+      ];
+      
+      // 4. Apply real-time alert impacts to state
+      let additionalHealthImpact = 0;
+      let additionalWaterImpact = 0;
+      let additionalSustainabilityImpact = 0;
+      
+      for (const alert of realTimeAlerts) {
+        additionalHealthImpact += alert.impact.health;
+        additionalWaterImpact += alert.impact.water;
+        additionalSustainabilityImpact += alert.impact.sustainability;
+      }
+      
+      // 5. Update state with merged events and additional impacts
+      const finalState = {
+        ...newState,
+        climateEvents: mergedEvents,
+        health: Math.max(0, Math.min(100, newState.health + additionalHealthImpact)),
+        waterUsed: newState.waterUsed + additionalWaterImpact,
+        sustainabilityScore: Math.max(0, Math.min(100, newState.sustainabilityScore + additionalSustainabilityImpact)),
+      };
+      
+      console.log('Final state after merging alerts:', {
+        totalEvents: finalState.climateEvents?.length,
+        health: finalState.health,
+        waterUsed: finalState.waterUsed,
+        sustainability: finalState.sustainabilityScore,
+      });
+      
+      setProductionState(finalState);
+      setForceUpdate((prev) => prev + 1);
+      
+      toast({
+        title: lang === 'pt' ? '✓ Tempo Avançado' : '✓ Time Advanced',
+        description: lang === 'pt' 
+          ? `${days} dia(s) avançado(s) com sucesso` 
+          : `${days} day(s) advanced successfully`,
+      });
+    } catch (error) {
+      console.error('Error advancing time:', error);
+      toast({
+        title: lang === 'pt' ? 'Erro ao Avançar Tempo' : 'Error Advancing Time',
+        description: lang === 'pt' 
+          ? 'Não foi possível avançar o tempo. Tente novamente.' 
+          : 'Could not advance time. Please try again.',
+        variant: 'destructive',
+      });
     }
-    
-    // 5. Update state with merged events and additional impacts
-    const finalState = {
-      ...newState,
-      climateEvents: mergedEvents,
-      health: Math.max(0, Math.min(100, newState.health + additionalHealthImpact)),
-      waterUsed: newState.waterUsed + additionalWaterImpact,
-      sustainabilityScore: Math.max(0, Math.min(100, newState.sustainabilityScore + additionalSustainabilityImpact)),
-    };
-    
-    console.log('Final state after merging alerts:', {
-      totalEvents: finalState.climateEvents?.length,
-      health: finalState.health,
-      waterUsed: finalState.waterUsed,
-      sustainability: finalState.sustainabilityScore,
-    });
-    
-    setProductionState(finalState);
-    setForceUpdate((prev) => prev + 1);
   };
 
   const handleCompleteTask = (taskId: string) => {
