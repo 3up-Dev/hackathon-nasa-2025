@@ -87,6 +87,8 @@ export default function Login() {
               <span className="animate-bounce delay-0">🌾</span>
               <span className="animate-bounce delay-100">🌽</span>
               <span className="animate-bounce delay-200">🌿</span>
+              <span className="animate-bounce delay-300">🐄</span>
+              <span className="animate-bounce delay-0">🐟</span>
             </div>
 
             {/* Error message */}
