@@ -126,17 +126,19 @@ export default function Registration() {
       <div className="relative h-full bg-game-bg overflow-auto">
         <div className="flex flex-col items-center justify-center min-h-full p-8">
           <div className="w-full max-w-md">
-            <button
-              onClick={() => navigate('/tutorial')}
-              className="flex items-center gap-2 mb-6 text-game-gray-700 hover:text-game-fg transition-colors"
-            >
-              <span className="text-xl">←</span>
-              <span className="font-sans text-sm">Voltar</span>
-            </button>
-            
-            <h1 className="font-pixel text-lg text-game-fg mb-4 text-center">
-              Criar Conta
-            </h1>
+            <div className="flex items-center mb-6">
+              <button
+                onClick={() => navigate('/tutorial')}
+                className="flex items-center gap-2 text-game-gray-700 hover:text-game-fg transition-colors"
+              >
+                <span className="text-xl">←</span>
+                <span className="font-sans text-sm">Voltar</span>
+              </button>
+              
+              <h1 className="font-pixel text-lg text-game-fg flex-1 text-center">
+                Criar Conta
+              </h1>
+            </div>
 
             {/* Decorative elements */}
             <div className="flex gap-4 mb-8 text-4xl opacity-70 justify-center">
