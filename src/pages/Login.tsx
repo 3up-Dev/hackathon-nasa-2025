@@ -45,8 +45,8 @@ export default function Login() {
   return (
     <GameLayout>
       <div className="relative h-full bg-game-bg overflow-auto">
-        <div className="flex flex-col items-center justify-center min-h-full p-8">
-          <div className="w-full max-w-md">
+        <div className="flex flex-col p-6">
+          <div className="w-full max-w-md mx-auto">
             <div className="flex items-center mb-6">
               <button
                 onClick={() => navigate('/')}
@@ -56,19 +56,19 @@ export default function Login() {
                 <span className="font-sans text-sm">Voltar</span>
               </button>
               
-              <h1 className="font-pixel text-lg text-game-fg flex-1 text-center">
+              <h1 className="font-pixel text-base md:text-lg text-game-fg flex-1 text-center">
                 Entrar
               </h1>
             </div>
 
             {/* Decorative elements */}
-            <div className="flex gap-4 mb-8 text-4xl opacity-70 justify-center">
+            <div className="flex gap-4 mb-6 text-3xl md:text-4xl opacity-70 justify-center">
               <span className="animate-bounce delay-0">🌾</span>
               <span className="animate-bounce delay-100">🌽</span>
               <span className="animate-bounce delay-200">🌿</span>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
               <div>
                 <Label htmlFor="email" className="font-pixel text-xs text-game-fg">
                   E-mail
