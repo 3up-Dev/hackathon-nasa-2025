@@ -1,91 +1,94 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
-import { useLanguage } from '@/hooks/useLanguage';
-import { useProductionCycle } from '@/hooks/useProductionCycle';
 import { ProductionChecklist } from '@/components/game/ProductionChecklist';
+import { StageProgress } from '@/components/game/StageProgress';
+import { TimeControls } from '@/components/game/TimeControls';
+import { translations } from '@/i18n/translations';
 import { crops, Crop } from '@/data/crops';
 import { brazilStates, BrazilState } from '@/data/states';
-import { Heart, Droplets, Leaf, Calendar, ChevronRight } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+import { productionEngine, ProductionState } from '@/lib/productionEngine';
+import { SimpleProgress } from '@/components/ui/simple-progress';
+import { Heart, Droplets, Leaf, Sparkles } from 'lucide-react';
 
 export default function ProductionDashboard() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { t, lang } = useLanguage();
+  const lang: 'pt' | 'en' = 'pt';
+  const t = (key: keyof typeof translations['pt']) => translations[lang][key] || key;
+
   const [crop, setCrop] = useState<Crop | null>(null);
   const [state, setState] = useState<BrazilState | null>(null);
-
-  const {
-    cropId,
-    stateId,
-    currentDay,
-    health,
-    tasks,
-    waterUsed,
-    sustainabilityScore,
-    startProduction,
-    advanceTime,
-    completeTask,
-    getCurrentStage,
-    finishProduction,
-  } = useProductionCycle();
+  const [productionState, setProductionState] = useState<ProductionState | null>(null);
+  const [forceUpdate, setForceUpdate] = useState(0);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const paramCropId = params.get('crop');
-    const paramStateId = params.get('state');
+    const params = new URLSearchParams(window.location.search);
+    const cropId = params.get('crop');
+    const stateId = params.get('state');
 
-    if (!paramCropId || !paramStateId) {
-      navigate('/game');
+    if (!cropId || !stateId) {
+      window.location.href = '/';
       return;
     }
 
-    const selectedCrop = crops.find(c => c.id === paramCropId);
-    const selectedState = brazilStates.find(s => s.id === paramStateId);
+    const selectedCrop = crops.find((c) => c.id === cropId);
+    const selectedState = brazilStates.find((s) => s.id === stateId);
 
     if (!selectedCrop || !selectedState) {
-      navigate('/game');
+      window.location.href = '/';
       return;
     }
 
     setCrop(selectedCrop);
     setState(selectedState);
 
-    // Iniciar produção se ainda não iniciou
-    if (!cropId) {
-      startProduction(selectedCrop, paramStateId);
+    // Check if production already started
+    const currentState = productionEngine.getState();
+    if (!currentState || currentState.cropId !== cropId) {
+      const newState = productionEngine.startProduction(selectedCrop, stateId);
+      setProductionState(newState);
+    } else {
+      setProductionState(currentState);
     }
-  }, [location, navigate, cropId, startProduction]);
+  }, []);
 
-  if (!crop || !state) {
-    return null;
+  if (!crop || !state || !productionState) {
+    return (
+      <GameLayout>
+        <div className="flex items-center justify-center h-full">
+          <div className="text-6xl animate-pulse">🌱</div>
+        </div>
+      </GameLayout>
+    );
   }
 
-  const stage = getCurrentStage(crop);
-  const currentStage = crop.stages[stage.stageIndex];
-  const progressPercent = (currentDay / crop.growthDays) * 100;
-
-  const handleAdvanceWeek = () => {
-    advanceTime(7);
+  const handleAdvanceTime = (days: number) => {
+    const newState = productionEngine.advanceTime(days, crop);
+    setProductionState(newState);
+    setForceUpdate((prev) => prev + 1);
   };
 
-  const handleAdvanceMonth = () => {
-    advanceTime(30);
+  const handleCompleteTask = (taskId: string) => {
+    const newState = productionEngine.completeTask(taskId);
+    setProductionState(newState);
+    setForceUpdate((prev) => prev + 1);
   };
 
   const handleHarvest = () => {
-    finishProduction();
-    navigate(`/harvest?crop=${crop.id}&state=${state.id}`);
+    productionEngine.finishProduction();
+    window.location.href = `/harvest?crop=${crop.id}&state=${state.id}`;
   };
 
-  const isReadyToHarvest = currentDay >= crop.growthDays;
+  const isReadyToHarvest = productionState.currentDay >= crop.growthDays;
+  const progressPercent = Math.min(100, (productionState.currentDay / crop.growthDays) * 100);
+
+  const stage = productionEngine.getCurrentStage(crop);
+  const currentStage = crop.stages[stage.stageIndex];
 
   return (
     <GameLayout>
       <div className="w-full max-w-4xl mx-auto p-6 space-y-6">
-        {/* Header com progresso */}
+        {/* Header with progress */}
         <div className="bg-game-bg border-4 border-game-fg rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
@@ -99,23 +102,19 @@ export default function ProductionDashboard() {
               <p className="font-pixel text-xs text-game-gray-700">
                 {lang === 'pt' ? 'Dia' : 'Day'}
               </p>
-              <p className="font-pixel text-2xl text-game-fg">{currentDay}</p>
-              <p className="font-sans text-xs text-game-gray-600">
-                / {crop.growthDays}
-              </p>
+              <p className="font-pixel text-2xl text-game-fg">{productionState.currentDay}</p>
+              <p className="font-sans text-xs text-game-gray-600">/ {crop.growthDays}</p>
             </div>
           </div>
 
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className="font-pixel text-xs text-game-fg">
-                {currentStage.name[lang]}
-              </span>
+              <span className="font-pixel text-xs text-game-fg">{currentStage.name[lang]}</span>
               <span className="font-sans text-xs text-game-gray-700">
                 {Math.round(progressPercent)}%
               </span>
             </div>
-            <Progress value={progressPercent} className="h-3" />
+            <SimpleProgress value={progressPercent} className="h-3" />
           </div>
 
           {isReadyToHarvest && (
@@ -127,17 +126,35 @@ export default function ProductionDashboard() {
           )}
         </div>
 
-        {/* Métricas */}
+        {/* Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Heart className="w-5 h-5 text-game-brown" />
+              <Heart
+                className={`w-5 h-5 ${
+                  productionState.health > 70
+                    ? 'text-game-green-700'
+                    : productionState.health > 40
+                    ? 'text-game-gold'
+                    : 'text-game-brown'
+                }`}
+              />
               <span className="font-pixel text-xs text-game-fg">
                 {lang === 'pt' ? 'Saúde' : 'Health'}
               </span>
             </div>
-            <p className="font-pixel text-2xl text-game-fg">{health}%</p>
-            <Progress value={health} className="mt-2 h-2" />
+            <p className="font-pixel text-2xl text-game-fg">{productionState.health}%</p>
+            <SimpleProgress
+              value={productionState.health}
+              className="mt-2 h-2"
+              indicatorClassName={
+                productionState.health > 70
+                  ? 'bg-game-green-700'
+                  : productionState.health > 40
+                  ? 'bg-game-gold'
+                  : 'bg-game-brown'
+              }
+            />
           </div>
 
           <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
@@ -147,7 +164,7 @@ export default function ProductionDashboard() {
                 {lang === 'pt' ? 'Água Usada' : 'Water Used'}
               </span>
             </div>
-            <p className="font-pixel text-2xl text-game-fg">{waterUsed}L</p>
+            <p className="font-pixel text-2xl text-game-fg">{Math.round(productionState.waterUsed)}L</p>
             <p className="font-sans text-xs text-game-gray-600 mt-1">
               {lang === 'pt' ? 'Total acumulado' : 'Total accumulated'}
             </p>
@@ -160,76 +177,44 @@ export default function ProductionDashboard() {
                 {lang === 'pt' ? 'Sustentabilidade' : 'Sustainability'}
               </span>
             </div>
-            <p className="font-pixel text-2xl text-game-fg">{sustainabilityScore}%</p>
-            <Progress value={sustainabilityScore} className="mt-2 h-2" />
+            <p className="font-pixel text-2xl text-game-fg">{productionState.sustainabilityScore}%</p>
+            <SimpleProgress value={productionState.sustainabilityScore} className="mt-2 h-2" />
           </div>
         </div>
 
+        {/* Stage Progress */}
+        <StageProgress crop={crop} currentDay={productionState.currentDay} lang={lang} />
+
         {/* Checklist */}
-        {!isReadyToHarvest && (
-          <ProductionChecklist tasks={tasks} onTaskComplete={completeTask} />
+        {!isReadyToHarvest && productionState.tasks.length > 0 && (
+          <ProductionChecklist
+            tasks={productionState.tasks}
+            onTaskComplete={handleCompleteTask}
+            lang={lang}
+          />
         )}
 
-        {/* Controles de tempo */}
-        {!isReadyToHarvest && (
-          <div className="bg-game-bg border-4 border-game-fg rounded-xl p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Calendar className="w-5 h-5 text-game-fg" />
-              <h3 className="font-pixel text-base text-game-fg">
-                {lang === 'pt' ? 'Avançar Tempo' : 'Advance Time'}
-              </h3>
-            </div>
-            
-            <div className="flex gap-4">
-              <PixelButton
-                variant="secondary"
-                onClick={handleAdvanceWeek}
-                className="flex-1"
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <span>+7 {lang === 'pt' ? 'dias' : 'days'}</span>
-                  <ChevronRight className="w-4 h-4" />
-                </div>
-              </PixelButton>
-              
-              <PixelButton
-                variant="secondary"
-                onClick={handleAdvanceMonth}
-                className="flex-1"
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <span>+30 {lang === 'pt' ? 'dias' : 'days'}</span>
-                  <ChevronRight className="w-4 h-4" />
-                </div>
-              </PixelButton>
-            </div>
+        {/* Time Controls */}
+        <TimeControls
+          currentDay={productionState.currentDay}
+          totalDays={crop.growthDays}
+          onAdvanceTime={handleAdvanceTime}
+          lang={lang}
+          isReadyToHarvest={isReadyToHarvest}
+        />
 
-            <p className="font-sans text-xs text-game-gray-700 text-center mt-3">
-              {lang === 'pt'
-                ? 'Complete as tarefas antes de avançar o tempo para manter a saúde da produção'
-                : 'Complete tasks before advancing time to maintain production health'}
-            </p>
-          </div>
-        )}
-
-        {/* Botão de colheita */}
+        {/* Harvest button */}
         {isReadyToHarvest && (
-          <PixelButton
-            variant="primary"
-            size="lg"
-            onClick={handleHarvest}
-            className="w-full"
-          >
-            🌾 {lang === 'pt' ? 'Colher Produção' : 'Harvest Production'}
+          <PixelButton variant="primary" size="lg" onClick={handleHarvest} className="w-full">
+            <div className="flex items-center justify-center gap-2">
+              <Sparkles className="w-5 h-5" />
+              <span>🌾 {lang === 'pt' ? 'Colher Produção' : 'Harvest Production'}</span>
+            </div>
           </PixelButton>
         )}
 
-        <PixelButton
-          variant="ghost"
-          onClick={() => navigate('/game')}
-          className="w-full"
-        >
-          {lang === 'pt' ? 'Voltar ao Mapa' : 'Back to Map'}
+        <PixelButton variant="ghost" onClick={() => (window.location.href = '/')} className="w-full">
+          {lang === 'pt' ? 'Voltar ao Início' : 'Back to Home'}
         </PixelButton>
       </div>
     </GameLayout>

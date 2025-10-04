@@ -1,14 +1,14 @@
-import { useLanguage } from '@/hooks/useLanguage';
-import { ProductionTask } from '@/hooks/useProductionCycle';
-import { Check, Droplets, Thermometer, Wind, Sprout } from 'lucide-react';
+import * as React from 'react';
+import { ProductionTask } from '@/lib/productionEngine';
+import { Check, Droplets, Thermometer, Wind, Sprout, Bug } from 'lucide-react';
 
 interface ProductionChecklistProps {
   tasks: ProductionTask[];
   onTaskComplete: (taskId: string) => void;
+  lang: 'pt' | 'en';
 }
 
-export const ProductionChecklist = ({ tasks, onTaskComplete }: ProductionChecklistProps) => {
-  const { lang } = useLanguage();
+export const ProductionChecklist = ({ tasks, onTaskComplete, lang }: ProductionChecklistProps) => {
 
   const getIcon = (type: ProductionTask['type']) => {
     switch (type) {
@@ -20,6 +20,8 @@ export const ProductionChecklist = ({ tasks, onTaskComplete }: ProductionCheckli
         return <Wind className="w-5 h-5" />;
       case 'nutrition':
         return <Sprout className="w-5 h-5" />;
+      case 'pest':
+        return <Bug className="w-5 h-5" />;
       default:
         return <Check className="w-5 h-5" />;
     }

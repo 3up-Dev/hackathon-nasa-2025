@@ -19,14 +19,60 @@ import NotFound from './pages/NotFound';
 const queryClient = new QueryClient();
 
 const Landing = () => (
-  <div style={{ padding: 24 }}>
-    <h1>App carregou</h1>
-    <p>
-      Ir para educação (exemplo):
-      <a href="/education?crop=soja&state=sp" style={{ marginLeft: 8, color: 'blue', textDecoration: 'underline' }}>
-        /education
-      </a>
-    </p>
+  <div style={{ padding: 24, maxWidth: 600, margin: '0 auto' }}>
+    <h1 style={{ fontFamily: 'Press Start 2P', fontSize: 16, marginBottom: 24 }}>🌱 Plantando o Futuro</h1>
+    <div style={{ fontFamily: 'sans-serif', fontSize: 14, lineHeight: 1.6 }}>
+      <p style={{ marginBottom: 16 }}>Sistema de produção implementado! 🎉</p>
+      
+      <div style={{ marginBottom: 24, padding: 16, background: '#f0f0f0', borderRadius: 8 }}>
+        <h2 style={{ fontSize: 14, marginBottom: 12, fontWeight: 'bold' }}>Funcionalidades:</h2>
+        <ul style={{ paddingLeft: 20, margin: 0 }}>
+          <li>✅ Tela educativa pré-plantio com dados climáticos</li>
+          <li>✅ Sistema de tempo e ciclo de produção completo</li>
+          <li>✅ Progresso visual por etapas de crescimento</li>
+          <li>✅ Sistema de tarefas semanais (irrigação, temperatura, etc.)</li>
+          <li>✅ Métricas de saúde, água e sustentabilidade</li>
+          <li>✅ Controles de tempo (1 dia, 1 semana, 1 mês)</li>
+          <li>✅ Persistência local do progresso</li>
+        </ul>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <h3 style={{ fontSize: 12, marginBottom: 8, fontWeight: 'bold' }}>Testar fluxo completo:</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <a 
+            href="/education?crop=soja&state=sp" 
+            style={{ 
+              padding: '8px 12px', 
+              background: '#4CAF50', 
+              color: 'white', 
+              textDecoration: 'none', 
+              borderRadius: 4,
+              textAlign: 'center'
+            }}
+          >
+            1. Tela Educativa (Soja em SP)
+          </a>
+          <a 
+            href="/production?crop=soja&state=sp" 
+            style={{ 
+              padding: '8px 12px', 
+              background: '#2196F3', 
+              color: 'white', 
+              textDecoration: 'none', 
+              borderRadius: 4,
+              textAlign: 'center'
+            }}
+          >
+            2. Dashboard de Produção
+          </a>
+        </div>
+      </div>
+
+      <p style={{ fontSize: 12, color: '#666', marginTop: 24 }}>
+        💡 Dica: Na produção, complete as tarefas antes de avançar o tempo para manter a saúde alta!
+      </p>
+    </div>
   </div>
 );
 
@@ -44,7 +90,7 @@ const App = () => {
               <Route path="/tutorial" element={<ProtectedRoute><Tutorial /></ProtectedRoute>} />
               <Route path="/game" element={<ProtectedRoute><GameMap /></ProtectedRoute>} />
               <Route path="/education" element={<PrePlantingEducation />} />
-              <Route path="/production" element={<ProtectedRoute><ProductionDashboard /></ProtectedRoute>} />
+              <Route path="/production" element={<ProductionDashboard />} />
               <Route path="/harvest" element={<ProtectedRoute><HarvestResults /></ProtectedRoute>} />
               <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
