@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface GameState {
+  selectedSector: string | null;
   selectedCrop: string | null;
   indicators: {
     production: number;
@@ -10,12 +11,14 @@ interface GameState {
   };
   plantedStates: string[];
   totalScore: number;
+  setSelectedSector: (sector: string | null) => void;
   setSelectedCrop: (crop: string | null) => void;
   addPlanting: (stateId: string, scores: { production: number; sustainability: number; water: number }) => void;
   resetGame: () => void;
 }
 
 const initialState = {
+  selectedSector: null,
   selectedCrop: null,
   indicators: {
     production: 10,
@@ -30,6 +33,7 @@ export const useGameState = create<GameState>()(
   persist(
     (set) => ({
       ...initialState,
+      setSelectedSector: (sector) => set({ selectedSector: sector, selectedCrop: null }),
       setSelectedCrop: (crop) => set({ selectedCrop: crop }),
       addPlanting: (stateId, scores) =>
         set((state) => {

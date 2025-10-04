@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { BrazilMap } from '@/components/game/BrazilMap';
+import { SectorSelector } from '@/components/game/SectorSelector';
 import { CropSelector } from '@/components/game/CropSelector';
 import { IndicatorCard } from '@/components/game/IndicatorCard';
 import { ViabilityPopup } from '@/components/game/ViabilityPopup';
@@ -13,10 +14,14 @@ import { toast } from 'sonner';
 export default function GameMap() {
   const [popupState, setPopupState] = useState<string | null>(null);
   const { t } = useLanguage();
-  const { indicators, selectedCrop, plantedStates } = useGameState();
+  const { indicators, selectedSector, selectedCrop, plantedStates } = useGameState();
   const navigate = useNavigate();
 
   const handleStateClick = (stateId: string) => {
+    if (!selectedSector) {
+      toast.error('Escolha um setor primeiro!');
+      return;
+    }
     if (!selectedCrop) {
       toast.error(t('choose_crop'));
       return;
@@ -70,9 +75,12 @@ export default function GameMap() {
         </div>
 
         {/* Map area */}
-        <div className="flex-1 overflow-hidden pb-[140px]">
+        <div className="flex-1 overflow-hidden pb-[140px] pt-[140px]">
           <BrazilMap onStateClick={handleStateClick} />
         </div>
+
+        {/* Sector selector */}
+        <SectorSelector />
 
         {/* Crop selector */}
         <CropSelector />

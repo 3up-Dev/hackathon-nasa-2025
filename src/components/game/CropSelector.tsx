@@ -4,15 +4,23 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 
 export const CropSelector = () => {
-  const { selectedCrop, setSelectedCrop } = useGameState();
+  const { selectedSector, selectedCrop, setSelectedCrop } = useGameState();
   const { lang, t } = useLanguage();
+
+  const filteredCrops = selectedSector 
+    ? crops.filter(crop => crop.sector === selectedSector)
+    : [];
+
+  if (!selectedSector) {
+    return null;
+  }
 
   return (
     <div className="absolute bottom-0 left-0 right-0 bg-white border-t-4 border-game-green-700 shadow-2xl">
       <div className="p-4">
         <h3 className="font-pixel text-xs text-game-fg mb-3">{t('choose_crop')}</h3>
         <div className="flex gap-2 overflow-x-auto pb-2">
-          {crops.map((crop) => (
+          {filteredCrops.map((crop) => (
             <button
               key={crop.id}
               onClick={() => setSelectedCrop(crop.id)}
