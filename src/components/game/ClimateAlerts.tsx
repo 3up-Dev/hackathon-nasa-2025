@@ -1,4 +1,4 @@
-import { AlertTriangle, Flame, CloudRain, Sun, Snowflake, Bug } from 'lucide-react';
+import { AlertTriangle, Flame, CloudRain, Sun, Snowflake, Bug, Satellite } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ClimateEvent } from '@/lib/productionEngine';
 
@@ -45,32 +45,87 @@ const getSeverityText = (severity: ClimateEvent['severity'], lang: 'pt' | 'en') 
   return texts[lang][severity];
 };
 
+const getSourceBadge = (source: string | undefined, lang: 'pt' | 'en') => {
+  if (source === 'NASA_FIRMS') {
+    return {
+      label: '🔴 AO VIVO',
+      bgColor: 'bg-red-500',
+      textColor: 'text-white',
+      animate: true,
+    };
+  }
+  if (source === 'INMET') {
+    return {
+      label: '🔴 AO VIVO',
+      bgColor: 'bg-red-500',
+      textColor: 'text-white',
+      animate: true,
+    };
+  }
+  return {
+    label: '📊 NASA',
+    bgColor: 'bg-blue-500',
+    textColor: 'text-white',
+    animate: false,
+  };
+};
+
+const getSourceLink = (source: string | undefined) => {
+  if (source === 'NASA_FIRMS') {
+    return {
+      url: 'https://firms.modaps.eosdis.nasa.gov/map/',
+      label: 'Ver mapa de queimadas',
+    };
+  }
+  if (source === 'INMET') {
+    return {
+      url: 'https://portal.inmet.gov.br/',
+      label: 'Ver alertas oficiais',
+    };
+  }
+  return null;
+};
+
 export function ClimateAlerts({ events, lang }: ClimateAlertsProps) {
   if (events.length === 0) return null;
 
   return (
     <div className="space-y-3">
-      <h3 className="font-pixel text-sm text-game-fg">
-        {lang === 'pt' ? '🌍 Alertas Climáticos NASA' : '🌍 NASA Climate Alerts'}
+      <h3 className="font-pixel text-sm text-game-fg flex items-center gap-2">
+        <Satellite className="w-4 h-4" />
+        {lang === 'pt' ? '🌍 Alertas Climáticos' : '🌍 Climate Alerts'}
       </h3>
       
       {events.map((event, index) => {
         const Icon = getEventIcon(event.type);
         const severityColor = getSeverityColor(event.severity);
         const severityText = getSeverityText(event.severity, lang);
+        const sourceBadge = getSourceBadge(event.source, lang);
+        const sourceLink = getSourceLink(event.source);
         
         return (
           <Alert
-            key={`${event.type}-${index}`}
-            className={`${severityColor} border-4 animate-in slide-in-from-top-2 duration-500`}
+            key={`${event.type}-${event.source}-${index}`}
+            className={`${severityColor} border-4 animate-in slide-in-from-top-2 duration-500 ${
+              event.severity === 'high' && sourceBadge.animate ? 'animate-pulse' : ''
+            }`}
             style={{ animationDelay: `${index * 100}ms` }}
           >
-            <Icon className="h-5 w-5" />
-            <AlertTitle className="font-pixel text-xs mb-1">
-              {lang === 'pt' ? 'ALERTA CLIMÁTICO' : 'CLIMATE ALERT'} - {severityText}
-            </AlertTitle>
-            <AlertDescription className="font-sans text-xs space-y-1">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <div className="flex items-center gap-2">
+                <Icon className="h-5 w-5" />
+                <AlertTitle className="font-pixel text-xs mb-0">
+                  {lang === 'pt' ? 'ALERTA CLIMÁTICO' : 'CLIMATE ALERT'} - {severityText}
+                </AlertTitle>
+              </div>
+              <span className={`px-2 py-1 ${sourceBadge.bgColor} ${sourceBadge.textColor} text-[10px] font-pixel rounded flex-shrink-0`}>
+                {sourceBadge.label}
+              </span>
+            </div>
+            
+            <AlertDescription className="font-sans text-xs space-y-2">
               <p className="font-medium">{event.description[lang]}</p>
+              
               <div className="flex gap-3 text-[10px] text-game-gray-700">
                 {event.impact.health !== 0 && (
                   <span>
@@ -88,6 +143,17 @@ export function ClimateAlerts({ events, lang }: ClimateAlertsProps) {
                   </span>
                 )}
               </div>
+              
+              {sourceLink && (
+                <a
+                  href={sourceLink.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] text-game-green-700 hover:underline inline-flex items-center gap-1"
+                >
+                  {sourceLink.label} →
+                </a>
+              )}
             </AlertDescription>
           </Alert>
         );

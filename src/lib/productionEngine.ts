@@ -43,6 +43,8 @@ export interface ClimateEvent {
     water: number;
     sustainability: number;
   };
+  source?: string;
+  detectedAt?: string;
 }
 
 const STORAGE_KEY = 'plantando-futuro-production';
@@ -308,6 +310,31 @@ export class ProductionEngine {
     } catch (error) {
       console.error('Error fetching NASA climate data:', error);
       return null;
+    }
+  }
+
+  async fetchRealTimeAlerts(stateId: string): Promise<ClimateEvent[]> {
+    try {
+      console.log('Fetching real-time alerts for state:', stateId);
+      
+      const { data, error } = await supabase.functions.invoke('get-brazil-climate-alerts', {
+        body: { stateId }
+      });
+
+      if (error) {
+        console.error('Error invoking get-brazil-climate-alerts:', error);
+        return [];
+      }
+      
+      if (data && data.alerts && Array.isArray(data.alerts)) {
+        console.log('Real-time alerts fetched:', data.alerts.length);
+        return data.alerts;
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('Error fetching real-time alerts:', error);
+      return [];
     }
   }
 
