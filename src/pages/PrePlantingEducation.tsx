@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 // import { useNavigate, useLocation } from 'react-router-dom';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
-import { useLanguage } from '@/hooks/useLanguage';
+import { translations } from '@/i18n/translations';
 import { crops, Crop } from '@/data/crops';
 import { brazilStates, BrazilState } from '@/data/states';
 import { useClimateData } from '@/hooks/useClimateData';
@@ -13,7 +13,17 @@ import { Loader2, Thermometer, Droplets, Mountain, Clock, Satellite } from 'luci
 export default function PrePlantingEducation() {
   // const navigate = useNavigate();
   // const location = useLocation();
-  const { t, lang } = useLanguage();
+  const lang: 'pt' | 'en' = 'pt';
+  const t = (key: keyof typeof translations['pt'], params?: Record<string, string>) => {
+    let text = (translations as any)[lang][key] || key;
+    if (params) {
+      Object.entries(params).forEach(([param, value]) => {
+        text = text.replace(`{${param}}`, value);
+      });
+    }
+    return text as string;
+  };
+
   const [crop, setCrop] = useState<Crop | null>(null);
   const [state, setState] = useState<BrazilState | null>(null);
 
