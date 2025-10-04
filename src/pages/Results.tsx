@@ -14,11 +14,7 @@ export default function Results() {
   const { t } = useLanguage();
   const { indicators, totalScore, plantedStates, resetGame } = useGameState();
 
-  useEffect(() => {
-    if (plantedStates.length === 0) {
-      navigate('/');
-    }
-  }, [plantedStates.length, navigate]);
+  // Removido o redirecionamento automático para permitir visualizar resultados mesmo sem produções
 
   const medalType = getMedalType(totalScore);
 
@@ -51,7 +47,11 @@ export default function Results() {
           <div className="text-center">
             <h1 className="font-pixel text-base text-game-fg mb-2">{t('results_title')}</h1>
             <p className="font-sans text-sm text-game-gray-700">
-              {plantedStates.length} {t('plants_planted')}
+              {plantedStates.length > 0 ? (
+                `${plantedStates.length} ${t('plants_planted')}`
+              ) : (
+                'Nenhuma produção concluída ainda'
+              )}
             </p>
           </div>
 
