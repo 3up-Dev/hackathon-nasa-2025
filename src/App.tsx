@@ -18,6 +18,18 @@ import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
 
+const Landing = () => (
+  <div style={{ padding: 24 }}>
+    <h1>App carregou</h1>
+    <p>
+      Ir para educação (exemplo):
+      <a href="/education?crop=soja&state=sp" style={{ marginLeft: 8, color: 'blue', textDecoration: 'underline' }}>
+        /education
+      </a>
+    </p>
+  </div>
+);
+
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -25,13 +37,13 @@ const App = () => {
         
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Landing />} />
               <Route path="/registration" element={<Registration />} />
               <Route path="/login" element={<Login />} />
               <Route path="/select-country" element={<ProtectedRoute><CountrySelect /></ProtectedRoute>} />
               <Route path="/tutorial" element={<ProtectedRoute><Tutorial /></ProtectedRoute>} />
               <Route path="/game" element={<ProtectedRoute><GameMap /></ProtectedRoute>} />
-              <Route path="/education" element={<ProtectedRoute><PrePlantingEducation /></ProtectedRoute>} />
+              <Route path="/education" element={<PrePlantingEducation />} />
               <Route path="/production" element={<ProtectedRoute><ProductionDashboard /></ProtectedRoute>} />
               <Route path="/harvest" element={<ProtectedRoute><HarvestResults /></ProtectedRoute>} />
               <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
