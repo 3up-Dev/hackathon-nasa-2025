@@ -28,6 +28,43 @@ export default function Login() {
       if (error) throw error;
 
       if (data.user) {
+        try {
+          // Verifica se já existe perfil
+          const { data: existing, error: selError } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('user_id', data.user.id)
+            .maybeSingle();
+
+          if (selError) {
+            console.warn('Erro ao verificar perfil existente:', selError);
+          }
+
+          if (!existing) {
+            const raw = localStorage.getItem('pending-profile');
+            if (raw) {
+              try {
+                const pending = JSON.parse(raw);
+                if (pending?.user_id === data.user.id) {
+                  const { error: insertErr } = await supabase.from('profiles').insert(pending);
+                  if (!insertErr) {
+                    localStorage.removeItem('pending-profile');
+                  } else {
+                    console.warn('Falha ao concluir cadastro pendente:', insertErr);
+                  }
+                }
+              } catch (e) {
+                console.warn('Dados pendentes inválidos:', e);
+              }
+            }
+          } else {
+            // Já existe perfil, limpa pendência
+            localStorage.removeItem('pending-profile');
+          }
+        } catch (e) {
+          console.warn('Erro ao concluir cadastro:', e);
+        }
+
         toast.success('Login realizado com sucesso!');
         navigate('/select-country');
       }
