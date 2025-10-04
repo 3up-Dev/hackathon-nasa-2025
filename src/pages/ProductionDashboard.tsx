@@ -47,8 +47,12 @@ export default function ProductionDashboard() {
       setCrop(selectedCrop);
       setState(selectedState);
 
-      // Setup production engine with database sync
+      // Setup production engine with local UI + database sync
       productionEngine.setOnStateChange(async (newState) => {
+        // Always reflect latest engine state in UI
+        setProductionState({ ...newState });
+        setForceUpdate((prev) => prev + 1);
+        // Sync to profile if available
         if (currentProfile) {
           await updateCurrentProfile({
             production_state: newState,
@@ -91,9 +95,8 @@ export default function ProductionDashboard() {
       setProductionState(newState);
     };
 
-    if (currentProfile) {
-      initializeProduction();
-    }
+    // Initialize immediately using URL params, then sync to profile when available
+    initializeProduction();
   }, [currentProfile, updateCurrentProfile]);
 
   if (!crop || !state || !productionState) {
