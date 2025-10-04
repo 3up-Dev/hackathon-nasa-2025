@@ -32,7 +32,7 @@ export const CropSelector = () => {
                   : 'border-game-gray-300 hover:border-game-green-400 hover:scale-105'
               )}
             >
-              <span className="text-2xl mb-1">{crop.icon}</span>
+              <span className="text-xl mb-1">{crop.icon}</span>
               <span className="font-sans text-[10px] text-game-fg font-medium leading-tight">
                 {crop.name[lang]}
               </span>
