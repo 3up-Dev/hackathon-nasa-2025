@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 
@@ -41,7 +40,8 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
 
   if (!user || !session) {
-    return <Navigate to="/login" replace />;
+    window.location.href = '/login';
+    return null;
   }
 
   return <>{children}</>;
