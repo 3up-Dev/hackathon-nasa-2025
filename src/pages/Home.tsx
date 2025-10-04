@@ -30,18 +30,18 @@ export default function Home() {
           <PixelButton
             variant="primary"
             size="lg"
-            onClick={() => navigate('/select-country')}
+            onClick={() => navigate('/login')}
             className="w-full"
           >
-            {t('cta_start')}
+            Iniciar Jogo
           </PixelButton>
           <PixelButton
             variant="secondary"
             size="lg"
-            onClick={() => navigate('/game')}
+            onClick={() => navigate('/registration')}
             className="w-full"
           >
-            {t('cta_howto')}
+            Criar Conta
           </PixelButton>
         </div>
 
