@@ -2,7 +2,7 @@ import * as React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { PWAProvider } from "@/components/PWAProvider";
+
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Home from './pages/Home';
 import CountrySelect from './pages/CountrySelect';
@@ -79,26 +79,22 @@ const TestLanding = () => (
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <PWAProvider>
-        
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/test" element={<TestLanding />} />
-              <Route path="/registration" element={<Registration />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/select-country" element={<ProtectedRoute><CountrySelect /></ProtectedRoute>} />
-              <Route path="/tutorial" element={<ProtectedRoute><React.Suspense fallback={<div /> }><Tutorial /></React.Suspense></ProtectedRoute>} />
-              <Route path="/game" element={<ProtectedRoute><GameMap /></ProtectedRoute>} />
-              <Route path="/education" element={<PrePlantingEducation />} />
-              <Route path="/production" element={<ProductionDashboard />} />
-              <Route path="/harvest" element={<ProtectedRoute><HarvestResults /></ProtectedRoute>} />
-              <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        
-      </PWAProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/test" element={<TestLanding />} />
+          <Route path="/registration" element={<Registration />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/select-country" element={<ProtectedRoute><CountrySelect /></ProtectedRoute>} />
+          <Route path="/tutorial" element={<ProtectedRoute><React.Suspense fallback={<div /> }><Tutorial /></React.Suspense></ProtectedRoute>} />
+          <Route path="/game" element={<ProtectedRoute><GameMap /></ProtectedRoute>} />
+          <Route path="/education" element={<PrePlantingEducation />} />
+          <Route path="/production" element={<ProductionDashboard />} />
+          <Route path="/harvest" element={<ProtectedRoute><HarvestResults /></ProtectedRoute>} />
+          <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 };
