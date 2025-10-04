@@ -24,47 +24,73 @@ export default function ProductionDashboard() {
   const [forceUpdate, setForceUpdate] = useState(0);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const cropId = params.get('crop');
-    const stateId = params.get('state');
+    const initializeProduction = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const cropId = params.get('crop');
+      const stateId = params.get('state');
 
-    if (!cropId || !stateId) {
-      window.location.href = '/';
-      return;
-    }
-
-    const selectedCrop = crops.find((c) => c.id === cropId);
-    const selectedState = brazilStates.find((s) => s.id === stateId);
-
-    if (!selectedCrop || !selectedState) {
-      window.location.href = '/';
-      return;
-    }
-
-    setCrop(selectedCrop);
-    setState(selectedState);
-
-    // Setup production engine with database sync
-    productionEngine.setOnStateChange(async (newState) => {
-      if (currentProfile) {
-        await updateCurrentProfile({
-          production_state: newState,
-          indicators: {
-            production: Math.round((newState.health / 100) * 10),
-            sustainability: Math.round((newState.sustainabilityScore / 100) * 10),
-            water: Math.max(1, Math.round(10 - (newState.waterUsed / 1000)))
-          }
-        });
+      if (!cropId || !stateId) {
+        window.location.href = '/';
+        return;
       }
-    });
 
-    // Check if production already started
-    const currentState = productionEngine.getState();
-    if (!currentState || currentState.cropId !== cropId) {
+      const selectedCrop = crops.find((c) => c.id === cropId);
+      const selectedState = brazilStates.find((s) => s.id === stateId);
+
+      if (!selectedCrop || !selectedState) {
+        window.location.href = '/';
+        return;
+      }
+
+      setCrop(selectedCrop);
+      setState(selectedState);
+
+      // Setup production engine with database sync
+      productionEngine.setOnStateChange(async (newState) => {
+        if (currentProfile) {
+          await updateCurrentProfile({
+            production_state: newState,
+            indicators: {
+              production: Math.round((newState.health / 100) * 10),
+              sustainability: Math.round((newState.sustainabilityScore / 100) * 10),
+              water: Math.max(1, Math.round(10 - (newState.waterUsed / 1000)))
+            }
+          });
+        }
+      });
+
+      // PRIORITY 1: Check database for saved state
+      if (currentProfile?.production_state) {
+        const dbState = currentProfile.production_state as ProductionState;
+        console.log('Found production state in database:', dbState);
+        
+        // Verify it matches current crop/state
+        if (dbState.cropId === cropId && dbState.stateId === stateId) {
+          console.log('Restoring production from database');
+          productionEngine.restoreFromState(dbState);
+          setProductionState(dbState);
+          return;
+        } else {
+          console.log('Database state does not match current selection, starting new production');
+        }
+      }
+
+      // PRIORITY 2: Check localStorage
+      const localState = productionEngine.getState();
+      if (localState && localState.cropId === cropId && localState.stateId === stateId) {
+        console.log('Restoring production from localStorage');
+        setProductionState(localState);
+        return;
+      }
+
+      // PRIORITY 3: Start new production
+      console.log('Starting new production');
       const newState = productionEngine.startProduction(selectedCrop, stateId);
       setProductionState(newState);
-    } else {
-      setProductionState(currentState);
+    };
+
+    if (currentProfile) {
+      initializeProduction();
     }
   }, [currentProfile, updateCurrentProfile]);
 

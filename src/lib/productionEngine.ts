@@ -200,6 +200,13 @@ export class ProductionEngine {
     return this.state;
   }
 
+  restoreFromState(state: ProductionState): void {
+    console.log('Restoring production state from database:', state);
+    this.state = state;
+    // Update localStorage to match database
+    this.saveState();
+  }
+
   resetProduction(): void {
     this.state = null;
     localStorage.removeItem(STORAGE_KEY);
