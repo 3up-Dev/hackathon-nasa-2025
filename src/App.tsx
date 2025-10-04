@@ -1,4 +1,4 @@
-
+import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PWAProvider } from "@/components/PWAProvider";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
@@ -19,6 +19,10 @@ import NotFound from './pages/NotFound';
 
 const App = () => (
   <PWAProvider>
+    {/* Optional providers moved out while stabilizing hooks */}
+    {/* <NetworkStatus /> */}
+    {/* <PWAInstallPrompt /> */}
+    {/* <IOSInstallPrompt /> */}
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
