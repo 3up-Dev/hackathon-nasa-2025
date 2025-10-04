@@ -24,7 +24,7 @@ export default function CountrySelect() {
 
   const handleCountryClick = (country: Country) => {
     if (!country.available) return;
-    navigate('/tutorial');
+    navigate('/game');
   };
 
   return (

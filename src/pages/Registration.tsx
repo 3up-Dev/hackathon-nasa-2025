@@ -120,7 +120,7 @@ export default function Registration() {
 
       console.log('Profile created successfully');
       toast.success('Conta criada com sucesso!');
-      navigate('/select-country');
+      navigate('/login');
     } catch (error) {
       console.error('Registration error:', error);
       if (error instanceof z.ZodError) {

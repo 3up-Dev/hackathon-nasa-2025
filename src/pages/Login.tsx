@@ -29,7 +29,7 @@ export default function Login() {
 
       if (data.user) {
         toast.success('Login realizado com sucesso!');
-        navigate('/select-country');
+        navigate('/tutorial');
       }
     } catch (error) {
       if (error instanceof Error) {

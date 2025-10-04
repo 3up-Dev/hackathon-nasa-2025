@@ -32,11 +32,13 @@ export default function Tutorial() {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
     } else {
+      localStorage.setItem('tutorialCompleted', '1');
       navigate('/select-country');
     }
   };
 
   const handleSkip = () => {
+    localStorage.setItem('tutorialCompleted', '1');
     navigate('/select-country');
   };
 
