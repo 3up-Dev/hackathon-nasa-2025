@@ -91,6 +91,14 @@ export default function Registration() {
       <div className="relative h-full bg-game-bg overflow-auto">
         <div className="flex flex-col items-center justify-center min-h-full p-8">
           <div className="w-full max-w-md">
+            <button
+              onClick={() => navigate('/tutorial')}
+              className="flex items-center gap-2 mb-6 text-game-gray-700 hover:text-game-fg transition-colors"
+            >
+              <span className="text-xl">←</span>
+              <span className="font-sans text-sm">Voltar</span>
+            </button>
+            
             <h1 className="font-pixel text-lg text-game-fg mb-8 text-center">
               Criar Conta
             </h1>
