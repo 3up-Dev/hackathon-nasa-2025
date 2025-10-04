@@ -114,6 +114,28 @@ export const ViabilityPopup = ({ open, onClose, stateId }: ViabilityPopupProps) 
             <p className="font-sans text-sm font-semibold text-game-fg mb-2">
               {t(viability.isViable ? 'popup_viavel' : 'popup_inviavel', { crop: crop.name[lang] })}
             </p>
+            
+            {/* Success Rate */}
+            <div className="bg-white rounded-lg p-2 mb-3">
+              <div className="flex justify-between items-center mb-1">
+                <span className="font-sans text-xs text-game-gray-700">
+                  {lang === 'pt' ? 'Chance de Sucesso' : 'Success Rate'}
+                </span>
+                <span className="font-pixel text-xs text-game-fg">
+                  {viability.successRate}%
+                </span>
+              </div>
+              <div className="w-full bg-game-gray-200 rounded-full h-1.5">
+                <div 
+                  className={`h-1.5 rounded-full transition-all ${
+                    viability.successRate >= 70 ? 'bg-game-green-700' : 
+                    viability.successRate >= 50 ? 'bg-yellow-600' : 'bg-game-brown'
+                  }`}
+                  style={{ width: `${viability.successRate}%` }}
+                />
+              </div>
+            </div>
+            
             {!viability.isViable && viability.reasons.length > 0 && (
               <>
                 <p className="font-sans text-xs text-game-gray-700 mb-2">

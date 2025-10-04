@@ -46,19 +46,35 @@ serve(async (req) => {
     const data = await response.json();
     console.log('NASA API response received');
 
+    // Validate response structure
+    if (!data.parameters || !data.parameters.T2M || !data.parameters.PRECTOTCORR || !data.parameters.RH2M) {
+      console.error('Invalid NASA API response structure:', JSON.stringify(data).substring(0, 500));
+      throw new Error('Invalid NASA API response structure');
+    }
+
     // Calculate averages from the daily data
     const temps = Object.values(data.parameters.T2M) as number[];
     const precips = Object.values(data.parameters.PRECTOTCORR) as number[];
     const humidities = Object.values(data.parameters.RH2M) as number[];
+    
+    console.log(`Data points received - Temps: ${temps.length}, Precips: ${precips.length}, Humidity: ${humidities.length}`);
 
-    // Filter out -999 (missing data indicator)
-    const validTemps = temps.filter(t => t !== -999);
-    const validPrecips = precips.filter(p => p !== -999);
-    const validHumidities = humidities.filter(h => h !== -999);
+    // Filter out -999 (missing data indicator) and ensure numbers
+    const validTemps = temps.filter(t => typeof t === 'number' && !isNaN(t) && t !== -999);
+    const validPrecips = precips.filter(p => typeof p === 'number' && !isNaN(p) && p !== -999);
+    const validHumidities = humidities.filter(h => typeof h === 'number' && !isNaN(h) && h !== -999);
+
+    console.log(`Valid data points - Temps: ${validTemps.length}, Precips: ${validPrecips.length}, Humidity: ${validHumidities.length}`);
+
+    if (validTemps.length === 0 || validPrecips.length === 0) {
+      throw new Error('No valid climate data available for this location');
+    }
 
     const avgTemp = validTemps.reduce((a, b) => a + b, 0) / validTemps.length;
     const totalPrecip = validPrecips.reduce((a, b) => a + b, 0);
-    const avgHumidity = validHumidities.reduce((a, b) => a + b, 0) / validHumidities.length;
+    const avgHumidity = validHumidities.length > 0 
+      ? validHumidities.reduce((a, b) => a + b, 0) / validHumidities.length 
+      : 0;
 
     const result: NASAClimateData = {
       temperature: Math.round(avgTemp * 10) / 10,

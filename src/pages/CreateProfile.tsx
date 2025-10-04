@@ -240,16 +240,17 @@ export default function CreateProfile() {
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-sans text-xs text-game-gray-700">Chance de Sucesso</span>
                   <span className="font-pixel text-sm text-game-fg">
-                    {viabilityResult.isViable ? '85%' : '45%'}
+                    {viabilityResult.successRate}%
                   </span>
                 </div>
                 <div className="w-full bg-game-gray-200 rounded-full h-2">
                   <div 
                     className={cn(
                       "h-2 rounded-full transition-all",
-                      viabilityResult.isViable ? "bg-game-green-700" : "bg-game-brown"
+                      viabilityResult.successRate >= 70 ? "bg-game-green-700" : 
+                      viabilityResult.successRate >= 50 ? "bg-yellow-600" : "bg-game-brown"
                     )}
-                    style={{ width: viabilityResult.isViable ? '85%' : '45%' }}
+                    style={{ width: `${viabilityResult.successRate}%` }}
                   />
                 </div>
               </div>

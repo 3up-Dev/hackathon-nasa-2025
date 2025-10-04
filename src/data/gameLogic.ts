@@ -11,6 +11,7 @@ export interface ViabilityResult {
     water: number;
   };
   isRealData?: boolean;
+  successRate: number; // 0-100 percentage
 }
 
 export const calculateViability = (
@@ -26,31 +27,64 @@ export const calculateViability = (
   const rain = realClimateData?.precipitation ?? state.rain;
   const isRealData = realClimateData?.isRealData ?? false;
 
-  // Temperature check
-  if (temp < crop.idealTemp[0]) {
-    isViable = false;
+  // Calculate temperature match percentage (0-100%)
+  const [minTemp, maxTemp] = crop.idealTemp;
+  const tempRange = maxTemp - minTemp;
+  let tempScore = 0;
+  
+  if (temp < minTemp) {
+    // Below minimum - calculate how far off
+    const deviation = minTemp - temp;
+    tempScore = Math.max(0, 100 - (deviation / minTemp) * 100);
     reasons.push('reason_low_temp');
-  } else if (temp > crop.idealTemp[1]) {
     isViable = false;
+  } else if (temp > maxTemp) {
+    // Above maximum - calculate how far off
+    const deviation = temp - maxTemp;
+    tempScore = Math.max(0, 100 - (deviation / maxTemp) * 100);
     reasons.push('reason_high_temp');
+    isViable = false;
+  } else {
+    // Within range - perfect score or close to edges
+    const distanceFromMin = temp - minTemp;
+    const distanceFromMax = maxTemp - temp;
+    const closestEdgeDistance = Math.min(distanceFromMin, distanceFromMax);
+    tempScore = 70 + (closestEdgeDistance / tempRange) * 30; // 70-100% when in range
   }
 
-  // Rainfall check
-  if (rain < crop.idealRain[0]) {
-    isViable = false;
+  // Calculate rainfall match percentage (0-100%)
+  const [minRain] = crop.idealRain;
+  let rainScore = 0;
+  
+  if (rain < minRain) {
+    // Below minimum rainfall
+    rainScore = (rain / minRain) * 100;
     reasons.push('reason_low_rain');
-  }
-
-  // Soil check
-  if (!crop.idealSoil.includes(state.soil)) {
     isViable = false;
-    reasons.push('reason_bad_soil');
+  } else {
+    // Adequate or more rainfall
+    rainScore = 100;
   }
 
-  // Calculate scores based on viability
+  // Soil compatibility check
+  const soilPenalty = crop.idealSoil.includes(state.soil) ? 0 : 25;
+  if (soilPenalty > 0) {
+    reasons.push('reason_bad_soil');
+    isViable = false;
+  }
+
+  // Calculate final success rate (weighted average)
+  // Temperature: 40%, Rainfall: 40%, Soil: 20%
+  const successRate = Math.round(
+    (tempScore * 0.4) + 
+    (rainScore * 0.4) + 
+    ((100 - soilPenalty) * 0.2)
+  );
+
+  // Calculate scores based on success rate
   const scores = {
-    production: isViable ? 15 : 5,
-    sustainability: isViable ? 10 : 2,
+    production: Math.round(successRate * 0.15),
+    sustainability: Math.round(successRate * 0.10),
     water: crop.waterConsumption === 'high' ? 8 : crop.waterConsumption === 'medium' ? 5 : 3,
   };
 
@@ -60,6 +94,7 @@ export const calculateViability = (
     suggestedStates: [], // Will be filled by hook
     scores,
     isRealData,
+    successRate,
   };
 };
 
