@@ -1,14 +1,8 @@
-import React, { useEffect } from 'react';
-import { registerServiceWorker } from '@/utils/registerSW';
+import * as React from 'react';
 
 /**
- * Componente que inicializa funcionalidades PWA
+ * Componente que apenas passa children sem usar hooks
  */
 export const PWAProvider = ({ children }: { children: React.ReactNode }) => {
-  useEffect(() => {
-    // Registra Service Worker
-    registerServiceWorker();
-  }, []);
-
   return <>{children}</>;
 };
