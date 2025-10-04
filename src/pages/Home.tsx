@@ -1,11 +1,46 @@
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { useLanguage } from '@/hooks/useLanguage';
+import { supabase } from '@/integrations/supabase/client';
+import { User } from '@supabase/supabase-js';
 
 export default function Home() {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Verificar sessão atual
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    // Ouvir mudanças na autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
+
+  if (loading) {
+    return (
+      <GameLayout>
+        <div className="flex items-center justify-center h-full bg-gradient-to-b from-game-bg to-game-green-400 to-opacity-20">
+          <div className="text-4xl animate-pulse">🌱</div>
+        </div>
+      </GameLayout>
+    );
+  }
 
   return (
     <GameLayout>
@@ -29,22 +64,45 @@ export default function Home() {
 
         {/* CTAs */}
         <div className="w-full max-w-xs space-y-4">
-          <PixelButton
-            variant="primary"
-            size="lg"
-            onClick={() => navigate('/login')}
-            className="w-full"
-          >
-            Entrar
-          </PixelButton>
-          <PixelButton
-            variant="secondary"
-            size="lg"
-            onClick={() => navigate('/registration')}
-            className="w-full"
-          >
-            Criar Conta
-          </PixelButton>
+          {user ? (
+            <>
+              <PixelButton
+                variant="primary"
+                size="lg"
+                onClick={() => navigate('/tutorial')}
+                className="w-full"
+              >
+                Continuar Jogo
+              </PixelButton>
+              <PixelButton
+                variant="secondary"
+                size="lg"
+                onClick={handleLogout}
+                className="w-full"
+              >
+                Sair
+              </PixelButton>
+            </>
+          ) : (
+            <>
+              <PixelButton
+                variant="primary"
+                size="lg"
+                onClick={() => navigate('/login')}
+                className="w-full"
+              >
+                Entrar
+              </PixelButton>
+              <PixelButton
+                variant="secondary"
+                size="lg"
+                onClick={() => navigate('/registration')}
+                className="w-full"
+              >
+                Criar Conta
+              </PixelButton>
+            </>
+          )}
         </div>
 
         {/* Footer decoration */}

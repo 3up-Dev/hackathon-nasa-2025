@@ -4,6 +4,7 @@ import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { TutorialSlide } from '@/components/tutorial/TutorialSlide';
 import { useLanguage } from '@/hooks/useLanguage';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Tutorial() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -42,16 +43,29 @@ export default function Tutorial() {
     navigate('/select-country');
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
+
   return (
     <GameLayout>
       <div className="relative h-full bg-game-bg">
-        {/* Skip button */}
-        <button
-          onClick={handleSkip}
-          className="absolute top-4 right-4 font-sans text-sm text-game-gray-700 hover:text-game-fg z-10"
-        >
-          {t('cta_skip')}
-        </button>
+        {/* Header buttons */}
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
+          <button
+            onClick={handleLogout}
+            className="font-sans text-sm text-game-gray-700 hover:text-game-fg"
+          >
+            ← Sair
+          </button>
+          <button
+            onClick={handleSkip}
+            className="font-sans text-sm text-game-gray-700 hover:text-game-fg"
+          >
+            {t('cta_skip')}
+          </button>
+        </div>
 
         {/* Slide */}
         <TutorialSlide {...slides[currentSlide]} />

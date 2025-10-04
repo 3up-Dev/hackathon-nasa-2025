@@ -9,6 +9,7 @@ import { useGameState } from '@/hooks/useGameState';
 import { useNavigate } from 'react-router-dom';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function GameMap() {
   const [popupState, setPopupState] = useState<string | null>(null);
@@ -36,6 +37,11 @@ export default function GameMap() {
     navigate('/results');
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
+
   return (
     <GameLayout>
       <div className="relative h-full bg-game-bg flex flex-col">
@@ -44,9 +50,9 @@ export default function GameMap() {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <button
-                onClick={() => navigate('/')}
+                onClick={handleLogout}
                 className="flex items-center justify-center w-8 h-8 rounded-lg bg-game-gray-300 hover:bg-game-gray-700 hover:text-white transition-colors"
-                aria-label="Voltar"
+                aria-label="Sair"
               >
                 ←
               </button>

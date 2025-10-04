@@ -7,6 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useGameState } from '@/hooks/useGameState';
 import { getMedalType } from '@/data/gameLogic';
 import { useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Results() {
   const navigate = useNavigate();
@@ -26,10 +27,26 @@ export default function Results() {
     navigate('/');
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    resetGame();
+    navigate('/');
+  };
+
   return (
     <GameLayout>
       <div className="h-full bg-gradient-to-b from-game-bg to-game-green-400 to-opacity-20 overflow-auto">
         <div className="p-8 space-y-8">
+          {/* Logout button */}
+          <div className="flex justify-end">
+            <button
+              onClick={handleLogout}
+              className="font-sans text-sm text-game-gray-700 hover:text-game-fg"
+            >
+              ← Sair
+            </button>
+          </div>
+
           {/* Header */}
           <div className="text-center">
             <h1 className="font-pixel text-base text-game-fg mb-2">{t('results_title')}</h1>
