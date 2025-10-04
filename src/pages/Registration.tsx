@@ -4,16 +4,22 @@ import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { cn } from '@/lib/utils';
 
 const registrationSchema = z.object({
   fullName: z.string().trim().min(3, 'Nome deve ter pelo menos 3 caracteres').max(100),
-  birthDate: z.string().refine((date) => {
-    const birthDate = new Date(date);
+  birthDate: z.date().refine((date) => {
     const today = new Date();
-    const age = today.getFullYear() - birthDate.getFullYear();
+    const age = today.getFullYear() - date.getFullYear();
     return age >= 13;
   }, 'Você deve ter pelo menos 13 anos'),
   email: z.string().trim().email('E-mail inválido').max(255),
@@ -24,9 +30,9 @@ const registrationSchema = z.object({
 export default function Registration() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [birthDate, setBirthDate] = useState<Date>();
   const [formData, setFormData] = useState({
     fullName: '',
-    birthDate: '',
     email: '',
     phone: '',
     password: '',
@@ -37,8 +43,16 @@ export default function Registration() {
     setLoading(true);
 
     try {
+      if (!birthDate) {
+        toast.error('Selecione sua data de nascimento');
+        return;
+      }
+
       // Validate form data
-      const validatedData = registrationSchema.parse(formData);
+      const validatedData = registrationSchema.parse({
+        ...formData,
+        birthDate,
+      });
 
       // Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -64,7 +78,7 @@ export default function Registration() {
         .insert({
           user_id: authData.user.id,
           full_name: validatedData.fullName,
-          birth_date: validatedData.birthDate,
+          birth_date: format(validatedData.birthDate, 'yyyy-MM-dd'),
           email: validatedData.email,
           phone: validatedData.phone,
         });
@@ -129,14 +143,35 @@ export default function Registration() {
                 <Label htmlFor="birthDate" className="font-pixel text-xs text-game-fg">
                   Data de Nascimento
                 </Label>
-                <Input
-                  id="birthDate"
-                  type="date"
-                  required
-                  value={formData.birthDate}
-                  onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-                  className="mt-1"
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal mt-1",
+                        !birthDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {birthDate ? format(birthDate, "PPP", { locale: ptBR }) : <span>Selecione a data</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={birthDate}
+                      onSelect={setBirthDate}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                      }
+                      initialFocus
+                      captionLayout="dropdown-buttons"
+                      fromYear={1900}
+                      toYear={new Date().getFullYear()}
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div>
