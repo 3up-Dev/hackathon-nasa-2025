@@ -12,12 +12,12 @@ export const ProductionChecklist = ({ tasks, onTaskComplete, lang }: ProductionC
   console.log('ProductionChecklist rendered with tasks:', tasks.length);
 
   const handleTaskClick = (taskId: string, completed: boolean) => {
-    console.log('Task clicked:', { taskId, completed });
+    console.log('🔵 Task clicked:', { taskId, completed });
     if (!completed) {
-      console.log('Calling onTaskComplete for task:', taskId);
+      console.log('🟢 Calling onTaskComplete for task:', taskId);
       onTaskComplete(taskId);
     } else {
-      console.log('Task already completed, ignoring click');
+      console.log('🟡 Task already completed, ignoring click');
     }
   };
 
@@ -45,55 +45,64 @@ export const ProductionChecklist = ({ tasks, onTaskComplete, lang }: ProductionC
       </h3>
 
       <div className="space-y-2">
-        {tasks.map((task) => (
-          <div
-            key={task.id}
-            className={`border-2 rounded-lg p-3 transition-all ${
-              task.completed
-                ? 'bg-game-green-400/20 border-game-green-700'
-                : 'bg-game-gray-200 border-game-fg hover:border-game-green-700 cursor-pointer'
-            }`}
-            onClick={() => handleTaskClick(task.id, task.completed)}
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className={`flex items-center justify-center w-8 h-8 rounded border-2 ${
-                  task.completed
-                    ? 'bg-game-green-700 border-game-green-700'
-                    : 'bg-white border-game-fg'
-                }`}
-              >
-                {task.completed ? (
-                  <Check className="w-5 h-5 text-white" />
-                ) : (
-                  <div className="text-game-fg">{getIcon(task.type)}</div>
-                )}
-              </div>
-
-              <div className="flex-1">
-                <p
-                  className={`font-pixel text-xs ${
-                    task.completed ? 'text-game-green-700 line-through' : 'text-game-fg'
+        {tasks.map((task) => {
+          console.log('🔷 Rendering task:', task.id, 'completed:', task.completed);
+          return (
+            <div
+              key={task.id}
+              className={`border-2 rounded-lg p-3 transition-all ${
+                task.completed
+                  ? 'bg-game-green-400/20 border-game-green-700'
+                  : 'bg-game-gray-200 border-game-fg hover:border-game-green-700 cursor-pointer'
+              }`}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔴 DIV CLICKED for task:', task.id);
+                handleTaskClick(task.id, task.completed);
+              }}
+              style={{ pointerEvents: 'auto' }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={`flex items-center justify-center w-8 h-8 rounded border-2 ${
+                    task.completed
+                      ? 'bg-game-green-700 border-game-green-700'
+                      : 'bg-white border-game-fg'
                   }`}
                 >
-                  {task.title[lang]}
-                </p>
-                <p className="font-sans text-xs text-game-gray-700 mt-1">
-                  {task.description[lang]}
-                </p>
-              </div>
+                  {task.completed ? (
+                    <Check className="w-5 h-5 text-white" />
+                  ) : (
+                    <div className="text-game-fg">{getIcon(task.type)}</div>
+                  )}
+                </div>
 
-              {!task.completed && (
-                <div className="text-right">
-                  <p className="font-pixel text-xs text-game-green-700">+{task.reward}</p>
-                  <p className="font-sans text-xs text-game-gray-600">
-                    {lang === 'pt' ? 'saúde' : 'health'}
+                <div className="flex-1">
+                  <p
+                    className={`font-pixel text-xs ${
+                      task.completed ? 'text-game-green-700 line-through' : 'text-game-fg'
+                    }`}
+                  >
+                    {task.title[lang]}
+                  </p>
+                  <p className="font-sans text-xs text-game-gray-700 mt-1">
+                    {task.description[lang]}
                   </p>
                 </div>
-              )}
+
+                {!task.completed && (
+                  <div className="text-right">
+                    <p className="font-pixel text-xs text-game-green-700">+{task.reward}</p>
+                    <p className="font-sans text-xs text-game-gray-600">
+                      {lang === 'pt' ? 'saúde' : 'health'}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-4 p-3 bg-game-green-400/20 border-2 border-game-green-700 rounded-lg">
