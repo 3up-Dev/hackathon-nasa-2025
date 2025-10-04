@@ -33,7 +33,7 @@ export default function Home() {
             onClick={() => navigate('/login')}
             className="w-full"
           >
-            Iniciar Jogo
+            Entrar
           </PixelButton>
           <PixelButton
             variant="secondary"
