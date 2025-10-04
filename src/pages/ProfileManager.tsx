@@ -55,7 +55,7 @@ export default function ProfileManager() {
     <GameLayout>
       <div className="h-full flex flex-col p-4 overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="font-pixel text-base text-game-fg">
+          <h1 className="font-pixel text-sm text-game-fg">
             🌱 Meus Perfis de Produção
           </h1>
           <button
