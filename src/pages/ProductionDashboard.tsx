@@ -139,11 +139,11 @@ export default function ProductionDashboard() {
                     : 'text-game-brown'
                 }`}
               />
-              <span className="font-pixel text-xs text-game-fg">
+              <span className="font-pixel text-[10px] text-game-fg">
                 {lang === 'pt' ? 'Saúde' : 'Health'}
               </span>
             </div>
-            <p className="font-pixel text-2xl text-game-fg">{productionState.health}%</p>
+            <p className="font-pixel text-lg text-game-fg">{productionState.health}%</p>
             <SimpleProgress
               value={productionState.health}
               className="mt-2 h-2"
@@ -160,11 +160,11 @@ export default function ProductionDashboard() {
           <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <Droplets className="w-5 h-5 text-game-green-700" />
-              <span className="font-pixel text-xs text-game-fg">
+              <span className="font-pixel text-[10px] text-game-fg">
                 {lang === 'pt' ? 'Água Usada' : 'Water Used'}
               </span>
             </div>
-            <p className="font-pixel text-2xl text-game-fg">{Math.round(productionState.waterUsed)}L</p>
+            <p className="font-pixel text-lg text-game-fg">{Math.round(productionState.waterUsed)}L</p>
             <p className="font-sans text-xs text-game-gray-600 mt-1">
               {lang === 'pt' ? 'Total acumulado' : 'Total accumulated'}
             </p>
@@ -173,11 +173,11 @@ export default function ProductionDashboard() {
           <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <Leaf className="w-5 h-5 text-game-green-700" />
-              <span className="font-pixel text-xs text-game-fg">
+              <span className="font-pixel text-[10px] text-game-fg">
                 {lang === 'pt' ? 'Sustentabilidade' : 'Sustainability'}
               </span>
             </div>
-            <p className="font-pixel text-2xl text-game-fg">{productionState.sustainabilityScore}%</p>
+            <p className="font-pixel text-lg text-game-fg">{productionState.sustainabilityScore}%</p>
             <SimpleProgress value={productionState.sustainabilityScore} className="mt-2 h-2" />
           </div>
         </div>
