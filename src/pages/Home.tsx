@@ -1,15 +1,11 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
-import { useLanguage } from '@/hooks/useLanguage';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
 export default function Home() {
-  const navigate = useNavigate();
-  const { t } = useLanguage();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -50,7 +46,7 @@ export default function Home() {
         <div className="mb-8 animate-fade-in">
           <div className="text-8xl mb-4 animate-pulse">🌱</div>
           <h1 className="font-pixel text-lg text-game-fg text-center leading-relaxed px-4">
-            {t('app_title')}
+            Plantando o Futuro
           </h1>
         </div>
 
@@ -70,7 +66,7 @@ export default function Home() {
               <PixelButton
                 variant="primary"
                 size="lg"
-                onClick={() => navigate('/tutorial')}
+                onClick={() => window.location.href = '/tutorial'}
                 className="w-full"
               >
                 Continuar Jogo
@@ -89,7 +85,7 @@ export default function Home() {
               <PixelButton
                 variant="primary"
                 size="lg"
-                onClick={() => navigate('/login')}
+                onClick={() => window.location.href = '/login'}
                 className="w-full"
               >
                 Entrar
@@ -97,7 +93,7 @@ export default function Home() {
               <PixelButton
                 variant="secondary"
                 size="lg"
-                onClick={() => navigate('/registration')}
+                onClick={() => window.location.href = '/registration'}
                 className="w-full"
               >
                 Criar Conta

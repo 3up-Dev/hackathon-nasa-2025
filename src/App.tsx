@@ -18,7 +18,7 @@ import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
 
-const Landing = () => (
+const TestLanding = () => (
   <div style={{ padding: 24, maxWidth: 600, margin: '0 auto' }}>
     <h1 style={{ fontFamily: 'Press Start 2P', fontSize: 16, marginBottom: 24 }}>🌱 Plantando o Futuro</h1>
     <div style={{ fontFamily: 'sans-serif', fontSize: 14, lineHeight: 1.6 }}>
@@ -83,7 +83,8 @@ const App = () => {
         
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Landing />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/test" element={<TestLanding />} />
               <Route path="/registration" element={<Registration />} />
               <Route path="/login" element={<Login />} />
               <Route path="/select-country" element={<ProtectedRoute><CountrySelect /></ProtectedRoute>} />
