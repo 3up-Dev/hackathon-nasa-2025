@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, LogOut } from 'lucide-react';
+import { Plus, LogOut, Trophy } from 'lucide-react';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { ProfileCard } from '@/components/profile/ProfileCard';
@@ -42,6 +42,10 @@ export default function ProfileManager() {
 
   const handleCreateProfile = () => {
     navigate('/profile/new');
+  };
+
+  const handleViewResults = () => {
+    navigate('/results');
   };
 
   if (loading) {
@@ -102,13 +106,24 @@ export default function ProfileManager() {
               ))}
             </div>
 
-            <PixelButton 
-              onClick={handleCreateProfile}
-              className="w-full flex items-center justify-center gap-2"
-            >
-              <Plus className="w-5 h-5" />
-              Criar Novo Perfil
-            </PixelButton>
+            <div className="space-y-3">
+              <PixelButton 
+                onClick={handleCreateProfile}
+                className="w-full flex items-center justify-center gap-2"
+              >
+                <Plus className="w-5 h-5" />
+                Criar Novo Perfil
+              </PixelButton>
+
+              <PixelButton 
+                variant="ghost"
+                onClick={handleViewResults}
+                className="w-full flex items-center justify-center gap-2"
+              >
+                <Trophy className="w-5 h-5" />
+                Ver Resultados Globais
+              </PixelButton>
+            </div>
           </>
         )}
       </div>
