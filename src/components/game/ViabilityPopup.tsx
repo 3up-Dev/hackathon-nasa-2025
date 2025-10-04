@@ -45,10 +45,11 @@ export const ViabilityPopup = ({ open, onClose, stateId }: ViabilityPopupProps) 
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-[342px] rounded-2xl border-4 border-game-green-700">
         <DialogHeader>
-          <DialogTitle className="font-pixel text-sm flex items-center gap-2">
+          <DialogTitle className="font-pixel text-xs flex items-center gap-2">
             <span className="text-3xl">{crop.icon}</span>
             {t('popup_title')}
           </DialogTitle>
+          <p className="font-sans text-sm text-game-gray-700 mt-1">{state.name}</p>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
