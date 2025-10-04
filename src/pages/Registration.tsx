@@ -1,3 +1,4 @@
+// Registration page - Updated version without React Router hooks
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { GameLayout } from '@/components/layout/GameLayout';
