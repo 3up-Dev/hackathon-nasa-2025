@@ -100,39 +100,27 @@ export default function Registration() {
       }
 
       console.log('User created:', authData.user.id);
+      console.log('Creating profile...');
 
-      if (authData.session?.access_token) {
-        console.log('Session present, inserting profile...');
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            user_id: authData.user.id,
-            full_name: validatedData.fullName,
-            birth_date: format(validatedData.birthDate, 'yyyy-MM-dd'),
-            email: validatedData.email,
-            phone: validatedData.phone,
-          });
-
-        if (profileError) {
-          console.error('Profile error:', profileError);
-          throw profileError;
-        }
-
-        console.log('Profile created successfully');
-        toast.success('Conta criada com sucesso!');
-        navigate('/select-country');
-      } else {
-        const pendingProfile = {
+      // Create profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
           user_id: authData.user.id,
           full_name: validatedData.fullName,
           birth_date: format(validatedData.birthDate, 'yyyy-MM-dd'),
           email: validatedData.email,
           phone: validatedData.phone,
-        };
-        localStorage.setItem('pending-profile', JSON.stringify(pendingProfile));
-        toast.success('Enviamos um e-mail de confirmação. Após confirmar, faça login para concluir seu cadastro.');
-        navigate('/login');
+        });
+
+      if (profileError) {
+        console.error('Profile error:', profileError);
+        throw profileError;
       }
+
+      console.log('Profile created successfully');
+      toast.success('Conta criada com sucesso!');
+      navigate('/select-country');
     } catch (error) {
       console.error('Registration error:', error);
       if (error instanceof z.ZodError) {
