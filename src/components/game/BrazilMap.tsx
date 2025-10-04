@@ -12,8 +12,16 @@ export const BrazilMap = ({ onStateClick }: BrazilMapProps) => {
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [initialPinchDistance, setInitialPinchDistance] = useState<number | null>(null);
+  const [initialZoom, setInitialZoom] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
   const { plantedStates } = useGameState();
+
+  const getTouchDistance = (touch1: React.Touch, touch2: React.Touch) => {
+    const dx = touch1.clientX - touch2.clientX;
+    const dy = touch1.clientY - touch2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
 
   const handleZoomIn = () => {
     setZoom((prev) => Math.min(prev + 0.3, 3));
@@ -47,7 +55,14 @@ export const BrazilMap = ({ onStateClick }: BrazilMapProps) => {
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (zoom > 1 && e.touches.length === 1) {
+    if (e.touches.length === 2) {
+      // Pinch gesture
+      const distance = getTouchDistance(e.touches[0], e.touches[1]);
+      setInitialPinchDistance(distance);
+      setInitialZoom(zoom);
+      setIsDragging(false);
+    } else if (e.touches.length === 1 && zoom > 1) {
+      // Pan gesture
       setIsDragging(true);
       setDragStart({ 
         x: e.touches[0].clientX - pan.x, 
@@ -57,7 +72,19 @@ export const BrazilMap = ({ onStateClick }: BrazilMapProps) => {
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (isDragging && zoom > 1 && e.touches.length === 1) {
+    if (e.touches.length === 2 && initialPinchDistance !== null) {
+      // Pinch zoom
+      e.preventDefault();
+      const distance = getTouchDistance(e.touches[0], e.touches[1]);
+      const scale = distance / initialPinchDistance;
+      const newZoom = Math.max(1, Math.min(3, initialZoom * scale));
+      setZoom(newZoom);
+      
+      if (newZoom <= 1) {
+        setPan({ x: 0, y: 0 });
+      }
+    } else if (isDragging && zoom > 1 && e.touches.length === 1) {
+      // Pan
       setPan({
         x: e.touches[0].clientX - dragStart.x,
         y: e.touches[0].clientY - dragStart.y,
@@ -67,6 +94,7 @@ export const BrazilMap = ({ onStateClick }: BrazilMapProps) => {
 
   const handleTouchEnd = () => {
     setIsDragging(false);
+    setInitialPinchDistance(null);
   };
 
   const regionColors = {
