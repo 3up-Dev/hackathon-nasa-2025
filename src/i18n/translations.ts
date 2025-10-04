@@ -26,7 +26,7 @@ export const translations = {
     reason_low_temp: "Temperatura abaixo do ideal.",
     reason_bad_soil: "Solo inadequado.",
     tip_try_states: "Dica: tente {states}.",
-    cta_plant: "Plantar",
+    cta_plant: "Iniciar Produção",
     cta_close: "Fechar",
     cta_next: "Próximo",
     cta_skip: "Pular",
@@ -36,7 +36,7 @@ export const translations = {
     medal_gold: "Medalha de Ouro",
     medal_silver: "Medalha de Prata",
     medal_bronze: "Medalha de Bronze",
-    plants_planted: "plantios realizados",
+    plants_planted: "produções realizadas",
   },
   en: {
     app_title: "Planting the Future",

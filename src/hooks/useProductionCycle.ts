@@ -137,7 +137,7 @@ function generateInitialTasks(): ProductionTask[] {
     {
       id: 'irrigation',
       type: 'irrigation',
-      title: { pt: 'Irrigar Plantação', en: 'Irrigate Crops' },
+      title: { pt: 'Irrigar Produção', en: 'Irrigate Production' },
       description: { pt: 'Verificar e ajustar irrigação', en: 'Check and adjust irrigation' },
       completed: false,
       penalty: 5,

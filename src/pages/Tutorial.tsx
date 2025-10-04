@@ -9,7 +9,7 @@ export default function Tutorial() {
 
   const slides = [
     { icon: '🌡️', title: 'Clima e Solo', body: 'Aprenda como clima e solo afetam sua produção.' },
-    { icon: '🌱', title: 'Ciclo da Plantação', body: 'Gerencie etapas do plantio até a colheita.' },
+    { icon: '🌱', title: 'Ciclo de Produção', body: 'Gerencie etapas do início até a colheita/abate.' },
     { icon: '📊', title: 'Indicadores e Progresso', body: 'Acompanhe métricas para tomar melhores decisões.' },
   ];
 
