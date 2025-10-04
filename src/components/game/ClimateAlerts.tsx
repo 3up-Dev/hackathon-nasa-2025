@@ -1,10 +1,15 @@
-import { AlertTriangle, Flame, CloudRain, Sun, Snowflake, Bug, Satellite } from 'lucide-react';
+import { AlertTriangle, Flame, CloudRain, Sun, Snowflake, Bug, Satellite, RefreshCw } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ClimateEvent } from '@/lib/productionEngine';
+import { PixelButton } from '@/components/layout/PixelButton';
 
 interface ClimateAlertsProps {
   events: ClimateEvent[];
   lang: 'pt' | 'en';
+  stateName?: string;
+  lastUpdated?: Date | null;
+  isLoading?: boolean;
+  onRefresh?: () => void;
 }
 
 const getEventIcon = (type: ClimateEvent['type']) => {
@@ -86,15 +91,62 @@ const getSourceLink = (source: string | undefined) => {
   return null;
 };
 
-export function ClimateAlerts({ events, lang }: ClimateAlertsProps) {
-  if (events.length === 0) return null;
+export function ClimateAlerts({ events, lang, stateName, lastUpdated, isLoading, onRefresh }: ClimateAlertsProps) {
+  const formatTime = (date: Date) => {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
 
   return (
     <div className="space-y-3">
-      <h3 className="font-pixel text-sm text-game-fg flex items-center gap-2">
-        <Satellite className="w-4 h-4" />
-        {lang === 'pt' ? '🌍 Alertas Climáticos' : '🌍 Climate Alerts'}
-      </h3>
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="font-pixel text-sm text-game-fg flex items-center gap-2">
+          <Satellite className="w-4 h-4" />
+          {lang === 'pt' ? '🌍 Alertas Climáticos' : '🌍 Climate Alerts'}
+        </h3>
+        
+        {onRefresh && (
+          <div className="flex items-center gap-2">
+            {lastUpdated && (
+              <span className="font-sans text-[10px] text-game-gray-600">
+                {formatTime(lastUpdated)}
+              </span>
+            )}
+            <PixelButton 
+              variant="ghost" 
+              onClick={onRefresh}
+              disabled={isLoading}
+              className="h-7 px-2"
+            >
+              <RefreshCw className={`w-3 h-3 ${isLoading ? 'animate-spin' : ''}`} />
+              <span className="text-[10px] ml-1">
+                {lang === 'pt' ? 'Atualizar' : 'Refresh'}
+              </span>
+            </PixelButton>
+          </div>
+        )}
+      </div>
+      
+      {events.length === 0 ? (
+        <div className="bg-game-green-700/10 border-2 border-game-green-700 rounded-lg p-4 text-center">
+          <p className="font-sans text-xs text-game-gray-700">
+            {lang === 'pt' 
+              ? `✓ Sem alertas climáticos no momento para ${stateName || 'esta região'}` 
+              : `✓ No climate alerts at this time for ${stateName || 'this region'}`
+            }
+          </p>
+        </div>
+      ) : (
+        <>
+          <p className="font-sans text-[10px] text-game-gray-600">
+            {lang === 'pt' 
+              ? `${events.length} alerta(s) ativo(s) para ${stateName || 'esta região'}`
+              : `${events.length} active alert(s) for ${stateName || 'this region'}`
+            }
+          </p>
+        </>
+      )}
       
       {events.map((event, index) => {
         const Icon = getEventIcon(event.type);

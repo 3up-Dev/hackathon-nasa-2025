@@ -24,6 +24,8 @@ export default function ProductionDashboard() {
   const [state, setState] = useState<BrazilState | null>(null);
   const [productionState, setProductionState] = useState<ProductionState | null>(null);
   const [forceUpdate, setForceUpdate] = useState(0);
+  const [lastAlertsUpdated, setLastAlertsUpdated] = useState<Date | null>(null);
+  const [isLoadingAlerts, setIsLoadingAlerts] = useState(false);
 
   // Keep a stable reference to updateCurrentProfile to avoid effect loops
   const updateProfileRef = useRef(updateCurrentProfile);
@@ -99,6 +101,25 @@ export default function ProductionDashboard() {
       console.log('Starting new production');
       const newState = productionEngine.startProduction(selectedCrop, stateId);
       setProductionState(newState);
+
+      // Fetch initial climate alerts (without applying impacts)
+      console.log('🌍 Fetching initial climate alerts for', stateId);
+      try {
+        const alerts = await productionEngine.fetchRealTimeAlerts(stateId);
+        console.log('✓ Initial alerts fetched:', alerts.length);
+        
+        if (alerts.length > 0) {
+          const updatedState = productionEngine.getState();
+          const mergedEvents = [...(updatedState.climateEvents || []), ...alerts];
+          setProductionState({ ...updatedState, climateEvents: mergedEvents });
+          setLastAlertsUpdated(new Date());
+        } else {
+          console.log('ℹ️ No active alerts for', stateId);
+          setLastAlertsUpdated(new Date());
+        }
+      } catch (error) {
+        console.error('Error fetching initial alerts:', error);
+      }
     };
 
     // Initialize immediately using URL params, then sync to profile when available
@@ -176,6 +197,64 @@ export default function ProductionDashboard() {
       });
     }
   }, [state, crop, lang]);
+
+  const handleRefreshAlerts = useCallback(async () => {
+    if (!state) return;
+    
+    setIsLoadingAlerts(true);
+    console.log('🔄 Manual refresh of alerts for', state.id);
+    
+    try {
+      const alerts = await productionEngine.fetchRealTimeAlerts(state.id);
+      console.log('✓ Alerts refreshed:', alerts.length);
+      
+      const currentState = productionEngine.getState();
+      
+      // Deduplicate: create a key for each event
+      const existingKeys = new Set(
+        (currentState.climateEvents || []).map(e => 
+          `${e.type}-${e.source}-${e.detectedAt}`
+        )
+      );
+      
+      const newAlerts = alerts.filter(alert => {
+        const key = `${alert.type}-${alert.source}-${alert.detectedAt}`;
+        return !existingKeys.has(key);
+      });
+      
+      if (newAlerts.length > 0) {
+        const mergedEvents = [...(currentState.climateEvents || []), ...newAlerts];
+        setProductionState({ ...currentState, climateEvents: mergedEvents });
+        
+        toast({
+          title: lang === 'pt' ? '✓ Alertas Atualizados' : '✓ Alerts Updated',
+          description: lang === 'pt' 
+            ? `${newAlerts.length} novo(s) alerta(s) encontrado(s)` 
+            : `${newAlerts.length} new alert(s) found`,
+        });
+      } else {
+        toast({
+          title: lang === 'pt' ? 'Alertas Atualizados' : 'Alerts Updated',
+          description: lang === 'pt' 
+            ? 'Nenhum novo alerta no momento' 
+            : 'No new alerts at this time',
+        });
+      }
+      
+      setLastAlertsUpdated(new Date());
+    } catch (error) {
+      console.error('Error refreshing alerts:', error);
+      toast({
+        title: lang === 'pt' ? 'Erro ao Atualizar Alertas' : 'Error Updating Alerts',
+        description: lang === 'pt' 
+          ? 'Não foi possível buscar alertas. Tente novamente.' 
+          : 'Could not fetch alerts. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoadingAlerts(false);
+    }
+  }, [state, lang]);
 
   const handleCompleteTask = useCallback((taskId: string) => {
     console.log('handleCompleteTask called with taskId:', taskId);
@@ -367,12 +446,17 @@ export default function ProductionDashboard() {
           </div>
         </div>
 
-        {/* Climate Alerts */}
-        {productionState.climateEvents && productionState.climateEvents.length > 0 && (
-          <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
-            <ClimateAlerts events={productionState.climateEvents} lang={lang} />
-          </div>
-        )}
+        {/* Climate Alerts - Always visible */}
+        <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
+          <ClimateAlerts 
+            events={productionState.climateEvents || []} 
+            lang={lang}
+            stateName={state.name}
+            lastUpdated={lastAlertsUpdated}
+            isLoading={isLoadingAlerts}
+            onRefresh={handleRefreshAlerts}
+          />
+        </div>
 
         {/* Stage Progress */}
         <StageProgress crop={crop} currentDay={productionState.currentDay} lang={lang} />
