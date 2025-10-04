@@ -79,29 +79,9 @@ export const BrazilMap = ({ onStateClick }: BrazilMapProps) => {
 
   return (
     <div className="relative w-full h-full flex items-center justify-center p-4">
-      {/* Zoom controls */}
-      <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
-        <button
-          onClick={handleZoomIn}
-          disabled={zoom >= 3}
-          className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl font-bold hover:scale-110 transition-transform disabled:opacity-50 disabled:cursor-not-allowed border-2 border-game-gray-300"
-          aria-label="Zoom in"
-        >
-          +
-        </button>
-        <button
-          onClick={handleZoomOut}
-          disabled={zoom <= 1}
-          className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl font-bold hover:scale-110 transition-transform disabled:opacity-50 disabled:cursor-not-allowed border-2 border-game-gray-300"
-          aria-label="Zoom out"
-        >
-          −
-        </button>
-      </div>
-
       <div
         ref={containerRef}
-        className="w-full h-full flex items-center justify-center overflow-hidden"
+        className="relative w-full h-full flex items-center justify-center overflow-hidden"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -111,6 +91,26 @@ export const BrazilMap = ({ onStateClick }: BrazilMapProps) => {
         onTouchEnd={handleTouchEnd}
         style={{ cursor: zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
       >
+        {/* Zoom controls */}
+        <div className="absolute bottom-4 right-4 z-20 flex flex-col gap-2">
+          <button
+            onClick={handleZoomIn}
+            disabled={zoom >= 3}
+            className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl font-bold hover:scale-110 transition-transform disabled:opacity-50 disabled:cursor-not-allowed border-2 border-game-gray-300"
+            aria-label="Zoom in"
+          >
+            +
+          </button>
+          <button
+            onClick={handleZoomOut}
+            disabled={zoom <= 1}
+            className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl font-bold hover:scale-110 transition-transform disabled:opacity-50 disabled:cursor-not-allowed border-2 border-game-gray-300"
+            aria-label="Zoom out"
+          >
+            −
+          </button>
+        </div>
+
         <svg
           viewBox="0 0 500 600"
           className="w-full h-full max-h-[500px]"
