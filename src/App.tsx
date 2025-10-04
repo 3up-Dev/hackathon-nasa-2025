@@ -5,7 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import Home from './pages/Home';
+import Home from './pages/HomeV2';
 import CountrySelect from './pages/CountrySelect';
 const Tutorial = React.lazy(() => import('./pages/Tutorial'));
 import Registration from './pages/Registration';
