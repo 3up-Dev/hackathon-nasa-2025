@@ -94,6 +94,7 @@ const App = () => {
           <Route path="/tutorial" element={<ProtectedRoute><React.Suspense fallback={<div />}><Tutorial /></React.Suspense></ProtectedRoute>} />
           <Route path="/education" element={<PrePlantingEducation />} />
           <Route path="/production" element={<ProductionDashboard />} />
+          <Route path="/game" element={<ProductionDashboard />} />
           <Route path="/harvest" element={<ProtectedRoute><HarvestResults /></ProtectedRoute>} />
           <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />

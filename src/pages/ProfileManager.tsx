@@ -24,7 +24,20 @@ export default function ProfileManager() {
 
   const handlePlayProfile = async (profileId: string) => {
     await setActiveProfile(profileId);
-    navigate('/game');
+    
+    // Buscar dados do perfil para navegação
+    const profile = profiles.find(p => p.id === profileId);
+    
+    if (profile && profile.crop_id && profile.state_id) {
+      // Navegar para a tela de produção com os parâmetros corretos
+      navigate(`/production?crop=${profile.crop_id}&state=${profile.state_id}`);
+    } else {
+      console.error('Profile missing crop_id or state_id:', profile);
+      // Fallback: tentar navegar apenas com o que temos
+      if (profile?.crop_id) {
+        navigate(`/production?crop=${profile.crop_id}&state=AM`);
+      }
+    }
   };
 
   const handleCreateProfile = () => {
