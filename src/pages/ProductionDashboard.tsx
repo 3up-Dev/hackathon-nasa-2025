@@ -19,9 +19,10 @@ import { crops, Crop } from '@/data/crops';
 import { brazilStates, BrazilState } from '@/data/states';
 import { productionEngine, ProductionState } from '@/lib/productionEngine';
 import { SimpleProgress } from '@/components/ui/simple-progress';
-import { Heart, Droplets, Leaf, Sparkles } from 'lucide-react';
+import { Heart, Droplets, Leaf, Sparkles, Info } from 'lucide-react';
 import { useGameProfiles } from '@/hooks/useGameProfiles';
 import { toast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export default function ProductionDashboard() {
   const lang: 'pt' | 'en' = 'pt';
@@ -34,6 +35,7 @@ export default function ProductionDashboard() {
   const [forceUpdate, setForceUpdate] = useState(0);
   const [lastAlertsUpdated, setLastAlertsUpdated] = useState<Date | null>(null);
   const [isLoadingAlerts, setIsLoadingAlerts] = useState(false);
+  const [infoDialogOpen, setInfoDialogOpen] = useState<'health' | 'water' | 'sustainability' | null>(null);
 
   // Keep a stable reference to updateCurrentProfile to avoid effect loops
   const updateProfileRef = useRef(updateCurrentProfile);
@@ -403,19 +405,28 @@ export default function ProductionDashboard() {
         {/* Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Heart
-                className={`w-5 h-5 ${
-                  productionState.health > 70
-                    ? 'text-game-green-700'
-                    : productionState.health > 40
-                    ? 'text-game-gold'
-                    : 'text-game-brown'
-                }`}
-              />
-              <span className="font-pixel text-[10px] text-game-fg">
-                {lang === 'pt' ? 'Saúde' : 'Health'}
-              </span>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Heart
+                  className={`w-5 h-5 ${
+                    productionState.health > 70
+                      ? 'text-game-green-700'
+                      : productionState.health > 40
+                      ? 'text-game-gold'
+                      : 'text-game-brown'
+                  }`}
+                />
+                <span className="font-pixel text-[10px] text-game-fg">
+                  {lang === 'pt' ? 'Saúde' : 'Health'}
+                </span>
+              </div>
+              <button 
+                onClick={() => setInfoDialogOpen('health')}
+                className="p-1 hover:bg-game-gray-200 rounded-full transition-colors"
+                aria-label="Informações sobre Saúde"
+              >
+                <Info className="w-4 h-4 text-game-gray-600" />
+              </button>
             </div>
             <p className="font-pixel text-lg text-game-fg">{productionState.health}%</p>
             <SimpleProgress
@@ -432,11 +443,20 @@ export default function ProductionDashboard() {
           </div>
 
           <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Droplets className="w-5 h-5 text-game-green-700" />
-              <span className="font-pixel text-[10px] text-game-fg">
-                {lang === 'pt' ? 'Água Usada' : 'Water Used'}
-              </span>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Droplets className="w-5 h-5 text-game-green-700" />
+                <span className="font-pixel text-[10px] text-game-fg">
+                  {lang === 'pt' ? 'Água Usada' : 'Water Used'}
+                </span>
+              </div>
+              <button 
+                onClick={() => setInfoDialogOpen('water')}
+                className="p-1 hover:bg-game-gray-200 rounded-full transition-colors"
+                aria-label="Informações sobre Água"
+              >
+                <Info className="w-4 h-4 text-game-gray-600" />
+              </button>
             </div>
             <p className="font-pixel text-lg text-game-fg">{Math.round(productionState.waterUsed)}L</p>
             <p className="font-sans text-xs text-game-gray-600 mt-1">
@@ -445,11 +465,20 @@ export default function ProductionDashboard() {
           </div>
 
           <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Leaf className="w-5 h-5 text-game-green-700" />
-              <span className="font-pixel text-[10px] text-game-fg leading-tight">
-                Sustenta-<br />bilidade
-              </span>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Leaf className="w-5 h-5 text-game-green-700" />
+                <span className="font-pixel text-[10px] text-game-fg leading-tight">
+                  Sustenta-<br />bilidade
+                </span>
+              </div>
+              <button 
+                onClick={() => setInfoDialogOpen('sustainability')}
+                className="p-1 hover:bg-game-gray-200 rounded-full transition-colors"
+                aria-label="Informações sobre Sustentabilidade"
+              >
+                <Info className="w-4 h-4 text-game-gray-600" />
+              </button>
             </div>
             <p className="font-pixel text-lg text-game-fg">{productionState.sustainabilityScore}%</p>
             <SimpleProgress value={productionState.sustainabilityScore} className="mt-2 h-2" />
@@ -510,6 +539,149 @@ export default function ProductionDashboard() {
           {lang === 'pt' ? 'Voltar aos Perfis' : 'Back to Profiles'}
         </PixelButton>
       </div>
+
+      {/* Info Dialogs */}
+      <Dialog open={infoDialogOpen === 'health'} onOpenChange={() => setInfoDialogOpen(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 font-pixel text-base">
+              <Heart className="w-5 h-5 text-game-green-700" />
+              {lang === 'pt' ? 'Saúde da Produção' : 'Production Health'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 font-sans text-sm">
+            <div>
+              <h4 className="font-semibold text-game-fg mb-1">
+                {lang === 'pt' ? '🌱 O que é?' : '🌱 What is it?'}
+              </h4>
+              <p className="text-game-gray-700">
+                {lang === 'pt' 
+                  ? 'A Saúde indica a vitalidade geral da sua produção. Representa o quanto sua cultura está se desenvolvendo de forma saudável e produtiva.'
+                  : 'Health indicates the overall vitality of your production. It represents how well your crop is developing in a healthy and productive way.'}
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-game-fg mb-1">
+                {lang === 'pt' ? '📊 Como é calculado?' : '📊 How is it calculated?'}
+              </h4>
+              <ul className="text-game-gray-700 space-y-1 list-disc list-inside">
+                <li>{lang === 'pt' ? 'Tarefas não completadas reduzem a saúde' : 'Incomplete tasks reduce health'}</li>
+                <li>{lang === 'pt' ? 'Eventos climáticos extremos (NASA) causam danos' : 'Extreme climate events (NASA) cause damage'}</li>
+                <li>{lang === 'pt' ? 'Temperatura fora da faixa ideal penaliza' : 'Temperature outside ideal range penalizes'}</li>
+                <li>{lang === 'pt' ? 'Completar tarefas recupera a saúde' : 'Completing tasks restores health'}</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-game-fg mb-1">
+                {lang === 'pt' ? '⚠️ Impacto' : '⚠️ Impact'}
+              </h4>
+              <div className="space-y-2 text-game-gray-700">
+                <p>
+                  <span className="text-game-green-700 font-semibold">{'> 70%:'}</span>{' '}
+                  {lang === 'pt' ? 'Produção excelente, colheita máxima' : 'Excellent production, maximum harvest'}
+                </p>
+                <p>
+                  <span className="text-game-gold font-semibold">40-70%:</span>{' '}
+                  {lang === 'pt' ? 'Produção moderada, perdas parciais' : 'Moderate production, partial losses'}
+                </p>
+                <p>
+                  <span className="text-game-brown font-semibold">{'< 40%:'}</span>{' '}
+                  {lang === 'pt' ? 'Produção crítica, perdas significativas' : 'Critical production, significant losses'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={infoDialogOpen === 'water'} onOpenChange={() => setInfoDialogOpen(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 font-pixel text-base">
+              <Droplets className="w-5 h-5 text-game-green-700" />
+              {lang === 'pt' ? 'Água Usada' : 'Water Used'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 font-sans text-sm">
+            <div>
+              <h4 className="font-semibold text-game-fg mb-1">
+                {lang === 'pt' ? '💧 O que é?' : '💧 What is it?'}
+              </h4>
+              <p className="text-game-gray-700">
+                {lang === 'pt' 
+                  ? 'Quantidade total de água consumida durante todo o ciclo de produção, incluindo irrigação e necessidades da cultura.'
+                  : 'Total amount of water consumed during the entire production cycle, including irrigation and crop needs.'}
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-game-fg mb-1">
+                {lang === 'pt' ? '📊 Como é calculado?' : '📊 How is it calculated?'}
+              </h4>
+              <ul className="text-game-gray-700 space-y-1 list-disc list-inside">
+                <li>{lang === 'pt' ? 'Consumo base diário da cultura' : 'Daily base consumption of the crop'}</li>
+                <li>{lang === 'pt' ? 'Evapotranspiração real (dados NASA)' : 'Real evapotranspiration (NASA data)'}</li>
+                <li>{lang === 'pt' ? 'Coeficiente da cultura por estágio' : 'Crop coefficient per stage'}</li>
+                <li>{lang === 'pt' ? 'Eventos climáticos (seca, calor) aumentam consumo' : 'Climate events (drought, heat) increase consumption'}</li>
+                <li>{lang === 'pt' ? 'Chuvas reduzem necessidade de irrigação' : 'Rainfall reduces irrigation needs'}</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-game-fg mb-1">
+                {lang === 'pt' ? '🌍 Impacto' : '🌍 Impact'}
+              </h4>
+              <p className="text-game-gray-700">
+                {lang === 'pt' 
+                  ? 'O uso eficiente de água melhora seu score de sustentabilidade. Alto consumo de água sem necessidade penaliza a pontuação final. Gerir bem a irrigação é essencial para agricultura sustentável.'
+                  : 'Efficient water use improves your sustainability score. High water consumption without need penalizes the final score. Managing irrigation well is essential for sustainable agriculture.'}
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={infoDialogOpen === 'sustainability'} onOpenChange={() => setInfoDialogOpen(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 font-pixel text-base">
+              <Leaf className="w-5 h-5 text-game-green-700" />
+              {lang === 'pt' ? 'Sustentabilidade' : 'Sustainability'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 font-sans text-sm">
+            <div>
+              <h4 className="font-semibold text-game-fg mb-1">
+                {lang === 'pt' ? '🌿 O que é?' : '🌿 What is it?'}
+              </h4>
+              <p className="text-game-gray-700">
+                {lang === 'pt' 
+                  ? 'Mede o quão sustentável e responsável está sendo sua produção agrícola, considerando práticas ambientais e eficiência de recursos.'
+                  : 'Measures how sustainable and responsible your agricultural production is, considering environmental practices and resource efficiency.'}
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-game-fg mb-1">
+                {lang === 'pt' ? '📊 Como é calculado?' : '📊 How is it calculated?'}
+              </h4>
+              <ul className="text-game-gray-700 space-y-1 list-disc list-inside">
+                <li>{lang === 'pt' ? 'Completar tarefas aumenta +2% por tarefa' : 'Completing tasks increases +2% per task'}</li>
+                <li>{lang === 'pt' ? 'Eventos climáticos extremos reduzem score' : 'Extreme climate events reduce score'}</li>
+                <li>{lang === 'pt' ? 'Uso eficiente de água melhora pontuação' : 'Efficient water use improves score'}</li>
+                <li>{lang === 'pt' ? 'Escolher culturas adequadas ao clima local' : 'Choosing crops suited to local climate'}</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-game-fg mb-1">
+                {lang === 'pt' ? '🏆 Impacto' : '🏆 Impact'}
+              </h4>
+              <p className="text-game-gray-700">
+                {lang === 'pt' 
+                  ? 'A Sustentabilidade representa 40% da sua pontuação final. Produzir de forma sustentável garante melhores medalhas (Ouro, Prata, Bronze) e ranking global mais alto.'
+                  : 'Sustainability represents 40% of your final score. Producing sustainably ensures better medals (Gold, Silver, Bronze) and higher global ranking.'}
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </GameLayout>
   );
 }
