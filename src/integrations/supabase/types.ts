@@ -84,6 +84,7 @@ export type Database = {
           phone: string
           updated_at: string
           user_id: string | null
+          username: string
         }
         Insert: {
           birth_date: string
@@ -94,6 +95,7 @@ export type Database = {
           phone: string
           updated_at?: string
           user_id?: string | null
+          username: string
         }
         Update: {
           birth_date?: string
@@ -104,6 +106,7 @@ export type Database = {
           phone?: string
           updated_at?: string
           user_id?: string | null
+          username?: string
         }
         Relationships: []
       }
@@ -119,12 +122,20 @@ export type Database = {
           sector: string | null
           state_id: string | null
           total_score: number | null
+          username: string | null
         }
         Relationships: []
       }
     }
     Functions: {
-      [_ in never]: never
+      generate_unique_username: {
+        Args: { full_name_input: string }
+        Returns: string
+      }
+      slugify: {
+        Args: { text_input: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
