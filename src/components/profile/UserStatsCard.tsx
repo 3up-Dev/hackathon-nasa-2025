@@ -41,7 +41,7 @@ export const UserStatsCard = ({ totalScore, profilesCount, bestScore }: UserStat
           <div>
             <p className="font-sans text-xs text-game-gray-700 mb-1">Melhor Resultado</p>
             <p className={`font-pixel text-2xl ${medalColors[medal]}`}>
-              {bestScore} pts
+              {bestScore} <span className="text-xs">pts</span>
             </p>
           </div>
         </div>
