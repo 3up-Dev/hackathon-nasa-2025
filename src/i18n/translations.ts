@@ -45,6 +45,10 @@ export const translations = {
     medal_silver: "Medalha de Prata",
     medal_bronze: "Medalha de Bronze",
     plants_planted: "produções realizadas",
+    ranking_global: "Ranking Global",
+    total_players: "Total de jogadores",
+    average_score: "Pontuação média",
+    your_position: "Sua posição",
   },
   en: {
     app_title: "Planting the Future",
@@ -84,6 +88,10 @@ export const translations = {
     medal_silver: "Silver Medal",
     medal_bronze: "Bronze Medal",
     plants_planted: "crops planted",
+    ranking_global: "Global Ranking",
+    total_players: "Total players",
+    average_score: "Average score",
+    your_position: "Your position",
   },
 };
 

@@ -11,18 +11,18 @@ import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { MedalBadge } from '@/components/game/MedalBadge';
 import { IndicatorCard } from '@/components/game/IndicatorCard';
+import { GlobalRanking } from '@/components/game/GlobalRanking';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useGameState } from '@/hooks/useGameState';
+import { useGameProfiles } from '@/hooks/useGameProfiles';
 import { getMedalType } from '@/data/gameLogic';
-import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function Results() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const { indicators, totalScore, plantedStates, resetGame } = useGameState();
-
-  // Removido o redirecionamento automático para permitir visualizar resultados mesmo sem produções
+  const { currentProfile } = useGameProfiles();
 
   const medalType = getMedalType(totalScore);
 
@@ -96,6 +96,11 @@ export default function Results() {
               value={indicators.water}
               color="brown"
             />
+          </div>
+
+          {/* Global Ranking Section */}
+          <div className="pt-6 border-t-2 border-game-gray-300">
+            <GlobalRanking currentProfileId={currentProfile?.id} />
           </div>
 
           {/* Replay button */}
