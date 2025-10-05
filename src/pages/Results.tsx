@@ -27,8 +27,7 @@ export default function Results() {
   const medalType = getMedalType(totalScore);
 
   const handleReplay = () => {
-    resetGame();
-    navigate('/');
+    navigate('/profiles');
   };
 
   const handleLogout = async () => {
