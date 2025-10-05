@@ -1,3 +1,11 @@
+/**
+ * Este arquivo foi desenvolvido com assistência de Inteligência Artificial.
+ * Sistema multi-perfil com sincronização Supabase e persistência local.
+ * 
+ * This file was developed with Artificial Intelligence assistance.
+ * Multi-profile system with Supabase sync and local persistence.
+ */
+
 import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

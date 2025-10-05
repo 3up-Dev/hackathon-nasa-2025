@@ -1,3 +1,11 @@
+/**
+ * Este arquivo foi desenvolvido com assistência de Inteligência Artificial.
+ * Dashboard principal do ciclo de produção com integração NASA POWER/FIRMS/INMET.
+ * 
+ * This file was developed with Artificial Intelligence assistance.
+ * Main production cycle dashboard with NASA POWER/FIRMS/INMET integration.
+ */
+
 import * as React from 'react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { GameLayout } from '@/components/layout/GameLayout';

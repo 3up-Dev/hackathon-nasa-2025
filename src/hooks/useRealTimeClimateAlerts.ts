@@ -1,3 +1,11 @@
+/**
+ * Este arquivo foi desenvolvido com assistência de Inteligência Artificial.
+ * Hook para alertas climáticos em tempo real (NASA FIRMS + INMET).
+ * 
+ * This file was developed with Artificial Intelligence assistance.
+ * Hook for real-time climate alerts (NASA FIRMS + INMET).
+ */
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ClimateEvent } from '@/lib/productionEngine';

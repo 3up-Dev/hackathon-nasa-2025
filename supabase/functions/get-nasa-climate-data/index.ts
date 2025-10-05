@@ -1,3 +1,11 @@
+/**
+ * Este arquivo foi desenvolvido com assistência de Inteligência Artificial.
+ * Edge Function para integração com NASA POWER API (dados climáticos).
+ * 
+ * This file was developed with Artificial Intelligence assistance.
+ * Edge Function for NASA POWER API integration (climate data).
+ */
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {

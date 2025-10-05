@@ -1,3 +1,11 @@
+/**
+ * Este arquivo foi desenvolvido com assistência de Inteligência Artificial.
+ * Lógica de cálculo de viabilidade de cultivo baseada em dados climáticos.
+ * 
+ * This file was developed with Artificial Intelligence assistance.
+ * Crop viability calculation logic based on climate data.
+ */
+
 import { Crop } from './crops';
 import { BrazilState } from './states';
 

@@ -1,3 +1,11 @@
+/**
+ * Este arquivo foi desenvolvido com assistência de Inteligência Artificial.
+ * Motor principal do ciclo de produção do jogo com integração de dados climáticos da NASA.
+ * 
+ * This file was developed with Artificial Intelligence assistance.
+ * Main production cycle engine with NASA climate data integration.
+ */
+
 import { Crop } from '@/data/crops';
 import { supabase } from '@/integrations/supabase/client';
 import { BrazilState } from '@/data/states';

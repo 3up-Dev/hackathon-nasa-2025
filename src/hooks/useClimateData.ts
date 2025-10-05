@@ -1,3 +1,11 @@
+/**
+ * Este arquivo foi desenvolvido com assistência de Inteligência Artificial.
+ * Hook para buscar dados climáticos da NASA POWER API.
+ * 
+ * This file was developed with Artificial Intelligence assistance.
+ * Hook for fetching climate data from NASA POWER API.
+ */
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { BrazilState } from '@/data/states';

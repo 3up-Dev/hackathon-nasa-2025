@@ -1,3 +1,11 @@
+/**
+ * Este arquivo foi desenvolvido com assistência de Inteligência Artificial.
+ * Dados climáticos dos 27 estados brasileiros com coordenadas geográficas.
+ * 
+ * This file was developed with Artificial Intelligence assistance.
+ * Climate data for 27 Brazilian states with geographic coordinates.
+ */
+
 export interface BrazilState {
   id: string;
   name: string;

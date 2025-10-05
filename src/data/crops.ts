@@ -1,3 +1,11 @@
+/**
+ * Este arquivo foi desenvolvido com assistência de Inteligência Artificial.
+ * Dados das 13 culturas organizadas por 5 setores produtivos.
+ * 
+ * This file was developed with Artificial Intelligence assistance.
+ * Data for 13 crops organized by 5 production sectors.
+ */
+
 export type Sector = 'agricultura' | 'pecuaria' | 'aquicultura' | 'silvicultura' | 'horticultura';
 
 export interface CropStage {

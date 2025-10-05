@@ -1,3 +1,11 @@
+/**
+ * Este arquivo foi desenvolvido com assistência de Inteligência Artificial.
+ * Tela educativa pré-plantio com dados climáticos e cálculo de viabilidade.
+ * 
+ * This file was developed with Artificial Intelligence assistance.
+ * Pre-planting educational screen with climate data and viability calculation.
+ */
+
 import * as React from 'react';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';

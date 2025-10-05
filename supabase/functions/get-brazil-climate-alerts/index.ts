@@ -1,3 +1,11 @@
+/**
+ * Este arquivo foi desenvolvido com assistência de Inteligência Artificial.
+ * Edge Function para alertas climáticos em tempo real (NASA FIRMS + INMET).
+ * 
+ * This file was developed with Artificial Intelligence assistance.
+ * Edge Function for real-time climate alerts (NASA FIRMS + INMET).
+ */
+
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
 const corsHeaders = {

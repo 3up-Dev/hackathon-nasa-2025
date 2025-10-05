@@ -1,4 +1,11 @@
-// App component - v2.0 - No PWA Provider
+/**
+ * Este arquivo foi desenvolvido com assistência de Inteligência Artificial.
+ * Componente principal da aplicação com roteamento e estrutura geral.
+ * 
+ * This file was developed with Artificial Intelligence assistance.
+ * Main application component with routing and general structure.
+ */
+
 import * as React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 

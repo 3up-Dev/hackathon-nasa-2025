@@ -1,3 +1,31 @@
+# Plantando Futuro 🌱
+
+## Sobre o Projeto
+
+**Plantando Futuro** é um serious game educacional que simula a produção agrícola sustentável no Brasil utilizando dados climáticos reais da NASA. O jogo permite que estudantes e profissionais aprendam sobre agricultura sustentável, adaptação climática e uso responsável de recursos naturais através de uma experiência interativa e baseada em dados científicos.
+
+### Desenvolvimento com IA
+
+> **Declaração de Uso de IA**: Este projeto foi desenvolvido 100% com assistência de Inteligência Artificial. Toda a arquitetura de software, lógica de negócio, integração de APIs, interface do usuário e documentação foram criadas através de colaboração humano-IA. A equipe humana foi responsável pela definição de requisitos, design educacional, validação científica dos dados da NASA e supervisão de qualidade.
+
+**Importante**: Os dados climáticos são fornecidos diretamente pelas APIs da NASA e INMET sem qualquer modificação por IA. A inteligência artificial foi utilizada exclusivamente para:
+- Arquitetura e desenvolvimento do código (frontend React/TypeScript, backend Supabase, Edge Functions)
+- Lógica de jogo (cálculo de viabilidade, motor de produção, sistema de tarefas)
+- Interface do usuário e experiência (componentes React, design responsivo, animações)
+- Integração segura com APIs externas (NASA POWER, NASA FIRMS, INMET)
+- Documentação técnica e educacional
+
+**Supervisão Humana**: Toda a implementação foi revisada e validada por humanos nas seguintes áreas:
+- Arquitetura de sistema e decisões técnicas
+- Design de experiência do usuário (UX/UI)
+- Design educacional e pedagógico
+- Validação de integridade dos dados científicos
+- Testes de segurança e privacidade
+
+**Mídia**: Este projeto **NÃO** utiliza imagens, áudio ou vídeo gerados por IA. Todos os ícones são emojis Unicode padrão e gráficos são renderizados por bibliotecas JavaScript (Recharts).
+
+---
+
 # Welcome to your Lovable project
 
 ## Project info
