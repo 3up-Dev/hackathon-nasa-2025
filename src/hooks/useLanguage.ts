@@ -7,6 +7,7 @@
  */
 
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { translations, Language, TranslationKey } from '@/i18n/translations';
 
 interface LanguageStore {
@@ -15,22 +16,29 @@ interface LanguageStore {
   t: (key: TranslationKey, params?: Record<string, string>) => string;
 }
 
-export const useLanguage = create<LanguageStore>((set, get) => ({
-  lang: 'pt',
-  toggleLanguage: () =>
-    set((state) => ({
-      lang: state.lang === 'pt' ? 'en' : 'pt',
-    })),
-  t: (key: TranslationKey, params?: Record<string, string>) => {
-    const { lang } = get();
-    let text = translations[lang][key] || translations.pt[key] || key;
-    
-    if (params) {
-      Object.entries(params).forEach(([param, value]) => {
-        text = text.replace(`{${param}}`, value);
-      });
+export const useLanguage = create<LanguageStore>()(
+  persist(
+    (set, get) => ({
+      lang: 'pt',
+      toggleLanguage: () =>
+        set((state) => ({
+          lang: state.lang === 'pt' ? 'en' : 'pt',
+        })),
+      t: (key: TranslationKey, params?: Record<string, string>) => {
+        const { lang } = get();
+        let text = translations[lang][key] || translations.pt[key] || key;
+        
+        if (params) {
+          Object.entries(params).forEach(([param, value]) => {
+            text = text.replace(`{${param}}`, value);
+          });
+        }
+        
+        return text;
+      },
+    }),
+    {
+      name: 'language-storage', // nome da chave no localStorage
     }
-    
-    return text;
-  },
-}));
+  )
+);
