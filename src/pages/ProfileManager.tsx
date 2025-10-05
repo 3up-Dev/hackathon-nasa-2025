@@ -6,12 +6,13 @@
  * All logic, structure, and implementation were reviewed and validated by the human team.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, LogOut, Trophy } from 'lucide-react';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { ProfileCard } from '@/components/profile/ProfileCard';
+import { UserStatsCard } from '@/components/profile/UserStatsCard';
 import { useGameProfiles } from '@/hooks/useGameProfiles';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -56,6 +57,22 @@ export default function ProfileManager() {
     navigate('/results');
   };
 
+  // Calcular estatísticas do usuário
+  const userStats = useMemo(() => {
+    if (profiles.length === 0) {
+      return { totalScore: 0, profilesCount: 0, bestScore: 0 };
+    }
+
+    const totalScore = profiles.reduce((sum, profile) => sum + (profile.total_score || 0), 0);
+    const bestScore = Math.max(...profiles.map(p => p.total_score || 0));
+
+    return {
+      totalScore,
+      profilesCount: profiles.length,
+      bestScore,
+    };
+  }, [profiles]);
+
   if (loading) {
     return (
       <GameLayout>
@@ -69,7 +86,7 @@ export default function ProfileManager() {
   return (
     <GameLayout>
       <div className="h-full flex flex-col p-4 overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-4">
           <h1 className="font-pixel text-sm text-game-fg">
             🌱 Meus Perfis de Produção
           </h1>
@@ -80,6 +97,15 @@ export default function ProfileManager() {
             <LogOut className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Card de Estatísticas do Usuário */}
+        {profiles.length > 0 && (
+          <UserStatsCard
+            totalScore={userStats.totalScore}
+            profilesCount={userStats.profilesCount}
+            bestScore={userStats.bestScore}
+          />
+        )}
 
         {profiles.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
