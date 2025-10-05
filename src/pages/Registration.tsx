@@ -17,6 +17,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
@@ -41,12 +42,32 @@ export default function Registration() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [birthDate, setBirthDate] = useState<Date | undefined>(undefined);
+  const [calendarMonth, setCalendarMonth] = useState<Date>(new Date(2000, 0, 1));
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     phone: '',
     password: '',
   });
+
+  const months = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ];
+
+  const years = Array.from({ length: 111 }, (_, i) => new Date().getFullYear() - i);
+
+  const handleMonthChange = (month: string) => {
+    const newDate = new Date(calendarMonth);
+    newDate.setMonth(parseInt(month));
+    setCalendarMonth(newDate);
+  };
+
+  const handleYearChange = (year: string) => {
+    const newDate = new Date(calendarMonth);
+    newDate.setFullYear(parseInt(year));
+    setCalendarMonth(newDate);
+  };
 
   useEffect(() => {
     // Check if user is already authenticated
@@ -260,16 +281,52 @@ export default function Registration() {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={birthDate}
-                      onSelect={setBirthDate}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("1900-01-01")
-                      }
-                      initialFocus
-                      className={cn("p-3 pointer-events-auto")}
-                    />
+                    <div className="p-3 space-y-2">
+                      <div className="flex gap-2">
+                        <Select
+                          value={calendarMonth.getMonth().toString()}
+                          onValueChange={handleMonthChange}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Mês" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {months.map((month, index) => (
+                              <SelectItem key={index} value={index.toString()}>
+                                {month}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Select
+                          value={calendarMonth.getFullYear().toString()}
+                          onValueChange={handleYearChange}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Ano" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {years.map((year) => (
+                              <SelectItem key={year} value={year.toString()}>
+                                {year}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <Calendar
+                        mode="single"
+                        selected={birthDate}
+                        onSelect={setBirthDate}
+                        month={calendarMonth}
+                        onMonthChange={setCalendarMonth}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                        className={cn("pointer-events-auto")}
+                      />
+                    </div>
                   </PopoverContent>
                 </Popover>
               </div>
