@@ -151,26 +151,24 @@ export default function CreateProfile() {
               <h2 className="font-pixel text-xs text-game-fg mb-3 text-center">
                 2. Escolha a Cultura/Animal
               </h2>
-              <div className="bg-white rounded-xl border-4 border-game-fg p-4">
-                <div className="grid grid-cols-4 gap-2 max-w-2xl mx-auto">
-                  {filteredCrops.map((crop) => (
-                    <button
-                      key={crop.id}
-                      onClick={() => setSelectedCrop(crop.id)}
-                      className={cn(
-                        'flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all',
-                        selectedCrop === crop.id
-                          ? 'border-game-green-700 bg-game-green-400 bg-opacity-20 scale-105 shadow-lg'
-                          : 'border-game-gray-300 hover:border-game-green-400 hover:scale-105'
-                      )}
-                    >
-                      <span className="text-2xl mb-1">{crop.icon}</span>
-                      <span className="font-sans text-[9px] text-game-fg text-center leading-tight font-medium">
-                        {crop.name[lang]}
-                      </span>
-                    </button>
-                  ))}
-                </div>
+              <div className="grid grid-cols-5 gap-1 max-w-2xl mx-auto">
+                {filteredCrops.map((crop) => (
+                  <button
+                    key={crop.id}
+                    onClick={() => setSelectedCrop(crop.id)}
+                    className={cn(
+                      'flex flex-col items-center justify-center p-2 rounded-lg border-4 transition-all',
+                      selectedCrop === crop.id
+                        ? 'border-game-green-700 bg-game-green-400 bg-opacity-20 scale-105 shadow-lg'
+                        : 'border-game-gray-300 hover:border-game-green-400 hover:scale-105 bg-white'
+                    )}
+                  >
+                    <span className="text-xl mb-1">{crop.icon}</span>
+                    <span className="font-pixel text-[5px] text-game-fg text-center leading-tight">
+                      {crop.name[lang]}
+                    </span>
+                  </button>
+                ))}
               </div>
             </div>
           )}
