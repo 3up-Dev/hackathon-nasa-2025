@@ -145,26 +145,11 @@ export default function CreateProfile() {
             </div>
           </div>
 
-          {/* Map */}
-          <div>
-            <h2 className="font-pixel text-xs text-game-fg mb-3 text-center">
-              2. Escolha o Estado
-              {selectedState && (
-                <span className="text-game-green-700 ml-2">
-                  ({selectedStateData?.name})
-                </span>
-              )}
-            </h2>
-            <div className="bg-white rounded-xl border-4 border-game-fg p-2" style={{ height: '400px' }}>
-              <BrazilMap onStateClick={setSelectedState} />
-            </div>
-          </div>
-
           {/* Crop Selection */}
           {selectedSector && (
             <div>
               <h2 className="font-pixel text-xs text-game-fg mb-3 text-center">
-                3. Escolha a Cultura/Animal
+                2. Escolha a Cultura/Animal
               </h2>
               <div className="bg-white rounded-xl border-4 border-game-fg p-4">
                 <div className="grid grid-cols-4 gap-2 max-w-2xl mx-auto">
@@ -189,6 +174,21 @@ export default function CreateProfile() {
               </div>
             </div>
           )}
+
+          {/* Map */}
+          <div>
+            <h2 className="font-pixel text-xs text-game-fg mb-3 text-center">
+              3. Escolha o Estado
+              {selectedState && (
+                <span className="text-game-green-700 ml-2">
+                  ({selectedStateData?.name})
+                </span>
+              )}
+            </h2>
+            <div className="bg-white rounded-xl border-4 border-game-fg p-2" style={{ height: '400px' }}>
+              <BrazilMap onStateClick={setSelectedState} />
+            </div>
+          </div>
 
           {/* Viability Report */}
           {canCreate && viabilityResult && (
