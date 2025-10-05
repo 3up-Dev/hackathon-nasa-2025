@@ -72,9 +72,6 @@ export const RankingCard = ({
             <p className="font-sans text-sm font-semibold text-game-fg truncate">
               {isCurrentUser ? 'VOCÊ' : profileName}
             </p>
-            <p className="font-sans text-xs text-game-gray-700">
-              🗺️ {stateId}
-            </p>
           </div>
 
           {/* Score */}
