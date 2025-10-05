@@ -49,6 +49,12 @@ export const translations = {
     total_players: "Total de jogadores",
     average_score: "Pontuação média",
     your_position: "Sua posição",
+    info_results_title: "Entenda seus resultados",
+    info_medal_score: "A medalha e pontuação são seus resultados pessoais baseados no desempenho do seu perfil nesta partida.",
+    info_production: "Indica a eficiência da sua produção agrícola ao longo do jogo.",
+    info_sustainability: "Mede suas práticas sustentáveis e impacto ambiental positivo.",
+    info_water: "Avalia sua eficiência no uso de recursos hídricos.",
+    info_global_ranking: "Compare seu desempenho com outros jogadores ao redor do mundo.",
   },
   en: {
     app_title: "Planting the Future",
@@ -92,6 +98,12 @@ export const translations = {
     total_players: "Total players",
     average_score: "Average score",
     your_position: "Your position",
+    info_results_title: "Understand your results",
+    info_medal_score: "The medal and score are your personal results based on your profile's performance in this match.",
+    info_production: "Indicates the efficiency of your agricultural production throughout the game.",
+    info_sustainability: "Measures your sustainable practices and positive environmental impact.",
+    info_water: "Evaluates your efficiency in using water resources.",
+    info_global_ranking: "Compare your performance with other players around the world.",
   },
 };
 
