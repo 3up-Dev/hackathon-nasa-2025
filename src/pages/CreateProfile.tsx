@@ -269,25 +269,28 @@ export default function CreateProfile() {
               )}
             </div>
           )}
+
+          {/* Create Button */}
+          {canCreate && (
+            <div className="space-y-4">
+              <PixelButton
+                onClick={handleCreateProfile}
+                disabled={!canCreate || creating}
+                className="w-full"
+              >
+                {creating ? 'Criando...' : '🚀 Iniciar Produção'}
+              </PixelButton>
+              
+              <p className="text-center text-xs text-game-gray-700 font-sans">
+                Nome do perfil: BR/{selectedState}/{crops.find(c => c.id === selectedCrop)?.name[lang]}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Footer - Fixed */}
-        <div className="p-4 border-t-4 border-game-fg bg-white space-y-4">
-
-          {/* Create Button */}
-          <PixelButton
-            onClick={handleCreateProfile}
-            disabled={!canCreate || creating}
-            className="w-full"
-          >
-            {creating ? 'Criando...' : '🚀 Iniciar Produção'}
-          </PixelButton>
-          
-          {canCreate && (
-            <p className="text-center text-xs text-game-gray-700 font-sans">
-              Nome do perfil: BR/{selectedState}/{crops.find(c => c.id === selectedCrop)?.name[lang]}
-            </p>
-          )}
+        <div className="p-4 border-t-4 border-game-fg bg-white">
+          {/* Empty footer for spacing */}
         </div>
       </div>
     </GameLayout>
