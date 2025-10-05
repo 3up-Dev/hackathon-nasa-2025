@@ -169,6 +169,10 @@ export default function ProfileManager() {
                 ? 'Complete produções para vê-las aqui!' 
                 : 'Crie um novo perfil para começar!'}
             </p>
+            <PixelButton onClick={handleCreateProfile} className="flex items-center gap-2">
+              <Plus className="w-5 h-5" />
+              {t('profiles_create_button')}
+            </PixelButton>
           </div>
         ) : (
           <>
