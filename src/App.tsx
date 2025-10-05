@@ -100,8 +100,8 @@ const App = () => {
           <Route path="/select-country" element={<ProtectedRoute><CountrySelect /></ProtectedRoute>} />
           <Route path="/tutorial" element={<ProtectedRoute><React.Suspense fallback={<div />}><Tutorial /></React.Suspense></ProtectedRoute>} />
           <Route path="/education" element={<PrePlantingEducation />} />
-          <Route path="/production" element={<ProductionDashboard />} />
-          <Route path="/game" element={<ProductionDashboard />} />
+          <Route path="/production" element={<ProtectedRoute><ProductionDashboard /></ProtectedRoute>} />
+          <Route path="/game" element={<ProtectedRoute><GameMap /></ProtectedRoute>} />
           <Route path="/harvest" element={<ProtectedRoute><HarvestResults /></ProtectedRoute>} />
           <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />

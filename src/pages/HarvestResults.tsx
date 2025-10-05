@@ -28,9 +28,15 @@ export default function HarvestResults() {
   const [crop, setCrop] = useState<Crop | null>(null);
   const [state, setState] = useState<BrazilState | null>(null);
 
-  const { health, sustainabilityScore, waterUsed, resetProduction } = useProductionCycle();
+  const { resetProduction } = useProductionCycle();
   const { addPlanting } = useGameState();
   const { currentProfile, updateCurrentProfile } = useGameProfiles();
+  
+  // Read production data from currentProfile.production_state (not localStorage)
+  const productionData = currentProfile?.production_state as any;
+  const health = productionData?.health || 100;
+  const sustainabilityScore = productionData?.sustainabilityScore || 100;
+  const waterUsed = productionData?.waterUsed || 0;
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -113,10 +119,11 @@ export default function HarvestResults() {
         indicators: newIndicators,
         planted_states: newPlantedStates,
         total_score: newTotalScore,
+        production_state: null, // CRITICAL: Clear production state to allow new cycle
       });
     }
 
-    // Resetar produção
+    // Resetar produção no localStorage
     resetProduction();
 
     // Navegar para o mapa

@@ -46,6 +46,7 @@ export const ProfileCard = ({ profile, onPlay, onDelete }: ProfileCardProps) => 
   const state = states.find(s => s.id === profile.state_id);
   
   const progress = (profile.planted_states.length / states.length) * 100;
+  const totalStates = states.length; // 27 estados brasileiros
   
   const formatDate = (date: string) => {
     const now = new Date();
@@ -88,8 +89,12 @@ export const ProfileCard = ({ profile, onPlay, onDelete }: ProfileCardProps) => 
 
       <div className="mb-4">
         <div className="flex justify-between items-center mb-1">
-          <span className="font-sans text-xs text-game-gray-700">Progresso</span>
-          <span className="font-pixel text-xs text-game-fg">{Math.round(progress)}%</span>
+          <span className="font-sans text-xs text-game-gray-700">
+            Progresso no Brasil
+          </span>
+          <span className="font-pixel text-xs text-game-fg">
+            {profile.planted_states.length}/{totalStates}
+          </span>
         </div>
         <div className="w-full bg-game-gray-200 rounded-full h-2">
           <div 

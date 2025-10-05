@@ -351,7 +351,9 @@ export default function ProductionDashboard() {
     );
   }
 
-  const isReadyToHarvest = productionState.currentDay >= crop.growthDays;
+  // Check if production is already complete
+  const isProductionComplete = productionState.isComplete;
+  const isReadyToHarvest = productionState.currentDay >= crop.growthDays && !isProductionComplete;
   const progressPercent = Math.min(100, (productionState.currentDay / crop.growthDays) * 100);
 
   const stage = productionEngine.getCurrentStage(crop);
@@ -487,8 +489,15 @@ export default function ProductionDashboard() {
           isReadyToHarvest={isReadyToHarvest}
         />
 
-        {/* Harvest button */}
-        {isReadyToHarvest && (
+        {/* Harvest button or View Results button */}
+        {isProductionComplete ? (
+          <PixelButton variant="primary" size="lg" onClick={() => window.location.href = `/harvest?crop=${crop.id}&state=${state.id}`} className="w-full">
+            <div className="flex items-center justify-center gap-2">
+              <Sparkles className="w-5 h-5" />
+              <span>🏆 {lang === 'pt' ? 'Ver Resultados da Colheita' : 'View Harvest Results'}</span>
+            </div>
+          </PixelButton>
+        ) : isReadyToHarvest && (
           <PixelButton variant="primary" size="lg" onClick={handleHarvest} className="w-full">
             <div className="flex items-center justify-center gap-2">
               <Sparkles className="w-5 h-5" />
