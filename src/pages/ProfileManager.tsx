@@ -129,6 +129,15 @@ export default function ProfileManager() {
           </div>
         ) : (
           <>
+            <PixelButton 
+              variant="ghost"
+              onClick={handleViewResults}
+              className="w-full flex items-center justify-center gap-2 mb-4"
+            >
+              <Trophy className="w-5 h-5" />
+              Ver Resultados Globais
+            </PixelButton>
+
             <div className="grid gap-4 mb-6">
               {profiles.map((profile) => (
                 <ProfileCard
@@ -147,15 +156,6 @@ export default function ProfileManager() {
               >
                 <Plus className="w-5 h-5" />
                 Criar Novo Perfil
-              </PixelButton>
-
-              <PixelButton 
-                variant="ghost"
-                onClick={handleViewResults}
-                className="w-full flex items-center justify-center gap-2"
-              >
-                <Trophy className="w-5 h-5" />
-                Ver Resultados Globais
               </PixelButton>
             </div>
           </>
