@@ -262,10 +262,26 @@ export class ProductionEngine {
     
     // Generate new tasks (weekly regular + climate-based)
     let newTasks = this.state.tasks;
-    if (newDay % 7 === 0 && newDay < crop.growthDays) {
+    const oldWeek = Math.floor(this.state.currentDay / 7);
+    const newWeek = Math.floor(newDay / 7);
+    
+    // If we skipped one or more weeks, generate fresh tasks
+    if (newWeek > oldWeek && newDay < crop.growthDays) {
+      const weeksSkipped = newWeek - oldWeek;
+      console.log(`🔄 Skipped ${weeksSkipped} week(s), generating new tasks`);
+      
+      // Mark old incomplete tasks as expired and apply penalties
+      const expiredTasks = this.state.tasks.filter(t => !t.completed);
+      if (expiredTasks.length > 0) {
+        const expiredPenalty = expiredTasks.reduce((acc, task) => acc + task.penalty, 0);
+        healthChange -= expiredPenalty;
+        console.log(`⚠️ ${expiredTasks.length} expired tasks, penalty: ${expiredPenalty}`);
+      }
+      
+      // Generate fresh tasks
       newTasks = this.generateTasks();
       
-      // Add climate-based tasks
+      // Add climate-based tasks if real data available
       if (realClimateData) {
         const climateTasks = this.generateClimateBasedTasks(realClimateData, crop);
         newTasks = [...newTasks, ...climateTasks];

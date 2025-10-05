@@ -12,11 +12,12 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useGameState } from '@/hooks/useGameState';
 import { crops } from '@/data/crops';
 import { brazilStates } from '@/data/states';
-import { calculateViability } from '@/data/gameLogic';
+import { calculateViability, calculateProductionTime } from '@/data/gameLogic';
 import { useClimateData } from '@/hooks/useClimateData';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Satellite } from 'lucide-react';
+import { Satellite, Clock, Info } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ViabilityPopupProps {
   open: boolean;
@@ -40,6 +41,11 @@ export const ViabilityPopup = ({ open, onClose, stateId }: ViabilityPopupProps) 
     if (!crop || !state) return null;
     return calculateViability(crop, state, climateData || undefined);
   }, [crop, state, climateData]);
+
+  const productionTime = useMemo(() => {
+    if (!crop || !viability) return null;
+    return calculateProductionTime(crop, viability.successRate, climateData || undefined);
+  }, [crop, viability, climateData]);
 
   if (!state || !crop || !viability) return null;
 
@@ -111,6 +117,62 @@ export const ViabilityPopup = ({ open, onClose, stateId }: ViabilityPopupProps) 
                 <p className="font-sans text-sm font-semibold text-game-fg capitalize">{state.soil}</p>
               </div>
             </div>
+
+            {/* Production Time */}
+            {productionTime && (
+              <div className="flex items-center gap-3 p-2 bg-game-bg rounded-lg">
+                <Clock className={`w-6 h-6 ${
+                  productionTime.speed === 'fast' ? 'text-game-green-700' :
+                  productionTime.speed === 'slow' ? 'text-orange-600' : 'text-game-fg'
+                }`} />
+                <div className="flex-1">
+                  <div className="flex items-center gap-1">
+                    <p className="font-sans text-xs text-game-gray-700">
+                      {lang === 'pt' ? 'Tempo de Produção' : 'Production Time'}
+                    </p>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="w-3 h-3 text-game-gray-600 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[250px] bg-game-fg text-white p-3">
+                          <p className="font-sans text-xs mb-2">
+                            {lang === 'pt' 
+                              ? 'Estimativa baseada em dados NASA e condições climáticas' 
+                              : 'Estimate based on NASA data and climate conditions'}
+                          </p>
+                          <div className="font-sans text-xs space-y-1 text-game-gray-200">
+                            <p>
+                              {lang === 'pt' ? 'Tempo base:' : 'Base time:'} {productionTime.baseDays} {lang === 'pt' ? 'dias' : 'days'}
+                            </p>
+                            <p>
+                              {lang === 'pt' ? 'Ajuste climático:' : 'Climate adjustment:'} {((productionTime.adjustmentFactor - 1) * 100).toFixed(0)}%
+                            </p>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <p className="font-sans text-sm font-semibold text-game-fg">
+                      {productionTime.adjustedDays} {lang === 'pt' ? 'dias' : 'days'}
+                    </p>
+                    <span className={`font-sans text-xs px-2 py-0.5 rounded-full ${
+                      productionTime.speed === 'fast' ? 'bg-game-green-700 bg-opacity-20 text-game-green-700' :
+                      productionTime.speed === 'slow' ? 'bg-orange-600 bg-opacity-20 text-orange-600' :
+                      'bg-game-gray-200 text-game-gray-700'
+                    }`}>
+                      {productionTime.speed === 'fast' ? (lang === 'pt' ? 'Rápido' : 'Fast') :
+                       productionTime.speed === 'slow' ? (lang === 'pt' ? 'Lento' : 'Slow') :
+                       (lang === 'pt' ? 'Normal' : 'Normal')}
+                    </span>
+                  </div>
+                  <p className="font-sans text-xs text-game-gray-600 mt-0.5">
+                    {productionTime.explanation[lang]}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Result message */}
