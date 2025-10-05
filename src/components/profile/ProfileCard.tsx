@@ -46,18 +46,18 @@ export const ProfileCard = ({ profile, onPlay, onDelete }: ProfileCardProps) => 
   const crop = crops.find(c => c.id === profile.crop_id);
   const state = states.find(s => s.id === profile.state_id);
   
-  // Check if there's an active production
+  // Check if there's production data
   const productionState = profile.production_state as any;
-  const hasActiveProduction = productionState && !productionState.isComplete;
+  const hasProductionData = productionState && productionState.currentDay !== undefined && crop;
   
-  // Calculate progress based on production or states planted
-  const progress = hasActiveProduction && crop
-    ? (productionState.currentDay / crop.growthDays) * 100
-    : (profile.planted_states.length / states.length) * 100;
+  // Calculate progress based ONLY on production days
+  const progress = hasProductionData
+    ? Math.min((productionState.currentDay / crop.growthDays) * 100, 100)
+    : 0;
   
-  const progressLabel = hasActiveProduction && crop
+  const progressLabel = hasProductionData
     ? `${productionState.currentDay}/${crop.growthDays} dias`
-    : `${profile.planted_states.length}/${states.length} estados`;
+    : '0 dias';
   
   const formatDate = (date: string) => {
     const now = new Date();
@@ -101,7 +101,7 @@ export const ProfileCard = ({ profile, onPlay, onDelete }: ProfileCardProps) => 
       <div className="mb-4">
         <div className="flex justify-between items-center mb-1">
           <span className="font-sans text-xs text-game-gray-700">
-            {hasActiveProduction ? 'Progresso da Produção' : 'Progresso no Brasil'}
+            Progresso da Produção
           </span>
           <span className="font-pixel text-xs text-game-fg">
             {progressLabel}
