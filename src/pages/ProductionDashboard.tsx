@@ -403,10 +403,10 @@ export default function ProductionDashboard() {
         </div>
 
         {/* Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
                 <Heart
                   className={`w-5 h-5 ${
                     productionState.health > 70
@@ -420,68 +420,56 @@ export default function ProductionDashboard() {
                   {lang === 'pt' ? 'Saúde' : 'Health'}
                 </span>
               </div>
-              <button 
-                onClick={() => setInfoDialogOpen('health')}
-                className="p-1 hover:bg-game-gray-200 rounded-full transition-colors"
-                aria-label="Informações sobre Saúde"
-              >
-                <Info className="w-4 h-4 text-game-gray-600" />
-              </button>
+              <p className="font-pixel text-lg text-game-fg">{productionState.health}%</p>
+              <SimpleProgress
+                value={productionState.health}
+                className="mt-2 h-2"
+                indicatorClassName={
+                  productionState.health > 70
+                    ? 'bg-game-green-700'
+                    : productionState.health > 40
+                    ? 'bg-game-gold'
+                    : 'bg-game-brown'
+                }
+              />
             </div>
-            <p className="font-pixel text-lg text-game-fg">{productionState.health}%</p>
-            <SimpleProgress
-              value={productionState.health}
-              className="mt-2 h-2"
-              indicatorClassName={
-                productionState.health > 70
-                  ? 'bg-game-green-700'
-                  : productionState.health > 40
-                  ? 'bg-game-gold'
-                  : 'bg-game-brown'
-              }
-            />
-          </div>
 
-          <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
+            <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
                 <Droplets className="w-5 h-5 text-game-green-700" />
                 <span className="font-pixel text-[8px] text-game-fg">
                   {lang === 'pt' ? 'Água Usada' : 'Water Used'}
                 </span>
               </div>
-              <button 
-                onClick={() => setInfoDialogOpen('water')}
-                className="p-1 hover:bg-game-gray-200 rounded-full transition-colors"
-                aria-label="Informações sobre Água"
-              >
-                <Info className="w-4 h-4 text-game-gray-600" />
-              </button>
+              <p className="font-pixel text-lg text-game-fg">{Math.round(productionState.waterUsed)}L</p>
+              <p className="font-sans text-xs text-game-gray-600 mt-1">
+                {lang === 'pt' ? 'Total acumulado' : 'Total accumulated'}
+              </p>
             </div>
-            <p className="font-pixel text-lg text-game-fg">{Math.round(productionState.waterUsed)}L</p>
-            <p className="font-sans text-xs text-game-gray-600 mt-1">
-              {lang === 'pt' ? 'Total acumulado' : 'Total accumulated'}
-            </p>
-          </div>
 
-          <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
+            <div className="bg-game-bg border-4 border-game-fg rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
                 <Leaf className="w-5 h-5 text-game-green-700" />
                 <span className="font-pixel text-[8px] text-game-fg leading-tight">
                   Sustenta-<br />bilidade
                 </span>
               </div>
-              <button 
-                onClick={() => setInfoDialogOpen('sustainability')}
-                className="p-1 hover:bg-game-gray-200 rounded-full transition-colors"
-                aria-label="Informações sobre Sustentabilidade"
-              >
-                <Info className="w-4 h-4 text-game-gray-600" />
-              </button>
+              <p className="font-pixel text-lg text-game-fg">{productionState.sustainabilityScore}%</p>
+              <SimpleProgress value={productionState.sustainabilityScore} className="mt-2 h-2" />
             </div>
-            <p className="font-pixel text-lg text-game-fg">{productionState.sustainabilityScore}%</p>
-            <SimpleProgress value={productionState.sustainabilityScore} className="mt-2 h-2" />
+          </div>
+
+          {/* Info Button Below Metrics */}
+          <div className="flex justify-center">
+            <button 
+              onClick={() => setInfoDialogOpen('health')}
+              className="flex items-center gap-2 px-4 py-2 bg-game-bg border-2 border-game-fg rounded-lg hover:bg-game-gray-200 transition-colors"
+            >
+              <Info className="w-4 h-4 text-game-gray-600" />
+              <span className="font-sans text-sm text-game-fg">
+                {lang === 'pt' ? 'Entenda sobre suas métricas' : 'Understand your metrics'}
+              </span>
+            </button>
           </div>
         </div>
 
