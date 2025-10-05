@@ -7,7 +7,7 @@
  */
 
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Info } from 'lucide-react';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
@@ -32,15 +32,65 @@ export default function Results() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const { resetGame } = useGameState();
-  const { currentProfile } = useGameProfiles();
+  const { currentProfile, loadProfiles } = useGameProfiles();
   const [infoOpen, setInfoOpen] = useState(false);
+  const [profileData, setProfileData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Usar dados do perfil atual do Supabase ao invés do localStorage
-  const indicators = currentProfile?.indicators || { production: 10, sustainability: 10, water: 10 };
-  const totalScore = currentProfile?.total_score || 0;
-  const plantedStates = currentProfile?.planted_states || [];
+  // Carregar dados reais do perfil ativo do banco
+  useEffect(() => {
+    const loadActiveProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          setLoading(false);
+          return;
+        }
+
+        // Buscar o perfil ativo do banco de dados
+        const { data, error } = await supabase
+          .from('game_profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .single();
+
+        if (error) {
+          console.error('Error loading active profile:', error);
+          setLoading(false);
+          return;
+        }
+
+        console.log('📊 Loaded profile data from DB:', data);
+        setProfileData(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error in loadActiveProfile:', error);
+        setLoading(false);
+      }
+    };
+
+    loadActiveProfile();
+    loadProfiles(); // Também recarrega os perfis no hook
+  }, []);
+
+  // Usar dados do perfil carregado ou fallback para currentProfile
+  const activeProfile = profileData || currentProfile;
+  const indicators = activeProfile?.indicators || { production: 10, sustainability: 10, water: 10 };
+  const totalScore = activeProfile?.total_score || 0;
+  const plantedStates = activeProfile?.planted_states || [];
 
   const medalType = getMedalType(totalScore);
+
+  if (loading) {
+    return (
+      <GameLayout>
+        <div className="flex items-center justify-center h-full">
+          <div className="text-4xl animate-pulse">🌱</div>
+        </div>
+      </GameLayout>
+    );
+  }
 
   const handleReplay = () => {
     navigate('/profiles');
@@ -162,7 +212,7 @@ export default function Results() {
 
           {/* Global Ranking Section */}
           <div className="pt-6 border-t-2 border-game-gray-300">
-            <GlobalRanking currentProfileId={currentProfile?.id} />
+            <GlobalRanking currentProfileId={activeProfile?.id} />
           </div>
 
           {/* Replay button */}
