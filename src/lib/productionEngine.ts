@@ -265,6 +265,8 @@ export class ProductionEngine {
     const oldWeek = Math.floor(this.state.currentDay / 7);
     const newWeek = Math.floor(newDay / 7);
     
+    console.log(`📅 Week transition: ${oldWeek} -> ${newWeek}, currentDay: ${this.state.currentDay} -> ${newDay}`);
+    
     // If we skipped one or more weeks, generate fresh tasks
     if (newWeek > oldWeek && newDay < crop.growthDays) {
       const weeksSkipped = newWeek - oldWeek;
@@ -280,12 +282,18 @@ export class ProductionEngine {
       
       // Generate fresh tasks
       newTasks = this.generateTasks();
+      console.log(`✅ Generated ${newTasks.length} new tasks for week ${newWeek}`);
       
       // Add climate-based tasks if real data available
       if (realClimateData) {
         const climateTasks = this.generateClimateBasedTasks(realClimateData, crop);
-        newTasks = [...newTasks, ...climateTasks];
+        if (climateTasks.length > 0) {
+          newTasks = [...newTasks, ...climateTasks];
+          console.log(`🌦️ Added ${climateTasks.length} climate-based tasks`);
+        }
       }
+    } else {
+      console.log(`⏭️ No week change - keeping existing tasks`);
     }
     
     this.state = {

@@ -185,6 +185,8 @@ export default function ProductionDashboard() {
         health: finalState.health,
         waterUsed: finalState.waterUsed,
         sustainability: finalState.sustainabilityScore,
+        tasksCount: finalState.tasks?.length,
+        currentDay: finalState.currentDay,
       });
       
       setProductionState(finalState);
