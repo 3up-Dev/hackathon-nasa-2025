@@ -12,6 +12,7 @@ import { getMedalType } from '@/data/gameLogic';
 
 export interface RankingEntry {
   id: string;
+  username?: string;
   profile_name: string;
   crop_id: string;
   sector: string;

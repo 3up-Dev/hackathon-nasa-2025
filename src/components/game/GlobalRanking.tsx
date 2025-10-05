@@ -74,7 +74,7 @@ export const GlobalRanking = ({ currentProfileId }: GlobalRankingProps) => {
           <RankingCard
             key={entry.id}
             position={entry.ranking_position}
-            profileName={entry.profile_name}
+            profileName={entry.username ?? entry.profile_name}
             cropId={entry.crop_id}
             sector={entry.sector}
             stateId={entry.state_id}
