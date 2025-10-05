@@ -416,7 +416,7 @@ export default function ProductionDashboard() {
                       : 'text-game-brown'
                   }`}
                 />
-                <span className="font-pixel text-[10px] text-game-fg">
+                <span className="font-pixel text-[8px] text-game-fg">
                   {lang === 'pt' ? 'Saúde' : 'Health'}
                 </span>
               </div>
@@ -446,7 +446,7 @@ export default function ProductionDashboard() {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Droplets className="w-5 h-5 text-game-green-700" />
-                <span className="font-pixel text-[10px] text-game-fg">
+                <span className="font-pixel text-[8px] text-game-fg">
                   {lang === 'pt' ? 'Água Usada' : 'Water Used'}
                 </span>
               </div>
@@ -468,7 +468,7 @@ export default function ProductionDashboard() {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Leaf className="w-5 h-5 text-game-green-700" />
-                <span className="font-pixel text-[10px] text-game-fg leading-tight">
+                <span className="font-pixel text-[8px] text-game-fg leading-tight">
                   Sustenta-<br />bilidade
                 </span>
               </div>
