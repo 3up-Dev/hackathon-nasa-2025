@@ -70,7 +70,7 @@ export default function ProfileManager() {
   const filteredProfiles = useMemo(() => {
     return profiles.filter(profile => {
       const status = (profile as any).status || 'active';
-      return showCompleted ? status === 'completed' : status === 'active';
+      return showCompleted ? status === 'active' : status === 'completed';
     });
   }, [profiles, showCompleted]);
 
