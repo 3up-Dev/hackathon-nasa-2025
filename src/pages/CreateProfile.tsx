@@ -6,9 +6,9 @@
  * All logic, structure, and implementation were reviewed and validated by the human team.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ThermometerSun, Cloud, Mountain, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, ThermometerSun, Cloud, Mountain, CheckCircle, XCircle, Clock, Info } from 'lucide-react';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { BrazilMap } from '@/components/game/BrazilMap';
@@ -17,8 +17,9 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useClimateData } from '@/hooks/useClimateData';
 import { crops } from '@/data/crops';
 import { states } from '@/data/states';
-import { calculateViability } from '@/data/gameLogic';
+import { calculateViability, calculateProductionTime } from '@/data/gameLogic';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const sectors = [
   { id: 'agricultura', icon: '🌾', name: { pt: 'Agricultura', en: 'Agriculture' } },
@@ -97,6 +98,21 @@ export default function CreateProfile() {
       setViabilityResult(null);
     }
   }, [selectedCropData, selectedStateData, climateData, canCreate]);
+
+  // Calculate production time using NASA data
+  const productionTime = useMemo(() => {
+    if (!selectedCropData || !viabilityResult) return null;
+    
+    return calculateProductionTime(
+      selectedCropData, 
+      viabilityResult.successRate,
+      climateData ? {
+        temperature: climateData.temperature,
+        precipitation: climateData.precipitation,
+        humidity: climateData.humidity,
+      } : undefined
+    );
+  }, [selectedCropData, viabilityResult, climateData]);
 
   return (
     <GameLayout>
@@ -260,6 +276,58 @@ export default function CreateProfile() {
                   />
                 </div>
               </div>
+
+              {/* Production Time */}
+              {productionTime && (
+                <div className="bg-white rounded-lg p-3 border-2 border-game-gray-300">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Clock className={cn(
+                        "w-4 h-4",
+                        productionTime.speed === 'fast' ? 'text-game-green-700' :
+                        productionTime.speed === 'slow' ? 'text-orange-600' : 'text-game-fg'
+                      )} />
+                      <span className="font-sans text-xs text-game-gray-700">Tempo de Produção</span>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="w-3 h-3 text-game-gray-600 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[200px] bg-game-fg text-white p-2">
+                            <p className="font-sans text-[10px] mb-1">
+                              Estimativa NASA baseada em:
+                            </p>
+                            <div className="font-sans text-[9px] space-y-1 text-game-gray-200">
+                              <p>• Tempo base: {productionTime.baseDays} dias</p>
+                              <p>• Ajuste: {((productionTime.adjustmentFactor - 1) * 100).toFixed(0)}%</p>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    <span className={cn(
+                      "font-sans text-[9px] px-2 py-0.5 rounded-full",
+                      productionTime.speed === 'fast' ? 'bg-game-green-700 bg-opacity-20 text-game-green-700' :
+                      productionTime.speed === 'slow' ? 'bg-orange-600 bg-opacity-20 text-orange-600' :
+                      'bg-game-gray-200 text-game-gray-700'
+                    )}>
+                      {productionTime.speed === 'fast' ? 'Rápido' :
+                       productionTime.speed === 'slow' ? 'Lento' : 'Normal'}
+                    </span>
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-pixel text-sm text-game-fg">
+                      {productionTime.adjustedDays} dias
+                    </span>
+                    <span className="font-sans text-[10px] text-game-gray-600">
+                      (~{productionTime.estimatedMonths} {productionTime.estimatedMonths === 1 ? 'mês' : 'meses'})
+                    </span>
+                  </div>
+                  <p className="font-sans text-[9px] text-game-gray-600 mt-1">
+                    {productionTime.explanation.pt}
+                  </p>
+                </div>
+              )}
 
               {/* Data Source */}
               {climateData && (
