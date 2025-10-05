@@ -306,10 +306,10 @@ export default function CreateProfile() {
                       </TooltipProvider>
                     </div>
                     <span className={cn(
-                      "font-sans text-[9px] px-2 py-0.5 rounded-full",
-                      productionTime.speed === 'fast' ? 'bg-game-green-700 bg-opacity-20 text-game-green-700' :
-                      productionTime.speed === 'slow' ? 'bg-orange-600 bg-opacity-20 text-orange-600' :
-                      'bg-game-gray-200 text-game-gray-700'
+                      "font-sans text-[9px] px-2 py-0.5 rounded-full text-white",
+                      productionTime.speed === 'fast' ? 'bg-game-green-700' :
+                      productionTime.speed === 'slow' ? 'bg-orange-600' :
+                      'bg-game-gray-700'
                     )}>
                       {productionTime.speed === 'fast' ? 'Rápido' :
                        productionTime.speed === 'slow' ? 'Lento' : 'Normal'}
