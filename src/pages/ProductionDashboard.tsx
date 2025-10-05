@@ -35,7 +35,7 @@ export default function ProductionDashboard() {
   const [forceUpdate, setForceUpdate] = useState(0);
   const [lastAlertsUpdated, setLastAlertsUpdated] = useState<Date | null>(null);
   const [isLoadingAlerts, setIsLoadingAlerts] = useState(false);
-  const [infoDialogOpen, setInfoDialogOpen] = useState<'health' | 'water' | 'sustainability' | null>(null);
+  const [infoDialogOpen, setInfoDialogOpen] = useState<'metrics' | null>(null);
 
   // Keep a stable reference to updateCurrentProfile to avoid effect loops
   const updateProfileRef = useRef(updateCurrentProfile);
@@ -462,7 +462,7 @@ export default function ProductionDashboard() {
           {/* Info Button Below Metrics */}
           <div className="flex justify-center">
             <button 
-              onClick={() => setInfoDialogOpen('health')}
+              onClick={() => setInfoDialogOpen('metrics')}
               className="flex items-center gap-2 px-4 py-2 bg-game-bg border-2 border-game-fg rounded-lg hover:bg-game-gray-200 transition-colors"
             >
               <Info className="w-4 h-4 text-game-gray-600" />
@@ -528,144 +528,143 @@ export default function ProductionDashboard() {
         </PixelButton>
       </div>
 
-      {/* Info Dialogs */}
-      <Dialog open={infoDialogOpen === 'health'} onOpenChange={() => setInfoDialogOpen(null)}>
-        <DialogContent className="max-w-md">
+      {/* Metrics Info Dialog */}
+      <Dialog open={infoDialogOpen === 'metrics'} onOpenChange={() => setInfoDialogOpen(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 font-pixel text-base">
-              <Heart className="w-5 h-5 text-game-green-700" />
-              {lang === 'pt' ? 'Saúde da Produção' : 'Production Health'}
+            <DialogTitle className="font-pixel text-lg text-game-fg">
+              {lang === 'pt' ? '📊 Entenda suas Métricas' : '📊 Understand Your Metrics'}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 font-sans text-sm">
-            <div>
-              <h4 className="font-semibold text-game-fg mb-1">
-                {lang === 'pt' ? '🌱 O que é?' : '🌱 What is it?'}
-              </h4>
-              <p className="text-game-gray-700">
-                {lang === 'pt' 
-                  ? 'A Saúde indica a vitalidade geral da sua produção. Representa o quanto sua cultura está se desenvolvendo de forma saudável e produtiva.'
-                  : 'Health indicates the overall vitality of your production. It represents how well your crop is developing in a healthy and productive way.'}
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-game-fg mb-1">
-                {lang === 'pt' ? '📊 Como é calculado?' : '📊 How is it calculated?'}
-              </h4>
-              <ul className="text-game-gray-700 space-y-1 list-disc list-inside">
-                <li>{lang === 'pt' ? 'Tarefas não completadas reduzem a saúde' : 'Incomplete tasks reduce health'}</li>
-                <li>{lang === 'pt' ? 'Eventos climáticos extremos (NASA) causam danos' : 'Extreme climate events (NASA) cause damage'}</li>
-                <li>{lang === 'pt' ? 'Temperatura fora da faixa ideal penaliza' : 'Temperature outside ideal range penalizes'}</li>
-                <li>{lang === 'pt' ? 'Completar tarefas recupera a saúde' : 'Completing tasks restores health'}</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-game-fg mb-1">
-                {lang === 'pt' ? '⚠️ Impacto' : '⚠️ Impact'}
-              </h4>
-              <div className="space-y-2 text-game-gray-700">
-                <p>
-                  <span className="text-game-green-700 font-semibold">{'> 70%:'}</span>{' '}
-                  {lang === 'pt' ? 'Produção excelente, colheita máxima' : 'Excellent production, maximum harvest'}
-                </p>
-                <p>
-                  <span className="text-game-gold font-semibold">40-70%:</span>{' '}
-                  {lang === 'pt' ? 'Produção moderada, perdas parciais' : 'Moderate production, partial losses'}
-                </p>
-                <p>
-                  <span className="text-game-brown font-semibold">{'< 40%:'}</span>{' '}
-                  {lang === 'pt' ? 'Produção crítica, perdas significativas' : 'Critical production, significant losses'}
-                </p>
+          
+          <div className="space-y-6 font-sans text-sm">
+            {/* Saúde */}
+            <div className="border-b border-game-gray-300 pb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Heart className="w-5 h-5 text-game-green-700" />
+                <h3 className="font-pixel text-base text-game-fg">
+                  {lang === 'pt' ? 'Saúde' : 'Health'}
+                </h3>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <h4 className="font-semibold text-game-fg mb-1">
+                    {lang === 'pt' ? '🌱 O que é?' : '🌱 What is it?'}
+                  </h4>
+                  <p className="text-game-gray-700">
+                    {lang === 'pt' 
+                      ? 'A Saúde indica a vitalidade geral da sua produção. Representa o quanto sua cultura está se desenvolvendo de forma saudável e produtiva.'
+                      : 'Health indicates the overall vitality of your production. It represents how well your crop is developing in a healthy and productive way.'}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-game-fg mb-1">
+                    {lang === 'pt' ? '📊 Como é calculado?' : '📊 How is it calculated?'}
+                  </h4>
+                  <ul className="text-game-gray-700 space-y-1 list-disc list-inside text-xs">
+                    <li>{lang === 'pt' ? 'Tarefas não completadas reduzem a saúde' : 'Incomplete tasks reduce health'}</li>
+                    <li>{lang === 'pt' ? 'Eventos climáticos extremos (NASA) causam danos' : 'Extreme climate events (NASA) cause damage'}</li>
+                    <li>{lang === 'pt' ? 'Temperatura fora da faixa ideal penaliza' : 'Temperature outside ideal range penalizes'}</li>
+                    <li>{lang === 'pt' ? 'Completar tarefas recupera a saúde' : 'Completing tasks restores health'}</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-game-fg mb-1">
+                    {lang === 'pt' ? '⚠️ Impacto' : '⚠️ Impact'}
+                  </h4>
+                  <div className="text-game-gray-700 text-xs space-y-1">
+                    <p><span className="text-game-green-700 font-semibold">{'>70%:'}</span> {lang === 'pt' ? 'Produção excelente' : 'Excellent production'}</p>
+                    <p><span className="text-game-gold font-semibold">40-70%:</span> {lang === 'pt' ? 'Produção moderada' : 'Moderate production'}</p>
+                    <p><span className="text-game-brown font-semibold">{'<40%:'}</span> {lang === 'pt' ? 'Produção crítica' : 'Critical production'}</p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
-      <Dialog open={infoDialogOpen === 'water'} onOpenChange={() => setInfoDialogOpen(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 font-pixel text-base">
-              <Droplets className="w-5 h-5 text-game-green-700" />
-              {lang === 'pt' ? 'Água Usada' : 'Water Used'}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 font-sans text-sm">
-            <div>
-              <h4 className="font-semibold text-game-fg mb-1">
-                {lang === 'pt' ? '💧 O que é?' : '💧 What is it?'}
-              </h4>
-              <p className="text-game-gray-700">
-                {lang === 'pt' 
-                  ? 'Quantidade total de água consumida durante todo o ciclo de produção, incluindo irrigação e necessidades da cultura.'
-                  : 'Total amount of water consumed during the entire production cycle, including irrigation and crop needs.'}
-              </p>
+            {/* Água Usada */}
+            <div className="border-b border-game-gray-300 pb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Droplets className="w-5 h-5 text-game-green-700" />
+                <h3 className="font-pixel text-base text-game-fg">
+                  {lang === 'pt' ? 'Água Usada' : 'Water Used'}
+                </h3>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <h4 className="font-semibold text-game-fg mb-1">
+                    {lang === 'pt' ? '💧 O que é?' : '💧 What is it?'}
+                  </h4>
+                  <p className="text-game-gray-700">
+                    {lang === 'pt' 
+                      ? 'Quantidade total de água consumida durante todo o ciclo de produção, incluindo irrigação e necessidades da cultura.'
+                      : 'Total amount of water consumed during the entire production cycle, including irrigation and crop needs.'}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-game-fg mb-1">
+                    {lang === 'pt' ? '📊 Como é calculado?' : '📊 How is it calculated?'}
+                  </h4>
+                  <ul className="text-game-gray-700 space-y-1 list-disc list-inside text-xs">
+                    <li>{lang === 'pt' ? 'Consumo base diário da cultura' : 'Daily base consumption of the crop'}</li>
+                    <li>{lang === 'pt' ? 'Evapotranspiração real (dados NASA)' : 'Real evapotranspiration (NASA data)'}</li>
+                    <li>{lang === 'pt' ? 'Coeficiente da cultura por estágio' : 'Crop coefficient per stage'}</li>
+                    <li>{lang === 'pt' ? 'Eventos climáticos aumentam consumo' : 'Climate events increase consumption'}</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-game-fg mb-1">
+                    {lang === 'pt' ? '🌍 Impacto' : '🌍 Impact'}
+                  </h4>
+                  <p className="text-game-gray-700 text-xs">
+                    {lang === 'pt' 
+                      ? 'O uso eficiente de água melhora seu score de sustentabilidade. Gerir bem a irrigação é essencial.'
+                      : 'Efficient water use improves your sustainability score. Managing irrigation well is essential.'}
+                  </p>
+                </div>
+              </div>
             </div>
-            <div>
-              <h4 className="font-semibold text-game-fg mb-1">
-                {lang === 'pt' ? '📊 Como é calculado?' : '📊 How is it calculated?'}
-              </h4>
-              <ul className="text-game-gray-700 space-y-1 list-disc list-inside">
-                <li>{lang === 'pt' ? 'Consumo base diário da cultura' : 'Daily base consumption of the crop'}</li>
-                <li>{lang === 'pt' ? 'Evapotranspiração real (dados NASA)' : 'Real evapotranspiration (NASA data)'}</li>
-                <li>{lang === 'pt' ? 'Coeficiente da cultura por estágio' : 'Crop coefficient per stage'}</li>
-                <li>{lang === 'pt' ? 'Eventos climáticos (seca, calor) aumentam consumo' : 'Climate events (drought, heat) increase consumption'}</li>
-                <li>{lang === 'pt' ? 'Chuvas reduzem necessidade de irrigação' : 'Rainfall reduces irrigation needs'}</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-game-fg mb-1">
-                {lang === 'pt' ? '🌍 Impacto' : '🌍 Impact'}
-              </h4>
-              <p className="text-game-gray-700">
-                {lang === 'pt' 
-                  ? 'O uso eficiente de água melhora seu score de sustentabilidade. Alto consumo de água sem necessidade penaliza a pontuação final. Gerir bem a irrigação é essencial para agricultura sustentável.'
-                  : 'Efficient water use improves your sustainability score. High water consumption without need penalizes the final score. Managing irrigation well is essential for sustainable agriculture.'}
-              </p>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
-      <Dialog open={infoDialogOpen === 'sustainability'} onOpenChange={() => setInfoDialogOpen(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 font-pixel text-base">
-              <Leaf className="w-5 h-5 text-game-green-700" />
-              {lang === 'pt' ? 'Sustentabilidade' : 'Sustainability'}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 font-sans text-sm">
+            {/* Sustentabilidade */}
             <div>
-              <h4 className="font-semibold text-game-fg mb-1">
-                {lang === 'pt' ? '🌿 O que é?' : '🌿 What is it?'}
-              </h4>
-              <p className="text-game-gray-700">
-                {lang === 'pt' 
-                  ? 'Mede o quão sustentável e responsável está sendo sua produção agrícola, considerando práticas ambientais e eficiência de recursos.'
-                  : 'Measures how sustainable and responsible your agricultural production is, considering environmental practices and resource efficiency.'}
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-game-fg mb-1">
-                {lang === 'pt' ? '📊 Como é calculado?' : '📊 How is it calculated?'}
-              </h4>
-              <ul className="text-game-gray-700 space-y-1 list-disc list-inside">
-                <li>{lang === 'pt' ? 'Completar tarefas aumenta +2% por tarefa' : 'Completing tasks increases +2% per task'}</li>
-                <li>{lang === 'pt' ? 'Eventos climáticos extremos reduzem score' : 'Extreme climate events reduce score'}</li>
-                <li>{lang === 'pt' ? 'Uso eficiente de água melhora pontuação' : 'Efficient water use improves score'}</li>
-                <li>{lang === 'pt' ? 'Escolher culturas adequadas ao clima local' : 'Choosing crops suited to local climate'}</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-game-fg mb-1">
-                {lang === 'pt' ? '🏆 Impacto' : '🏆 Impact'}
-              </h4>
-              <p className="text-game-gray-700">
-                {lang === 'pt' 
-                  ? 'A Sustentabilidade representa 40% da sua pontuação final. Produzir de forma sustentável garante melhores medalhas (Ouro, Prata, Bronze) e ranking global mais alto.'
-                  : 'Sustainability represents 40% of your final score. Producing sustainably ensures better medals (Gold, Silver, Bronze) and higher global ranking.'}
-              </p>
+              <div className="flex items-center gap-2 mb-3">
+                <Leaf className="w-5 h-5 text-game-green-700" />
+                <h3 className="font-pixel text-base text-game-fg">
+                  {lang === 'pt' ? 'Sustentabilidade' : 'Sustainability'}
+                </h3>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <h4 className="font-semibold text-game-fg mb-1">
+                    {lang === 'pt' ? '🌿 O que é?' : '🌿 What is it?'}
+                  </h4>
+                  <p className="text-game-gray-700">
+                    {lang === 'pt' 
+                      ? 'Mede o quão sustentável está sendo sua produção agrícola, considerando práticas ambientais e eficiência de recursos.'
+                      : 'Measures how sustainable your agricultural production is, considering environmental practices and resource efficiency.'}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-game-fg mb-1">
+                    {lang === 'pt' ? '📊 Como é calculado?' : '📊 How is it calculated?'}
+                  </h4>
+                  <ul className="text-game-gray-700 space-y-1 list-disc list-inside text-xs">
+                    <li>{lang === 'pt' ? 'Completar tarefas aumenta +2% por tarefa' : 'Completing tasks increases +2% per task'}</li>
+                    <li>{lang === 'pt' ? 'Eventos climáticos extremos reduzem score' : 'Extreme climate events reduce score'}</li>
+                    <li>{lang === 'pt' ? 'Uso eficiente de água melhora pontuação' : 'Efficient water use improves score'}</li>
+                    <li>{lang === 'pt' ? 'Escolher culturas adequadas ao clima local' : 'Choosing crops suited to local climate'}</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-game-fg mb-1">
+                    {lang === 'pt' ? '🏆 Impacto' : '🏆 Impact'}
+                  </h4>
+                  <p className="text-game-gray-700 text-xs">
+                    {lang === 'pt' 
+                      ? 'Representa 40% da sua pontuação final. Produzir de forma sustentável garante melhores medalhas e ranking mais alto.'
+                      : 'Represents 40% of your final score. Producing sustainably ensures better medals and higher ranking.'}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </DialogContent>
