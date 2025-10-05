@@ -20,6 +20,8 @@ import { CalendarIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/useLanguage';
+import { LanguageToggle } from '@/components/layout/LanguageToggle';
 
 const registrationSchema = z.object({
   fullName: z.string().trim().min(3, 'Nome deve ter pelo menos 3 caracteres').max(100),
@@ -34,6 +36,7 @@ const registrationSchema = z.object({
 });
 
 export default function Registration() {
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -113,7 +116,7 @@ export default function Registration() {
 
     try {
       if (!birthDate) {
-        setError('Selecione sua data de nascimento');
+        setError(t('register_date_error'));
         setLoading(false);
         return;
       }
@@ -188,10 +191,15 @@ export default function Registration() {
           ←
         </button>
 
+        {/* Language Toggle */}
+        <div className="absolute top-4 right-4 z-50">
+          <LanguageToggle />
+        </div>
+
         <div className="flex flex-col items-center justify-center min-h-full p-6">
           <div className="w-full max-w-md mx-auto">
             <h1 className="font-pixel text-base md:text-lg text-game-fg text-center mb-6">
-              Criar Conta
+              {t('register_title')}
             </h1>
 
             {/* Decorative elements */}
@@ -212,7 +220,7 @@ export default function Registration() {
             {success && (
               <div className="mb-4 p-3 bg-game-green-400/20 border-2 border-game-green-700 rounded-lg">
                 <p className="font-sans text-sm text-game-green-700 text-center">
-                  Conta criada com sucesso! Redirecionando para login...
+                  {t('register_success')}
                 </p>
               </div>
             )}
@@ -220,7 +228,7 @@ export default function Registration() {
             <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
               <div>
                 <Label htmlFor="fullName" className="font-pixel text-xs text-game-fg">
-                  Nome Completo
+                  {t('register_fullname')}
                 </Label>
                 <Input
                   id="fullName"
@@ -235,7 +243,7 @@ export default function Registration() {
 
               <div>
                 <Label htmlFor="birthDate" className="font-pixel text-xs text-game-fg">
-                  Data de Nascimento
+                  {t('register_birthdate')}
                 </Label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -248,7 +256,7 @@ export default function Registration() {
                       disabled={loading}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {birthDate ? format(birthDate, "dd/MM/yyyy") : <span>Selecione a data</span>}
+                      {birthDate ? format(birthDate, "dd/MM/yyyy") : <span>{t('register_select_date')}</span>}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -268,7 +276,7 @@ export default function Registration() {
 
               <div>
                 <Label htmlFor="email" className="font-pixel text-xs text-game-fg">
-                  E-mail
+                  {t('login_email')}
                 </Label>
                 <Input
                   id="email"
@@ -283,7 +291,7 @@ export default function Registration() {
 
               <div>
                 <Label htmlFor="phone" className="font-pixel text-xs text-game-fg">
-                  Telefone
+                  {t('register_phone')}
                 </Label>
                 <Input
                   id="phone"
@@ -300,7 +308,7 @@ export default function Registration() {
 
               <div>
                 <Label htmlFor="password" className="font-pixel text-xs text-game-fg">
-                  Senha
+                  {t('register_password')}
                 </Label>
                 <Input
                   id="password"
@@ -321,7 +329,7 @@ export default function Registration() {
                   className="w-full"
                   disabled={loading}
                 >
-                  {loading ? 'Criando...' : 'Criar Conta'}
+                  {loading ? t('register_loading') : t('register_button')}
                 </PixelButton>
               </div>
 
@@ -332,7 +340,7 @@ export default function Registration() {
                   className="font-sans text-sm text-game-gray-700 hover:text-game-fg transition-colors"
                   disabled={loading}
                 >
-                  Já tem conta? Entrar
+                  {t('register_has_account')}
                 </button>
               </div>
             </form>

@@ -14,8 +14,11 @@ import { PixelButton } from '@/components/layout/PixelButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/hooks/useLanguage';
+import { LanguageToggle } from '@/components/layout/LanguageToggle';
 
 export default function Login() {
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -117,10 +120,15 @@ export default function Login() {
           ←
         </button>
 
+        {/* Language Toggle */}
+        <div className="absolute top-4 right-4 z-50">
+          <LanguageToggle />
+        </div>
+
         <div className="flex flex-col items-center justify-center min-h-full p-6">
           <div className="w-full max-w-md mx-auto">
             <h1 className="font-pixel text-base md:text-lg text-game-fg text-center mb-6">
-              Entrar
+              {t('login_title')}
             </h1>
 
             {/* Decorative elements */}
@@ -143,7 +151,7 @@ export default function Login() {
             {success && (
               <div className="mb-4 p-3 bg-game-green-400/20 border-2 border-game-green-700 rounded-lg">
                 <p className="font-sans text-sm text-game-green-700 text-center">
-                  Login realizado com sucesso! Redirecionando...
+                  {t('login_success')}
                 </p>
               </div>
             )}
@@ -151,7 +159,7 @@ export default function Login() {
             <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
               <div>
                 <Label htmlFor="email" className="font-pixel text-xs text-game-fg">
-                  E-mail
+                  {t('login_email')}
                 </Label>
                 <Input
                   id="email"
@@ -166,7 +174,7 @@ export default function Login() {
 
               <div>
                 <Label htmlFor="password" className="font-pixel text-xs text-game-fg">
-                  Senha
+                  {t('login_password')}
                 </Label>
                 <Input
                   id="password"
@@ -186,7 +194,7 @@ export default function Login() {
                   className="w-full"
                   disabled={loading}
                 >
-                  {loading ? 'Entrando...' : 'Entrar'}
+                  {loading ? t('login_loading') : t('login_button')}
                 </PixelButton>
 
                 <div className="text-center">
@@ -196,7 +204,7 @@ export default function Login() {
                     className="font-sans text-sm text-game-gray-700 hover:text-game-fg transition-colors"
                     disabled={loading}
                   >
-                    Não tem conta? Criar conta
+                    {t('login_no_account')}
                   </button>
                 </div>
               </div>

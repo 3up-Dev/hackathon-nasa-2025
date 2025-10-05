@@ -55,6 +55,43 @@ export const translations = {
     info_sustainability: "Mede suas práticas sustentáveis e impacto ambiental positivo.",
     info_water: "Avalia sua eficiência no uso de recursos hídricos.",
     info_global_ranking: "Compare seu desempenho com outros jogadores ao redor do mundo.",
+    
+    // Authentication pages
+    login_title: "Entrar",
+    login_email: "E-mail",
+    login_password: "Senha",
+    login_button: "Entrar",
+    login_loading: "Entrando...",
+    login_success: "Login realizado com sucesso! Redirecionando...",
+    login_no_account: "Não tem conta? Criar conta",
+    
+    register_title: "Criar Conta",
+    register_fullname: "Nome Completo",
+    register_birthdate: "Data de Nascimento",
+    register_phone: "Telefone",
+    register_password: "Senha",
+    register_button: "Criar Conta",
+    register_loading: "Criando...",
+    register_success: "Conta criada com sucesso! Redirecionando para login...",
+    register_has_account: "Já tem conta? Entrar",
+    register_select_date: "Selecione a data",
+    register_date_error: "Selecione sua data de nascimento",
+    
+    // Home page
+    home_title: "Plantando o Futuro",
+    home_continue: "Continuar Jogo",
+    home_logout: "Sair",
+    home_login: "Entrar",
+    home_register: "Criar Conta",
+    home_footer: "Hackathon NASA 2025",
+    
+    // Profile Manager
+    profiles_title: "Meus Perfis de Produção",
+    profiles_none: "Nenhum perfil criado",
+    profiles_create_first: "Crie seu primeiro perfil para começar a jogar!",
+    profiles_create_button: "Criar Primeiro Perfil",
+    profiles_new_button: "Criar Novo Perfil",
+    profiles_view_results: "Ver Resultados Globais",
   },
   en: {
     app_title: "Planting the Future",
@@ -104,6 +141,43 @@ export const translations = {
     info_sustainability: "Measures your sustainable practices and positive environmental impact.",
     info_water: "Evaluates your efficiency in using water resources.",
     info_global_ranking: "Compare your performance with other players around the world.",
+    
+    // Authentication pages
+    login_title: "Sign In",
+    login_email: "Email",
+    login_password: "Password",
+    login_button: "Sign In",
+    login_loading: "Signing in...",
+    login_success: "Login successful! Redirecting...",
+    login_no_account: "No account? Sign up",
+    
+    register_title: "Create Account",
+    register_fullname: "Full Name",
+    register_birthdate: "Birth Date",
+    register_phone: "Phone",
+    register_password: "Password",
+    register_button: "Create Account",
+    register_loading: "Creating...",
+    register_success: "Account created successfully! Redirecting to login...",
+    register_has_account: "Already have an account? Sign in",
+    register_select_date: "Select date",
+    register_date_error: "Select your birth date",
+    
+    // Home page
+    home_title: "Planting the Future",
+    home_continue: "Continue Game",
+    home_logout: "Logout",
+    home_login: "Sign In",
+    home_register: "Create Account",
+    home_footer: "NASA Hackathon 2025",
+    
+    // Profile Manager
+    profiles_title: "My Production Profiles",
+    profiles_none: "No profiles created",
+    profiles_create_first: "Create your first profile to start playing!",
+    profiles_create_button: "Create First Profile",
+    profiles_new_button: "Create New Profile",
+    profiles_view_results: "View Global Results",
   },
 };
 

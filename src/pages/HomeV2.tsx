@@ -12,8 +12,11 @@ import { GameLayout } from '@/components/layout/GameLayout';
 import { PixelButton } from '@/components/layout/PixelButton';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
+import { useLanguage } from '@/hooks/useLanguage';
+import { LanguageToggle } from '@/components/layout/LanguageToggle';
 
 export default function Home() {
+  const { t } = useLanguage();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -49,12 +52,17 @@ export default function Home() {
 
   return (
     <GameLayout>
-      <div className="flex flex-col items-center justify-center h-full bg-gradient-to-b from-game-bg to-game-green-400 to-opacity-20 p-8">
+      <div className="relative flex flex-col items-center justify-center h-full bg-gradient-to-b from-game-bg to-game-green-400 to-opacity-20 p-8">
+        {/* Language Toggle */}
+        <div className="absolute top-4 right-4 z-50">
+          <LanguageToggle />
+        </div>
+
         {/* Logo */}
         <div className="mb-8 animate-fade-in">
           <div className="text-8xl mb-4 animate-pulse">🌱</div>
           <h1 className="font-pixel text-lg text-game-fg text-center leading-relaxed px-4">
-            Plantando o Futuro
+            {t('home_title')}
           </h1>
         </div>
 
@@ -77,7 +85,7 @@ export default function Home() {
                 onClick={() => window.location.href = '/profiles'}
                 className="w-full"
               >
-                Continuar Jogo
+                {t('home_continue')}
               </PixelButton>
               <PixelButton
                 variant="secondary"
@@ -85,7 +93,7 @@ export default function Home() {
                 onClick={handleLogout}
                 className="w-full"
               >
-                Sair
+                {t('home_logout')}
               </PixelButton>
             </>
           ) : (
@@ -96,7 +104,7 @@ export default function Home() {
                 onClick={() => window.location.href = '/login'}
                 className="w-full"
               >
-                Entrar
+                {t('home_login')}
               </PixelButton>
               <PixelButton
                 variant="secondary"
@@ -104,7 +112,7 @@ export default function Home() {
                 onClick={() => window.location.href = '/registration'}
                 className="w-full"
               >
-                Criar Conta
+                {t('home_register')}
               </PixelButton>
             </>
           )}
@@ -112,7 +120,7 @@ export default function Home() {
 
         {/* Footer decoration */}
         <div className="absolute bottom-8 text-xs font-sans text-game-gray-700 opacity-50">
-          Hackathon NASA 2025
+          {t('home_footer')}
         </div>
       </div>
     </GameLayout>

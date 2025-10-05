@@ -16,6 +16,7 @@ import { UserStatsCard } from '@/components/profile/UserStatsCard';
 import { useGameProfiles } from '@/hooks/useGameProfiles';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/hooks/useLanguage';
+import { LanguageToggle } from '@/components/layout/LanguageToggle';
 
 export default function ProfileManager() {
   const navigate = useNavigate();
@@ -88,14 +89,17 @@ export default function ProfileManager() {
       <div className="h-full flex flex-col p-4 overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h1 className="font-pixel text-sm text-game-fg">
-            🌱 Meus Perfis de Produção
+            🌱 {t('profiles_title')}
           </h1>
-          <button
-            onClick={handleLogout}
-            className="text-game-gray-700 hover:text-game-fg transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <LanguageToggle />
+            <button
+              onClick={handleLogout}
+              className="text-game-gray-700 hover:text-game-fg transition-colors"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Card de Estatísticas do Usuário */}
@@ -117,14 +121,14 @@ export default function ProfileManager() {
               <span className="animate-bounce delay-0">🐟</span>
             </div>
             <h2 className="font-pixel text-sm text-game-fg mb-2">
-              Nenhum perfil criado
+              {t('profiles_none')}
             </h2>
             <p className="font-sans text-sm text-game-gray-700 mb-6 max-w-xs">
-              Crie seu primeiro perfil para começar a jogar!
+              {t('profiles_create_first')}
             </p>
             <PixelButton onClick={handleCreateProfile} className="flex items-center gap-2">
               <Plus className="w-5 h-5" />
-              Criar Primeiro Perfil
+              {t('profiles_create_button')}
             </PixelButton>
           </div>
         ) : (
@@ -135,7 +139,7 @@ export default function ProfileManager() {
               className="w-full flex items-center justify-center gap-2 mb-4"
             >
               <Trophy className="w-5 h-5" />
-              Ver Resultados Globais
+              {t('profiles_view_results')}
             </PixelButton>
 
             <div className="grid gap-4 mb-6">
@@ -155,7 +159,7 @@ export default function ProfileManager() {
                 className="w-full flex items-center justify-center gap-2"
               >
                 <Plus className="w-5 h-5" />
-                Criar Novo Perfil
+                {t('profiles_new_button')}
               </PixelButton>
             </div>
           </>
