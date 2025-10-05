@@ -15,6 +15,7 @@ import { IndicatorCard } from '@/components/game/IndicatorCard';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useProductionCycle } from '@/hooks/useProductionCycle';
 import { useGameState } from '@/hooks/useGameState';
+import { useGameProfiles } from '@/hooks/useGameProfiles';
 import { crops, Crop } from '@/data/crops';
 import { brazilStates, BrazilState } from '@/data/states';
 import { getMedalType } from '@/data/gameLogic';
@@ -29,6 +30,7 @@ export default function HarvestResults() {
 
   const { health, sustainabilityScore, waterUsed, resetProduction } = useProductionCycle();
   const { addPlanting } = useGameState();
+  const { currentProfile, updateCurrentProfile } = useGameProfiles();
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -81,13 +83,38 @@ export default function HarvestResults() {
                        crop.waterConsumption === 'medium' ? 3.0 : 3.5;
   const profit = Math.round(productionAmount * pricePerUnit * (quality === 'A' ? 1.2 : quality === 'B' ? 1.0 : 0.8));
 
-  const handleContinue = () => {
-    // Adicionar ao estado global do jogo
+  const handleContinue = async () => {
+    // Adicionar ao estado global do jogo (localStorage - manter para compatibilidade)
     addPlanting(state.id, {
       production: Math.round(productionScore / 10),
       sustainability: Math.round(sustainabilityScore / 10),
       water: Math.round(waterEfficiency / 10),
     });
+
+    // Atualizar perfil no Supabase com os novos indicadores
+    if (currentProfile) {
+      const newIndicators = {
+        production: Math.min(100, currentProfile.indicators.production + Math.round(productionScore / 10)),
+        sustainability: Math.min(100, currentProfile.indicators.sustainability + Math.round(sustainabilityScore / 10)),
+        water: Math.min(100, currentProfile.indicators.water + Math.round(waterEfficiency / 10)),
+      };
+
+      const newPlantedStates = currentProfile.planted_states.includes(state.id)
+        ? currentProfile.planted_states
+        : [...currentProfile.planted_states, state.id];
+
+      const newTotalScore = Math.round(
+        newIndicators.production * 0.4 +
+        newIndicators.sustainability * 0.4 +
+        newIndicators.water * 0.2
+      );
+
+      await updateCurrentProfile({
+        indicators: newIndicators,
+        planted_states: newPlantedStates,
+        total_score: newTotalScore,
+      });
+    }
 
     // Resetar produção
     resetProduction();

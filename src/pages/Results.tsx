@@ -31,9 +31,14 @@ import {
 export default function Results() {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const { indicators, totalScore, plantedStates, resetGame } = useGameState();
+  const { resetGame } = useGameState();
   const { currentProfile } = useGameProfiles();
   const [infoOpen, setInfoOpen] = useState(false);
+
+  // Usar dados do perfil atual do Supabase ao invés do localStorage
+  const indicators = currentProfile?.indicators || { production: 10, sustainability: 10, water: 10 };
+  const totalScore = currentProfile?.total_score || 0;
+  const plantedStates = currentProfile?.planted_states || [];
 
   const medalType = getMedalType(totalScore);
 
