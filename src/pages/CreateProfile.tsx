@@ -130,7 +130,7 @@ export default function CreateProfile() {
                     setSelectedCrop(null); // Reset crop when changing sector
                   }}
                   className={cn(
-                    'flex flex-col items-center justify-center p-2 rounded-lg border-4 transition-all',
+                    'flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all',
                     selectedSector === sector.id
                       ? 'border-game-green-700 bg-game-green-400 bg-opacity-20 scale-105 shadow-lg'
                       : 'border-game-gray-300 hover:border-game-green-400 hover:scale-105 bg-white'
@@ -157,7 +157,7 @@ export default function CreateProfile() {
                     key={crop.id}
                     onClick={() => setSelectedCrop(crop.id)}
                     className={cn(
-                      'flex flex-col items-center justify-center p-2 rounded-lg border-4 transition-all',
+                      'flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all',
                       selectedCrop === crop.id
                         ? 'border-game-green-700 bg-game-green-400 bg-opacity-20 scale-105 shadow-lg'
                         : 'border-game-gray-300 hover:border-game-green-400 hover:scale-105 bg-white'
