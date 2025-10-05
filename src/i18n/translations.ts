@@ -92,6 +92,12 @@ export const translations = {
     profiles_create_button: "Criar Primeiro Perfil",
     profiles_new_button: "Criar Novo Perfil",
     profiles_view_results: "Ver Resultados Globais",
+    profiles_show_completed: "Mostrar Perfis Concluídos",
+    profiles_hide_completed: "Ocultar Perfis Concluídos",
+    profiles_status_active: "Ativo",
+    profiles_status_completed: "Concluído",
+    profiles_button_continue: "Continuar",
+    profiles_button_details: "Ver Detalhes",
   },
   en: {
     app_title: "Planting the Future",
@@ -178,6 +184,12 @@ export const translations = {
     profiles_create_button: "Create First Profile",
     profiles_new_button: "Create New Profile",
     profiles_view_results: "View Global Results",
+    profiles_show_completed: "Show Completed Profiles",
+    profiles_hide_completed: "Hide Completed Profiles",
+    profiles_status_active: "Active",
+    profiles_status_completed: "Completed",
+    profiles_button_continue: "Continue",
+    profiles_button_details: "View Details",
   },
 };
 

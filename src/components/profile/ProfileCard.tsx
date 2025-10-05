@@ -6,11 +6,13 @@
  * All logic, structure, and implementation were reviewed and validated by the human team.
  */
 
+import { useState } from 'react';
 import { Trash2, Play } from 'lucide-react';
 import { crops } from '@/data/crops';
 import { states } from '@/data/states';
 import { useLanguage } from '@/hooks/useLanguage';
 import { PixelButton } from '@/components/layout/PixelButton';
+import { cn } from '@/lib/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,6 +35,7 @@ interface ProfileCardProps {
     total_score: number;
     planted_states: string[];
     is_active: boolean;
+    status?: string;
     last_played_at: string;
     production_state?: any;
   };
@@ -41,10 +44,13 @@ interface ProfileCardProps {
 }
 
 export const ProfileCard = ({ profile, onPlay, onDelete }: ProfileCardProps) => {
-  const { lang } = useLanguage();
+  const { t, lang } = useLanguage();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   
   const crop = crops.find(c => c.id === profile.crop_id);
   const state = states.find(s => s.id === profile.state_id);
+  const status = profile.status || 'active';
+  const isCompleted = status === 'completed';
   
   // Check if there's production data
   const productionState = profile.production_state as any;
@@ -82,20 +88,22 @@ export const ProfileCard = ({ profile, onPlay, onDelete }: ProfileCardProps) => 
         <div className="flex items-center gap-3">
           <span className="text-4xl">{crop?.icon || '🌱'}</span>
           <div>
-            <h3 className="font-pixel text-sm text-game-fg mb-1">
-              {profile.profile_name}
-            </h3>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-pixel text-xs text-game-fg">{profile.profile_name}</span>
+              <span className={cn(
+                "px-2 py-0.5 font-pixel text-[8px] rounded",
+                isCompleted 
+                  ? "bg-game-gold text-white" 
+                  : "bg-game-green-700 text-white"
+              )}>
+                {isCompleted ? t('profiles_status_completed') : t('profiles_status_active')}
+              </span>
+            </div>
             <p className="font-sans text-xs text-game-gray-700">
               {crop?.name[lang]} • {state?.name}
             </p>
           </div>
         </div>
-        
-        {profile.is_active && (
-          <span className="bg-game-green-400 text-white font-pixel text-[8px] px-2 py-1 rounded">
-            ATIVO
-          </span>
-        )}
       </div>
 
       <div className="mb-4">
@@ -130,7 +138,7 @@ export const ProfileCard = ({ profile, onPlay, onDelete }: ProfileCardProps) => 
           className="flex-1 flex items-center justify-center gap-2"
         >
           <Play className="w-4 h-4" />
-          Continuar
+          {isCompleted ? t('profiles_button_details') : t('profiles_button_continue')}
         </PixelButton>
 
         <AlertDialog>

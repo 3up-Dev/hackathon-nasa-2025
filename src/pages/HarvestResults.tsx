@@ -120,14 +120,17 @@ export default function HarvestResults() {
         planted_states: newPlantedStates,
         total_score: newTotalScore,
         production_state: null, // CRITICAL: Clear production state to allow new cycle
-      });
+      } as any);
+      
+      // Atualizar status separadamente para completed
+      await updateCurrentProfile({ status: 'completed' } as any);
     }
 
     // Resetar produção no localStorage
     resetProduction();
 
-    // Navegar para o mapa
-    navigate('/game');
+    // Navegar para o gerenciador de perfis
+    navigate('/profiles');
   };
 
   const handleViewResults = () => {

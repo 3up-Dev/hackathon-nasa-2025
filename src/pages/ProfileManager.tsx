@@ -6,7 +6,7 @@
  * All logic, structure, and implementation were reviewed and validated by the human team.
  */
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, LogOut, Trophy } from 'lucide-react';
 import { GameLayout } from '@/components/layout/GameLayout';
@@ -22,6 +22,7 @@ export default function ProfileManager() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const { profiles, loading, loadProfiles, setActiveProfile, deleteProfile } = useGameProfiles();
+  const [showCompleted, setShowCompleted] = useState(false);
 
   useEffect(() => {
     loadProfiles();
@@ -37,6 +38,13 @@ export default function ProfileManager() {
     
     // Buscar dados do perfil para navegação
     const profile = profiles.find(p => p.id === profileId);
+    const status = (profile as any)?.status || 'active';
+    
+    // Se o perfil está concluído, mostrar resultados da colheita
+    if (status === 'completed' && profile?.crop_id && profile?.state_id) {
+      navigate(`/harvest?crop=${profile.crop_id}&state=${profile.state_id}`);
+      return;
+    }
     
     if (profile && profile.crop_id && profile.state_id) {
       // Navegar para a tela de produção com os parâmetros corretos
@@ -57,6 +65,14 @@ export default function ProfileManager() {
   const handleViewResults = () => {
     navigate('/results');
   };
+
+  // Filtrar perfis baseado no status
+  const filteredProfiles = useMemo(() => {
+    return profiles.filter(profile => {
+      const status = (profile as any).status || 'active';
+      return showCompleted ? status === 'completed' : status === 'active';
+    });
+  }, [profiles, showCompleted]);
 
   // Calcular estatísticas do usuário
   const userStats = useMemo(() => {
@@ -111,7 +127,18 @@ export default function ProfileManager() {
           />
         )}
 
-        {profiles.length === 0 ? (
+        {/* Toggle para mostrar perfis concluídos */}
+        {profiles.length > 0 && (
+          <PixelButton 
+            variant="ghost"
+            onClick={() => setShowCompleted(!showCompleted)}
+            className="w-full flex items-center justify-center gap-2 mb-4"
+          >
+            {showCompleted ? t('profiles_hide_completed') : t('profiles_show_completed')}
+          </PixelButton>
+        )}
+
+        {filteredProfiles.length === 0 && profiles.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
             <div className="flex gap-4 mb-4 text-4xl opacity-70 justify-center">
               <span className="animate-bounce delay-0">🌾</span>
@@ -131,6 +158,18 @@ export default function ProfileManager() {
               {t('profiles_create_button')}
             </PixelButton>
           </div>
+        ) : filteredProfiles.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
+            <div className="text-4xl mb-4 opacity-70">📦</div>
+            <h2 className="font-pixel text-sm text-game-fg mb-2">
+              {showCompleted ? 'Nenhum perfil concluído' : 'Nenhum perfil ativo'}
+            </h2>
+            <p className="font-sans text-sm text-game-gray-700 mb-6 max-w-xs">
+              {showCompleted 
+                ? 'Complete produções para vê-las aqui!' 
+                : 'Crie um novo perfil para começar!'}
+            </p>
+          </div>
         ) : (
           <>
             <PixelButton 
@@ -143,7 +182,7 @@ export default function ProfileManager() {
             </PixelButton>
 
             <div className="grid gap-4 mb-6">
-              {profiles.map((profile) => (
+              {filteredProfiles.map((profile) => (
                 <ProfileCard
                   key={profile.id}
                   profile={profile}

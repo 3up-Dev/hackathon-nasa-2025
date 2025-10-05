@@ -30,6 +30,7 @@ export type Database = {
           selected_crop: string | null
           selected_sector: string | null
           state_id: string
+          status: string
           total_score: number | null
           updated_at: string
           user_id: string
@@ -49,6 +50,7 @@ export type Database = {
           selected_crop?: string | null
           selected_sector?: string | null
           state_id: string
+          status?: string
           total_score?: number | null
           updated_at?: string
           user_id: string
@@ -68,6 +70,7 @@ export type Database = {
           selected_crop?: string | null
           selected_sector?: string | null
           state_id?: string
+          status?: string
           total_score?: number | null
           updated_at?: string
           user_id?: string
