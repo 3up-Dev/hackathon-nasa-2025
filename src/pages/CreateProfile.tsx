@@ -332,7 +332,9 @@ export default function CreateProfile() {
               {/* Data Source */}
               {climateData && (
                 <p className="text-center text-[8px] text-game-gray-700 font-sans">
-                  {climateData.isRealData ? '📡 Dados reais da NASA POWER' : '🔮 Dados simulados'}
+                  {climateData.isRealData 
+                    ? '📡 Dados reais da NASA POWER' 
+                    : '🔮 Dados simulados com base em médias históricas do INMET (Instituto Nacional de Meteorologia)'}
                 </p>
               )}
             </div>
