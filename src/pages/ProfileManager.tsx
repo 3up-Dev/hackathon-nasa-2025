@@ -22,7 +22,7 @@ export default function ProfileManager() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const { profiles, loading, loadProfiles, setActiveProfile, deleteProfile } = useGameProfiles();
-  const [showCompleted, setShowCompleted] = useState(false);
+  const [showCompleted, setShowCompleted] = useState<boolean>(false);
 
   useEffect(() => {
     loadProfiles();
