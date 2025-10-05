@@ -1,3 +1,11 @@
+/**
+ * Este arquivo foi desenvolvido com assistência de Inteligência Artificial.
+ * Toda a lógica, estrutura e implementação foram revisadas e validadas pela equipe humana.
+ * 
+ * This file was developed with Artificial Intelligence assistance.
+ * All logic, structure, and implementation were reviewed and validated by the human team.
+ */
+
 import { useState } from 'react';
 import { GameLayout } from '@/components/layout/GameLayout';
 import { BrazilMap } from '@/components/game/BrazilMap';

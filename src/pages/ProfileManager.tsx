@@ -1,3 +1,11 @@
+/**
+ * Este arquivo foi desenvolvido com assistência de Inteligência Artificial.
+ * Toda a lógica, estrutura e implementação foram revisadas e validadas pela equipe humana.
+ * 
+ * This file was developed with Artificial Intelligence assistance.
+ * All logic, structure, and implementation were reviewed and validated by the human team.
+ */
+
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, LogOut, Trophy } from 'lucide-react';
