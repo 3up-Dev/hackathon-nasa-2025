@@ -41,13 +41,19 @@ export default function Results() {
     <GameLayout>
       <div className="h-full bg-gradient-to-b from-game-bg to-game-green-400 to-opacity-20 overflow-auto">
         <div className="p-8 space-y-8">
-          {/* Logout button */}
-          <div className="flex justify-start">
+          {/* Navigation buttons */}
+          <div className="flex justify-between items-center">
+            <button
+              onClick={() => navigate('/profiles')}
+              className="font-sans text-sm text-game-gray-700 hover:text-game-fg transition-colors"
+            >
+              ← Voltar
+            </button>
             <button
               onClick={handleLogout}
-              className="font-sans text-sm text-game-gray-700 hover:text-game-fg"
+              className="font-sans text-sm text-game-gray-700 hover:text-game-fg transition-colors"
             >
-              ← Sair
+              Sair →
             </button>
           </div>
 
