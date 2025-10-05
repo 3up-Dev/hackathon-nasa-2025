@@ -24,7 +24,7 @@ export const GameLayout = ({ children }: GameLayoutProps) => {
       </div>
 
       {/* Game container - Responsivo para mobile, centralizado em desktop */}
-      <div className="relative h-full w-full md:max-w-[430px] md:h-[932px] md:mx-auto md:my-4 md:rounded-2xl bg-white md:shadow-2xl overflow-hidden flex flex-col">
+      <div className="relative h-full w-full md:max-w-[430px] md:h-[932px] md:mx-auto md:my-4 md:rounded-2xl bg-white md:shadow-2xl overflow-hidden flex flex-col" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         {/* Content */}
         <div className="flex-1 overflow-auto z-10 pointer-events-auto">
           {children}
