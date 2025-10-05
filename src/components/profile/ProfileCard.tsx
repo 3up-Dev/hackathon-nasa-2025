@@ -120,7 +120,7 @@ export const ProfileCard = ({ profile, onPlay, onDelete }: ProfileCardProps) => 
           Pontuação: <span className="font-bold text-game-fg">{profile.total_score}</span>
         </span>
         <span className="font-sans text-xs text-game-gray-700">
-          {formatDate(profile.last_played_at)}
+          Produção: <span className="font-bold text-game-fg">{profile.planted_states.length} estado{profile.planted_states.length !== 1 ? 's' : ''}</span>
         </span>
       </div>
 
