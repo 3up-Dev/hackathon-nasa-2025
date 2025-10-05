@@ -109,7 +109,19 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_rankings: {
+        Row: {
+          crop_id: string | null
+          id: string | null
+          last_played_at: string | null
+          profile_name: string | null
+          ranking_position: number | null
+          sector: string | null
+          state_id: string | null
+          total_score: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
